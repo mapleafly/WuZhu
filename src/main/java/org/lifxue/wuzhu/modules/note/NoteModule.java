@@ -6,12 +6,12 @@ import org.kordamp.ikonli.materialdesign.MaterialDesign;
 import org.springframework.stereotype.Component;
 
 /**
- * @program: CoinTDA
- * @classname: RichTextModule
- * @description: 富文本框控件
- * @author: mapleaf
- * @date 2020/7/20 15:46
- */
+  * @classname NoteModule
+  * @description 富文本框控件
+  * @auhthor lifxue
+  * @date 2023/1/6 14:06
+  * @version 1.0
+*/
 @Component
 public class NoteModule extends WorkbenchModule {
 

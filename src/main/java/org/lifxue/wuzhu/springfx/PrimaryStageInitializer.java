@@ -16,6 +16,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
+/**
+ * @version 1.0
+ * @classname PrimaryStageInitializer
+ * @description 监听事件，对事件的处理即启动javafx
+ * @auhthor lifxue
+ * @date 2023/1/6 14:19
+ */
 @Component
 public class PrimaryStageInitializer implements ApplicationListener<StageReadyEvent> {
 
@@ -60,10 +67,11 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
     }
 
     /**
-     * 初始化文件菜单
-     *
-     * @return
-     */
+     * @return com.dlsc.workbenchfx.view.controls.ToolbarItem
+     * @description 初始化文件菜单
+     * @author lifxue
+     * @date 2023/1/6 14:21
+     **/
     private ToolbarItem initFileItem() {
         // 导入CSV菜单项
         MenuItem importItem = new MenuItem("导入CSV", new FontIcon(MaterialDesign.MDI_IMPORT));
@@ -95,10 +103,11 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
     }
 
     /**
-     * 初始化更新菜单
-     *
-     * @return
-     */
+     * @description 初始化更新菜单
+     * @author lifxue
+     * @date 2023/1/6 14:21
+     * @return com.dlsc.workbenchfx.view.controls.ToolbarItem
+     **/
     private ToolbarItem initUpdateItem() {
         // 更新现价菜单项
         MenuItem updatePriceItem = new MenuItem("更新现价", new FontIcon(MaterialDesign.MDI_BANK));

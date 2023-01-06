@@ -24,8 +24,12 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 /**
- * @author lif
- */
+  * @classname InterfaceTheme
+  * @description 界面模板
+  * @auhthor lifxue
+  * @date 2023/1/6 14:38
+  * @version 1.0
+*/
 @Component
 public class InterfaceTheme {
 

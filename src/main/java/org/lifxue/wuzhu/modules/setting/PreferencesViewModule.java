@@ -23,8 +23,12 @@ import org.kordamp.ikonli.materialdesign.MaterialDesign;
 import org.springframework.stereotype.Component;
 
 /**
- * @author lif
- */
+  * @classname PreferencesViewModule
+  * @description 首选项设置模块
+  * @auhthor lifxue
+  * @date 2023/1/6 14:24
+  * @version 1.0
+*/
 @Slf4j
 @Component
 public class PreferencesViewModule extends WorkbenchModule {

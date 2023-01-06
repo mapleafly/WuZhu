@@ -26,15 +26,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author lif
- */
+
 @Slf4j
 public class CSVHelper {
     private static final String NEW_LINE_SEPARATOR = "\n";
     private static final char DELIMITER = ',';
     private static final Charset CHARSET = StandardCharsets.UTF_8;
 
+    /**
+     * @Description
+     * @Author lifxue
+     * @Date 2023/1/6 13:47
+     * @Param [header, data, filePath]
+     **/
     public static void writeCsv(String[] header, List<String[]> data, File filePath) {
         // 初始化csvformat
         CSVFormat formator =
@@ -60,7 +64,14 @@ public class CSVHelper {
         }
     }
 
-    public static List<String[]> readCsv(String filePath) {
+    /**
+     * @Description
+     * @Author lifxue
+     * @Date 2023/1/6 13:47
+     * @param filePath
+     * @return java.util.List<java.lang.String[]>
+     **/
+     public static List<String[]> readCsv(String filePath) {
         List<String[]> data = new ArrayList<>();
         try (Reader reader = new FileReader(filePath, CHARSET)) {
             Iterable<CSVRecord> records =

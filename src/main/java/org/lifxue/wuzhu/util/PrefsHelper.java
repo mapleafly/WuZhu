@@ -21,7 +21,11 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
- * @author lif
+ * @version 1.0
+ * @classname PrefsHelper
+ * @description 首选项助手
+ * @auhthor lifxue
+ * @date 2023/1/6 14:36
  */
 @Slf4j
 public class PrefsHelper {

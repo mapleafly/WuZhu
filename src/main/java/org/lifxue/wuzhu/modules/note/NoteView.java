@@ -7,15 +7,20 @@ import javafx.scene.layout.AnchorPane;
 import org.lifxue.wuzhu.modules.note.richtextfx.RichTextView;
 
 /**
- * @program: CoinTDA
- * @classname: NoteView
- * @description: 记事本View
- * @author: mapleaf
- * @date 2020/7/21 16:24
- */
+  * @classname NoteView
+  * @description 记事本View
+  * @auhthor lifxue
+  * @date 2023/1/6 14:06
+  * @version 1.0
+*/
 public class NoteView extends AnchorPane {
-
-    public NoteView(Workbench workbench) {
+    /**
+     * @Description
+     * @Author lifxue
+     * @Date 2023/1/6 13:42
+     * @Param [workbench]
+     **/
+   public NoteView(Workbench workbench) {
         TabPane tabPane = new TabPane();
 
         Tab strategyTab = new Tab();
