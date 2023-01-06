@@ -45,7 +45,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
     public void onApplicationEvent(StageReadyEvent event) {
         Stage stage = event.stage;
         stage.setTitle("WuZhu");
-        stage.getIcons().add(new Image(Objects.requireNonNull(PrimaryStageInitializer.class.getResource("/org/lifxue/wuzhu/images/lifng.jpg")).toString()));
+        stage.getIcons().add(new Image(Objects.requireNonNull(
+            PrimaryStageInitializer.class.getResource("/org/lifxue/wuzhu/images/lifng.jpg")).toString()));
 
         //增加菜单
         workbench.getToolbarControlsLeft().addAll(
