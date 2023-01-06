@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @FxmlView("PreferencesView.fxml")
-public class PreferencesViewController{
+public class PreferencesViewController {
 
     private final int PRICE_MIN = 50;
     private final int PRICE_MAX = 5000;
@@ -62,7 +62,7 @@ public class PreferencesViewController{
     @FXML
     private TextField apikeyTextField;
 
-    public PreferencesViewController(Workbench workbench){
+    public PreferencesViewController(Workbench workbench) {
         this.workbench = workbench;
 
     }

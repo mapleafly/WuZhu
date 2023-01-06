@@ -26,7 +26,6 @@ public class NoteModule extends WorkbenchModule {
     }
 
 
-
     /**
      * Gets called whenever the currently displayed content is being switched to this module.
      *

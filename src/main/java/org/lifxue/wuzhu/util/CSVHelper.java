@@ -31,7 +31,6 @@ import java.util.List;
  */
 @Slf4j
 public class CSVHelper {
-
     private static final String NEW_LINE_SEPARATOR = "\n";
     private static final char DELIMITER = ',';
     private static final Charset CHARSET = StandardCharsets.UTF_8;

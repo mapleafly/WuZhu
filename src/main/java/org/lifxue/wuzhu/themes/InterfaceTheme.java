@@ -19,12 +19,14 @@ import com.dlsc.workbenchfx.Workbench;
 import javafx.collections.ObservableList;
 import org.lifxue.wuzhu.enums.ThemeEnum;
 import org.lifxue.wuzhu.util.PrefsHelper;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
 /**
  * @author lif
  */
+@Component
 public class InterfaceTheme {
 
     private Workbench workbench;

@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 public class PreferencesViewModule extends WorkbenchModule {
 
     private FxWeaver fxWeaver;
+
     public PreferencesViewModule(FxWeaver fxWeaver) {
         super("首选项", MaterialDesign.MDI_SETTINGS);
         this.fxWeaver = fxWeaver;

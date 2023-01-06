@@ -25,7 +25,6 @@ import java.util.prefs.Preferences;
  */
 @Slf4j
 public class PrefsHelper {
-
     // 主题
     public static final String THEME = "theme";
     // 更新价格
@@ -46,7 +45,7 @@ public class PrefsHelper {
     public static final String CMC_API_KEY = "cmcapikey";
 
     //信息保存的路径
-     private static final Preferences preferences =
+    private static final Preferences preferences =
         Preferences.userRoot().node("/org/lifxue/wuzhu");
 
     /**
@@ -88,7 +87,7 @@ public class PrefsHelper {
         preferences.remove(k);
     }
 
-    public static String getCmcApiKey(){
+    public static String getCmcApiKey() {
         return preferences.get(CMC_API_KEY, "");
     }
 }

@@ -27,7 +27,6 @@ import java.time.format.DateTimeParseException;
  * @author xuelf
  */
 public class DateHelper {
-
     private static final String DATE_PATTERN = "yyyy-MM-dd";
     public static final StringConverter<LocalDate> CONVERTER =
         new StringConverter<>() {
