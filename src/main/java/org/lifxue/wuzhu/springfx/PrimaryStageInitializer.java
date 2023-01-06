@@ -12,6 +12,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
 import org.lifxue.wuzhu.modules.note.NoteModule;
 import org.lifxue.wuzhu.modules.setting.PreferencesViewModule;
+import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
@@ -31,15 +32,18 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
 
     private final NoteModule noteModule;
     private final PreferencesViewModule preferencesViewModule;
+    private final InterfaceTheme interfaceTheme;
 
     public PrimaryStageInitializer(
         Workbench workbench,
         NoteModule noteModule,
-        PreferencesViewModule preferencesViewModule
+        PreferencesViewModule preferencesViewModule,
+        InterfaceTheme interfaceTheme
     ) {
         this.workbench = workbench;
         this.noteModule = noteModule;
         this.preferencesViewModule = preferencesViewModule;
+        this.interfaceTheme = interfaceTheme;
     }
 
     @Override
@@ -47,7 +51,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         Stage stage = event.stage;
         stage.setTitle("WuZhu");
         stage.getIcons().add(new Image(Objects.requireNonNull(
-            PrimaryStageInitializer.class.getResource("/org/lifxue/wuzhu/images/lifng.jpg")).toString()));
+            PrimaryStageInitializer.class.getResource("/org/lifxue/wuzhu/images/W-p5.png")).toString()));
 
         //增加侧滑导航栏
         workbench.getNavigationDrawer().getItems().addAll(
@@ -76,6 +80,9 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         stage.setHeight(700);
         stage.show();
         stage.centerOnScreen();
+
+        // 设置主题
+        interfaceTheme.initNightMode();
     }
 
     private MenuItem preferencesMenuItem() {

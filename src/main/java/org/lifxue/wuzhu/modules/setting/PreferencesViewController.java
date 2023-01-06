@@ -65,12 +65,13 @@ public class PreferencesViewController {
 
     private Workbench workbench;
     private InterfaceTheme interfaceTheme;
+    private PrefsHelper prefsHelper;
 
-    public PreferencesViewController(Workbench workbench, InterfaceTheme interfaceTheme) {
+    public PreferencesViewController(Workbench workbench, InterfaceTheme interfaceTheme, PrefsHelper prefsHelper) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
+        this.prefsHelper = prefsHelper;
     }
-
 
     /**
      * @description Initializes the controller class.
@@ -83,7 +84,7 @@ public class PreferencesViewController {
         lightRadio.setUserData(ThemeEnum.LIGHT);
         nightRadio.setUserData(ThemeEnum.NIGHT);
         String themeValue =
-            PrefsHelper.getPreferencesValue(PrefsHelper.THEME, ThemeEnum.LIGHT.toString());
+            prefsHelper.getPreferencesValue(prefsHelper.THEME, ThemeEnum.LIGHT.toString());
         ThemeEnum themeEnum = ThemeEnum.valueOf(themeValue);
         switch (themeEnum) {
             case NIGHT:
@@ -98,12 +99,12 @@ public class PreferencesViewController {
         }
         //初始化自动更新设置
         String apValue =
-            PrefsHelper.getPreferencesValue(PrefsHelper.UPDATEPRICE, BooleanEnum.NO.toString());
+            prefsHelper.getPreferencesValue(prefsHelper.UPDATEPRICE, BooleanEnum.NO.toString());
         BooleanEnum apEnum = BooleanEnum.valueOf(apValue);
         autoPriceCheck.setSelected(apEnum.equals(BooleanEnum.YES));
 
         String acValue =
-            PrefsHelper.getPreferencesValue(PrefsHelper.COINIDMAP, BooleanEnum.NO.toString());
+            prefsHelper.getPreferencesValue(prefsHelper.COINIDMAP, BooleanEnum.NO.toString());
         BooleanEnum acEnum = BooleanEnum.valueOf(acValue);
         autoCoinInfoCheck.setSelected(acEnum.equals(BooleanEnum.YES));
 
@@ -113,37 +114,37 @@ public class PreferencesViewController {
         numSpinner.setValueFactory(spinner);
 
         String notSmallCoinValue =
-            PrefsHelper.getPreferencesValue(PrefsHelper.NOTSMALLCOIN, BooleanEnum.NO.toString());
+            prefsHelper.getPreferencesValue(prefsHelper.NOTSMALLCOIN, BooleanEnum.NO.toString());
         BooleanEnum notSmallCoinEnum = BooleanEnum.valueOf(notSmallCoinValue);
         if (notSmallCoinEnum.equals(BooleanEnum.YES)) {
             notSmallCheck.setSelected(true);
             numSpinner.setDisable(false);
             String notSmallCoinNumValue =
-                PrefsHelper.getPreferencesValue(PrefsHelper.NOTSMALLCOINNUM, "100");
+                prefsHelper.getPreferencesValue(prefsHelper.NOTSMALLCOINNUM, "100");
             numSpinner.getValueFactory().setValue(Integer.valueOf(notSmallCoinNumValue));
         } else {
             notSmallCheck.setSelected(false);
             numSpinner.setDisable(true);
         }
         //初始化代理设置
-        String proxyValue = PrefsHelper.getPreferencesValue(PrefsHelper.PROXY, BooleanEnum.NO.toString());
+        String proxyValue = prefsHelper.getPreferencesValue(prefsHelper.PROXY, BooleanEnum.NO.toString());
         BooleanEnum proxyEnum = BooleanEnum.valueOf(proxyValue);
         if (proxyEnum.equals(BooleanEnum.YES)) {
             proxyCheck.setSelected(true);
             hostTextField.setDisable(false);
-            hostTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.HOST, "127.0.0.1"));
+            hostTextField.setText(prefsHelper.getPreferencesValue(prefsHelper.HOST, "127.0.0.1"));
             portTextField.setDisable(false);
-            portTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.PORT, "56908"));
+            portTextField.setText(prefsHelper.getPreferencesValue(prefsHelper.PORT, "56908"));
         } else {
             proxyCheck.setSelected(false);
             hostTextField.setDisable(true);
-            hostTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.HOST, "127.0.0.1"));
+            hostTextField.setText(prefsHelper.getPreferencesValue(prefsHelper.HOST, "127.0.0.1"));
             portTextField.setDisable(true);
-            portTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.PORT, "56908"));
+            portTextField.setText(prefsHelper.getPreferencesValue(prefsHelper.PORT, "56908"));
         }
 
         //初始化coinmarketcap.com参数
-        apikeyTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.CMC_API_KEY, ""));
+        apikeyTextField.setText(prefsHelper.getPreferencesValue(prefsHelper.CMC_API_KEY, ""));
     }
 
     /**
@@ -165,40 +166,40 @@ public class PreferencesViewController {
     private void handleSave(ActionEvent event) {
         // theme
         String ra = modeGroup.getSelectedToggle().getUserData().toString();
-        PrefsHelper.updatePreferencesValue(PrefsHelper.THEME, ra);
+        prefsHelper.updatePreferencesValue(prefsHelper.THEME, ra);
 
         // db
         if (autoPriceCheck.isSelected()) {
-            PrefsHelper.updatePreferencesValue(PrefsHelper.UPDATEPRICE, BooleanEnum.YES.toString());
+            prefsHelper.updatePreferencesValue(prefsHelper.UPDATEPRICE, BooleanEnum.YES.toString());
         } else {
-            PrefsHelper.updatePreferencesValue(PrefsHelper.UPDATEPRICE, BooleanEnum.NO.toString());
+            prefsHelper.updatePreferencesValue(prefsHelper.UPDATEPRICE, BooleanEnum.NO.toString());
         }
         if (autoCoinInfoCheck.isSelected()) {
-            PrefsHelper.updatePreferencesValue(PrefsHelper.COINIDMAP, BooleanEnum.YES.toString());
+            prefsHelper.updatePreferencesValue(prefsHelper.COINIDMAP, BooleanEnum.YES.toString());
         } else {
-            PrefsHelper.updatePreferencesValue(PrefsHelper.COINIDMAP, BooleanEnum.NO.toString());
+            prefsHelper.updatePreferencesValue(prefsHelper.COINIDMAP, BooleanEnum.NO.toString());
         }
         // 品种比例图设置
         if (notSmallCheck.isSelected()) {
-            PrefsHelper.updatePreferencesValue(PrefsHelper.NOTSMALLCOIN, BooleanEnum.YES.toString());
-            PrefsHelper.updatePreferencesValue(
-                PrefsHelper.NOTSMALLCOINNUM, numSpinner.getValue().toString());
+            prefsHelper.updatePreferencesValue(prefsHelper.NOTSMALLCOIN, BooleanEnum.YES.toString());
+            prefsHelper.updatePreferencesValue(
+                prefsHelper.NOTSMALLCOINNUM, numSpinner.getValue().toString());
         } else {
-            PrefsHelper.updatePreferencesValue(PrefsHelper.NOTSMALLCOIN, BooleanEnum.NO.toString());
+            prefsHelper.updatePreferencesValue(prefsHelper.NOTSMALLCOIN, BooleanEnum.NO.toString());
         }
         //代理设置
         if (proxyCheck.isSelected()) {
-            PrefsHelper.updatePreferencesValue(PrefsHelper.PROXY, BooleanEnum.YES.toString());
-            PrefsHelper.updatePreferencesValue(PrefsHelper.HOST, hostTextField.getText());
-            PrefsHelper.updatePreferencesValue(PrefsHelper.PORT, portTextField.getText());
+            prefsHelper.updatePreferencesValue(prefsHelper.PROXY, BooleanEnum.YES.toString());
+            prefsHelper.updatePreferencesValue(prefsHelper.HOST, hostTextField.getText());
+            prefsHelper.updatePreferencesValue(prefsHelper.PORT, portTextField.getText());
         } else {
-            PrefsHelper.updatePreferencesValue(PrefsHelper.PROXY, BooleanEnum.NO.toString());
+            prefsHelper.updatePreferencesValue(prefsHelper.PROXY, BooleanEnum.NO.toString());
         }
         //保存apikey
-        PrefsHelper.updatePreferencesValue(PrefsHelper.CMC_API_KEY, apikeyTextField.getText());
+        prefsHelper.updatePreferencesValue(prefsHelper.CMC_API_KEY, apikeyTextField.getText());
 
         // 刷新保存
-        PrefsHelper.flushPreferences();
+        prefsHelper.flushPreferences();
 
         // theme即时生效
         //InterfaceTheme theme = new InterfaceTheme(workbench);

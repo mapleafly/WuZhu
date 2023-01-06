@@ -35,12 +35,15 @@ public class InterfaceTheme {
 
     private Workbench workbench;
 
-    public InterfaceTheme(Workbench workbench) {
+    private PrefsHelper prefsHelper;
+
+    public InterfaceTheme(Workbench workbench, PrefsHelper prefsHelper) {
         this.workbench = workbench;
+        this.prefsHelper = prefsHelper;
     }
 
     public void initNightMode() {
-        String themeValue = PrefsHelper.getPreferencesValue(PrefsHelper.THEME, ThemeEnum.LIGHT.toString());
+        String themeValue = prefsHelper.getPreferencesValue(prefsHelper.THEME, ThemeEnum.LIGHT.toString());
         ThemeEnum themeEnum = ThemeEnum.valueOf(themeValue);
         switch (themeEnum) {
             case NIGHT:
