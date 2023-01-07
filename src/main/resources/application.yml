@@ -1,19 +1,21 @@
-pring:
+spring:
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:~/.wuzhu/h2/wuzhudb;AUTO_SERVER=TRUE
     username: root
-    password: root
+    password: test
   sql:
     init:
       mode: always
       platform: h2
       #data-locations: classpath:db/data-h2.sql
       schema-locations: classpath:db/schema-h2.sql
+
 mybatis-plus:
   global-config:
     db-config:
-      id-type: auto #id\u751F\u6210\u89C4\u5219\uFF1A\u6570\u636E\u5E93id\u81EA\u589E
+      id-type: auto #id生成规则：数据库id自增
+
 coin-market-cap:
   customHeader: X-CMC_PRO_API_KEY
   httpHeader: application/json
@@ -31,15 +33,15 @@ coin-market-cap:
 feign:
   client:
     config:
-      default: # \u670D\u52A1\u540D\uFF0C\u586B\u5199 default \u4E3A\u6240\u6709\u670D\u52A1\uFF0C\u6216\u8005\u6307\u5B9A\u67D0\u670D\u52A1\uFF0C\u4F8B\u5982\uFF1Aannoroad-beta
-        connectTimeout: 10000 # \u8FDE\u63A5\u8D85\u65F6\uFF0C10\u79D2
-        readTimeout: 20000 # \u8BFB\u53D6\u8D85\u65F6\uFF0C20\u79D2
+      default: # 服务名，填写 default 为所有服务，或者指定某服务，例如：annoroad-beta
+        connectTimeout: 10000 # 连接超时，10秒
+        readTimeout: 20000 # 读取超时，20秒
   httpclient:
-    enabled: false # \u5173\u95ED ApacheHttpClient
-    max-connections: 50 # \u8FDE\u63A5\u6C60\u8FDE\u63A5\u6700\u5927\u8FDE\u63A5\u6570\uFF08\u7F3A\u7701\u503C 200\uFF09
-    time-to-live: 600 # \u8FDE\u63A5\u6700\u5927\u95F2\u7F6E\u65F6\u95F4\uFF0C\u5355\u4F4D\u4E3A\u79D2\uFF0C600\u79D2==10\u5206\u949F\uFF08\u7F3A\u7701\u503C\u4E3A 900\u79D2==15\u5206\u949F\uFF09
+    enabled: false # 关闭 ApacheHttpClient
+    max-connections: 50 # 连接池连接最大连接数（缺省值 200）
+    time-to-live: 600 # 连接最大闲置时间，单位为秒，600秒==10分钟（缺省值为 900秒==15分钟）
   okhttp:
-    enabled: true # \u5F00\u542F okhttp
+    enabled: true # 开启 okhttp
 
 proxy:
   #host: 127.0.0.1

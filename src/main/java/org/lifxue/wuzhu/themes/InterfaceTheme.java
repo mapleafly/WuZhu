@@ -19,31 +19,30 @@ import com.dlsc.workbenchfx.Workbench;
 import javafx.collections.ObservableList;
 import org.lifxue.wuzhu.enums.ThemeEnum;
 import org.lifxue.wuzhu.util.PrefsHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
 /**
-  * @classname InterfaceTheme
-  * @description 界面模板
-  * @auhthor lifxue
-  * @date 2023/1/6 14:38
-  * @version 1.0
-*/
+ * @version 1.0
+ * @classname InterfaceTheme
+ * @description 界面模板
+ * @auhthor lifxue
+ * @date 2023/1/6 14:38
+ */
 @Component
 public class InterfaceTheme {
 
     private Workbench workbench;
 
-    private PrefsHelper prefsHelper;
-
-    public InterfaceTheme(Workbench workbench, PrefsHelper prefsHelper) {
+    @Autowired
+    public InterfaceTheme(Workbench workbench) {
         this.workbench = workbench;
-        this.prefsHelper = prefsHelper;
     }
 
     public void initNightMode() {
-        String themeValue = prefsHelper.getPreferencesValue(prefsHelper.THEME, ThemeEnum.LIGHT.toString());
+        String themeValue = PrefsHelper.getPreferencesValue(PrefsHelper.THEME, ThemeEnum.LIGHT.toString());
         ThemeEnum themeEnum = ThemeEnum.valueOf(themeValue);
         switch (themeEnum) {
             case NIGHT:

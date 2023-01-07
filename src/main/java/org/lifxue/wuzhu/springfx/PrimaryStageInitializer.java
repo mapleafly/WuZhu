@@ -2,6 +2,7 @@ package org.lifxue.wuzhu.springfx;
 
 import com.dlsc.workbenchfx.Workbench;
 import com.dlsc.workbenchfx.view.controls.ToolbarItem;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Menu;
@@ -12,11 +13,13 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
 import org.lifxue.wuzhu.modules.note.NoteModule;
 import org.lifxue.wuzhu.modules.setting.PreferencesViewModule;
+import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @version 1.0
@@ -34,16 +37,20 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
     private final PreferencesViewModule preferencesViewModule;
     private final InterfaceTheme interfaceTheme;
 
+    private final ICMCMapService icmcMapService;
+
     public PrimaryStageInitializer(
         Workbench workbench,
         NoteModule noteModule,
         PreferencesViewModule preferencesViewModule,
-        InterfaceTheme interfaceTheme
+        InterfaceTheme interfaceTheme,
+        ICMCMapService icmcMapService
     ) {
         this.workbench = workbench;
         this.noteModule = noteModule;
         this.preferencesViewModule = preferencesViewModule;
         this.interfaceTheme = interfaceTheme;
+        this.icmcMapService = icmcMapService;
     }
 
     @Override
@@ -72,6 +79,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
             preferencesViewModule
         );
 
+        //设置每页显示几个模块
         workbench.setModulesPerPage(9);
 
         Scene scene = new Scene(workbench);
@@ -174,8 +182,29 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         coinMapItem.setOnAction(event ->
             workbench.showConfirmationDialog("更新货币数据", "你确定要更新货币数据吗？", buttonType -> {
                     if (buttonType == ButtonType.YES) {
-                        //CoinInfo coinInfo = new CoinInfo(workbench,null);
-                        //CompletableFuture.runAsync(coinInfo::handleUpdateCoinIDMap);
+                        CompletableFuture.runAsync(() -> {
+                            if (icmcMapService.saveOrUpdateBatch("cmc_rank")) {
+                                Platform.runLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        workbench.showInformationDialog("数据更新信息", "加密货币信息更新成功！",
+                                            buttonType1 -> {
+                                            }
+                                        );
+                                    }
+                                });
+                            } else {
+                                Platform.runLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        workbench.showErrorDialog("数据更新信息", "加密货币信息更新失败！",
+                                            buttonType1 -> {
+                                            }
+                                        );
+                                    }
+                                });
+                            }
+                        });
                         workbench.hideNavigationDrawer();
                     }
                 }

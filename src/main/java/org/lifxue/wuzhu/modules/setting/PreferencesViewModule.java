@@ -20,6 +20,7 @@ import javafx.scene.Node;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxWeaver;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,6 +38,10 @@ public class PreferencesViewModule extends WorkbenchModule {
 
     public PreferencesViewModule(FxWeaver fxWeaver) {
         super("首选项", MaterialDesign.MDI_SETTINGS);
+    }
+
+    @Autowired
+    public void setFxWeaver(FxWeaver fxWeaver){
         this.fxWeaver = fxWeaver;
     }
 

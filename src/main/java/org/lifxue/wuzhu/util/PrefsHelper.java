@@ -16,42 +16,37 @@
 package org.lifxue.wuzhu.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
- * @version 1.0
- * @classname PrefsHelper
- * @description 首选项助手
- * @auhthor lifxue
- * @date 2023/1/6 14:36
+ * @author lif
  */
 @Slf4j
-@Component
 public class PrefsHelper {
+
     // 主题
-    public final String THEME = "theme";
+    public static final String THEME = "theme";
     // 更新价格
-    public final String UPDATEPRICE = "updateprice";
+    public static final String UPDATEPRICE = "updateprice";
     // 更新coin信息
-    public final String COINIDMAP = "coinidmap";
+    public static final String COINIDMAP = "coinidmap";
     // coin信息最后更新日期
-    public final String COINIDMAP_DATE = "coinidmaplastdate";
+    public static final String COINIDMAP_DATE = "coinidmaplastdate";
     // 忽略小额品种
-    public final String NOTSMALLCOIN = "notsmallcoin";
-    public final String NOTSMALLCOINNUM = "notsmallcoinnum";
+    public static final String NOTSMALLCOIN = "notsmallcoin";
+    public static final String NOTSMALLCOINNUM = "notsmallcoinnum";
     //代理设置
-    public final String PROXY = "proxy";
-    public final String HOST = "host";
-    public final String PORT = "port";
+    public static final String PROXY = "proxy";
+    public static final String HOST = "host";
+    public static final String PORT = "port";
 
     //coin-market-cap网站的 apikey
-    public final String CMC_API_KEY = "cmcapikey";
+    public static final String CMC_API_KEY = "cmcapikey";
 
-    //信息保存的路径
-    private final Preferences preferences = Preferences.userRoot().node("/org/lifxue/wuzhu");
+     private static final Preferences preferences =
+        Preferences.userRoot().node("/org/lifxue/wuzhu");
 
     /**
      * @param key   1
@@ -61,14 +56,14 @@ public class PrefsHelper {
      * @author: mapleaf
      * @date: 2020/6/23 18:31
      */
-    public void updatePreferencesValue(String key, String value) {
+    public static void updatePreferencesValue(String key, String value) {
         preferences.put(key, value);
     }
 
     /**
      * 将最新Preferences的值写入配置文件
      */
-    public void flushPreferences() {
+    public static void flushPreferences() {
         try {
             preferences.flush();
         } catch (BackingStoreException e) {
@@ -84,15 +79,15 @@ public class PrefsHelper {
      * @author: mapleaf
      * @date: 2020/6/23 18:31
      */
-    public String getPreferencesValue(String key, String v) {
+    public static String getPreferencesValue(String key, String v) {
         return preferences.get(key, v);
     }
 
-    public void removePreferences(String k) {
+    public static void removePreferences(String k) {
         preferences.remove(k);
     }
 
-    public String getCmcApiKey() {
+    public static String getCmcApiKey(){
         return preferences.get(CMC_API_KEY, "");
     }
 }

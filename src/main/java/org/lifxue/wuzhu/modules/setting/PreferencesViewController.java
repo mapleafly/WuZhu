@@ -24,6 +24,7 @@ import org.lifxue.wuzhu.enums.BooleanEnum;
 import org.lifxue.wuzhu.enums.ThemeEnum;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.lifxue.wuzhu.util.PrefsHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -65,12 +66,11 @@ public class PreferencesViewController {
 
     private Workbench workbench;
     private InterfaceTheme interfaceTheme;
-    private PrefsHelper prefsHelper;
 
-    public PreferencesViewController(Workbench workbench, InterfaceTheme interfaceTheme, PrefsHelper prefsHelper) {
+    @Autowired
+    public PreferencesViewController(Workbench workbench, InterfaceTheme interfaceTheme) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
-        this.prefsHelper = prefsHelper;
     }
 
     /**
@@ -84,7 +84,7 @@ public class PreferencesViewController {
         lightRadio.setUserData(ThemeEnum.LIGHT);
         nightRadio.setUserData(ThemeEnum.NIGHT);
         String themeValue =
-            prefsHelper.getPreferencesValue(prefsHelper.THEME, ThemeEnum.LIGHT.toString());
+            PrefsHelper.getPreferencesValue(PrefsHelper.THEME, ThemeEnum.LIGHT.toString());
         ThemeEnum themeEnum = ThemeEnum.valueOf(themeValue);
         switch (themeEnum) {
             case NIGHT:
@@ -99,12 +99,12 @@ public class PreferencesViewController {
         }
         //初始化自动更新设置
         String apValue =
-            prefsHelper.getPreferencesValue(prefsHelper.UPDATEPRICE, BooleanEnum.NO.toString());
+            PrefsHelper.getPreferencesValue(PrefsHelper.UPDATEPRICE, BooleanEnum.NO.toString());
         BooleanEnum apEnum = BooleanEnum.valueOf(apValue);
         autoPriceCheck.setSelected(apEnum.equals(BooleanEnum.YES));
 
         String acValue =
-            prefsHelper.getPreferencesValue(prefsHelper.COINIDMAP, BooleanEnum.NO.toString());
+            PrefsHelper.getPreferencesValue(PrefsHelper.COINIDMAP, BooleanEnum.NO.toString());
         BooleanEnum acEnum = BooleanEnum.valueOf(acValue);
         autoCoinInfoCheck.setSelected(acEnum.equals(BooleanEnum.YES));
 
@@ -114,45 +114,37 @@ public class PreferencesViewController {
         numSpinner.setValueFactory(spinner);
 
         String notSmallCoinValue =
-            prefsHelper.getPreferencesValue(prefsHelper.NOTSMALLCOIN, BooleanEnum.NO.toString());
+            PrefsHelper.getPreferencesValue(PrefsHelper.NOTSMALLCOIN, BooleanEnum.NO.toString());
         BooleanEnum notSmallCoinEnum = BooleanEnum.valueOf(notSmallCoinValue);
         if (notSmallCoinEnum.equals(BooleanEnum.YES)) {
             notSmallCheck.setSelected(true);
             numSpinner.setDisable(false);
             String notSmallCoinNumValue =
-                prefsHelper.getPreferencesValue(prefsHelper.NOTSMALLCOINNUM, "100");
+                PrefsHelper.getPreferencesValue(PrefsHelper.NOTSMALLCOINNUM, "100");
             numSpinner.getValueFactory().setValue(Integer.valueOf(notSmallCoinNumValue));
         } else {
             notSmallCheck.setSelected(false);
             numSpinner.setDisable(true);
         }
         //初始化代理设置
-        String proxyValue = prefsHelper.getPreferencesValue(prefsHelper.PROXY, BooleanEnum.NO.toString());
+        String proxyValue = PrefsHelper.getPreferencesValue(PrefsHelper.PROXY, BooleanEnum.NO.toString());
         BooleanEnum proxyEnum = BooleanEnum.valueOf(proxyValue);
         if (proxyEnum.equals(BooleanEnum.YES)) {
             proxyCheck.setSelected(true);
             hostTextField.setDisable(false);
-            hostTextField.setText(prefsHelper.getPreferencesValue(prefsHelper.HOST, "127.0.0.1"));
+            hostTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.HOST, "127.0.0.1"));
             portTextField.setDisable(false);
-            portTextField.setText(prefsHelper.getPreferencesValue(prefsHelper.PORT, "56908"));
+            portTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.PORT, "56908"));
         } else {
             proxyCheck.setSelected(false);
             hostTextField.setDisable(true);
-            hostTextField.setText(prefsHelper.getPreferencesValue(prefsHelper.HOST, "127.0.0.1"));
+            hostTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.HOST, "127.0.0.1"));
             portTextField.setDisable(true);
-            portTextField.setText(prefsHelper.getPreferencesValue(prefsHelper.PORT, "56908"));
+            portTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.PORT, "56908"));
         }
 
         //初始化coinmarketcap.com参数
-        apikeyTextField.setText(prefsHelper.getPreferencesValue(prefsHelper.CMC_API_KEY, ""));
-    }
-
-    /**
-     * @param workbench the workbench to set
-     */
-    @Deprecated
-    public void setWorkbench(Workbench workbench) {
-        this.workbench = workbench;
+        apikeyTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.CMC_API_KEY, ""));
     }
 
     /**
@@ -166,40 +158,40 @@ public class PreferencesViewController {
     private void handleSave(ActionEvent event) {
         // theme
         String ra = modeGroup.getSelectedToggle().getUserData().toString();
-        prefsHelper.updatePreferencesValue(prefsHelper.THEME, ra);
+        PrefsHelper.updatePreferencesValue(PrefsHelper.THEME, ra);
 
         // db
         if (autoPriceCheck.isSelected()) {
-            prefsHelper.updatePreferencesValue(prefsHelper.UPDATEPRICE, BooleanEnum.YES.toString());
+            PrefsHelper.updatePreferencesValue(PrefsHelper.UPDATEPRICE, BooleanEnum.YES.toString());
         } else {
-            prefsHelper.updatePreferencesValue(prefsHelper.UPDATEPRICE, BooleanEnum.NO.toString());
+            PrefsHelper.updatePreferencesValue(PrefsHelper.UPDATEPRICE, BooleanEnum.NO.toString());
         }
         if (autoCoinInfoCheck.isSelected()) {
-            prefsHelper.updatePreferencesValue(prefsHelper.COINIDMAP, BooleanEnum.YES.toString());
+            PrefsHelper.updatePreferencesValue(PrefsHelper.COINIDMAP, BooleanEnum.YES.toString());
         } else {
-            prefsHelper.updatePreferencesValue(prefsHelper.COINIDMAP, BooleanEnum.NO.toString());
+            PrefsHelper.updatePreferencesValue(PrefsHelper.COINIDMAP, BooleanEnum.NO.toString());
         }
         // 品种比例图设置
         if (notSmallCheck.isSelected()) {
-            prefsHelper.updatePreferencesValue(prefsHelper.NOTSMALLCOIN, BooleanEnum.YES.toString());
-            prefsHelper.updatePreferencesValue(
-                prefsHelper.NOTSMALLCOINNUM, numSpinner.getValue().toString());
+            PrefsHelper.updatePreferencesValue(PrefsHelper.NOTSMALLCOIN, BooleanEnum.YES.toString());
+            PrefsHelper.updatePreferencesValue(
+                PrefsHelper.NOTSMALLCOINNUM, numSpinner.getValue().toString());
         } else {
-            prefsHelper.updatePreferencesValue(prefsHelper.NOTSMALLCOIN, BooleanEnum.NO.toString());
+            PrefsHelper.updatePreferencesValue(PrefsHelper.NOTSMALLCOIN, BooleanEnum.NO.toString());
         }
         //代理设置
         if (proxyCheck.isSelected()) {
-            prefsHelper.updatePreferencesValue(prefsHelper.PROXY, BooleanEnum.YES.toString());
-            prefsHelper.updatePreferencesValue(prefsHelper.HOST, hostTextField.getText());
-            prefsHelper.updatePreferencesValue(prefsHelper.PORT, portTextField.getText());
+            PrefsHelper.updatePreferencesValue(PrefsHelper.PROXY, BooleanEnum.YES.toString());
+            PrefsHelper.updatePreferencesValue(PrefsHelper.HOST, hostTextField.getText());
+            PrefsHelper.updatePreferencesValue(PrefsHelper.PORT, portTextField.getText());
         } else {
-            prefsHelper.updatePreferencesValue(prefsHelper.PROXY, BooleanEnum.NO.toString());
+            PrefsHelper.updatePreferencesValue(PrefsHelper.PROXY, BooleanEnum.NO.toString());
         }
         //保存apikey
-        prefsHelper.updatePreferencesValue(prefsHelper.CMC_API_KEY, apikeyTextField.getText());
+        PrefsHelper.updatePreferencesValue(PrefsHelper.CMC_API_KEY, apikeyTextField.getText());
 
         // 刷新保存
-        prefsHelper.flushPreferences();
+        PrefsHelper.flushPreferences();
 
         // theme即时生效
         //InterfaceTheme theme = new InterfaceTheme(workbench);
@@ -230,11 +222,11 @@ public class PreferencesViewController {
     }
 
     /**
+     * @param event
+     * @return void
      * @description 忽略小额品种复选框操作
      * @author lifxue
      * @date 2023/1/6 14:48
-     * @param event
-     * @return void
      **/
     @FXML
     private void handleNotSmallCheckOnAction(ActionEvent event) {
@@ -242,11 +234,11 @@ public class PreferencesViewController {
     }
 
     /**
+     * @param actionEvent
+     * @return void
      * @description 代理设置复选框操作
      * @author lifxue
      * @date 2023/1/6 14:47
-     * @param actionEvent
-     * @return void
      **/
     @FXML
     public void proxyCheckOnAction(ActionEvent actionEvent) {
