@@ -28,7 +28,8 @@ import java.util.List;
 @Component
 public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> implements ICMCMapService {
 
-    private static final Integer LIMIT = 5000;
+    private final Integer LIMIT = 5000;
+    private final String CMCMAP_AUX = "platform,first_historical_data,last_historical_data,is_active";
     private ICMCMapFeignClient icmcMapFeignClient;
 
     @Autowired

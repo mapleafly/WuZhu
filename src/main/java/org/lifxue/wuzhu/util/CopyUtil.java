@@ -1,8 +1,11 @@
 package org.lifxue.wuzhu.util;
 
 import org.lifxue.wuzhu.dto.CMCMapDto;
+import org.lifxue.wuzhu.dto.CMCQuotesLatestDto;
 import org.lifxue.wuzhu.dto.Platform;
+import org.lifxue.wuzhu.dto.Quote;
 import org.lifxue.wuzhu.entity.CMCMap;
+import org.lifxue.wuzhu.entity.CMCQuotesLatest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
@@ -93,12 +96,12 @@ public class CopyUtil {
         return list;
     }
 
- /*   public static CMCQuotesLatest copy(CMCQuotesLatestDto dto){
+    public static CMCQuotesLatest copy(CMCQuotesLatestDto dto){
         if(dto == null){
             return null;
         }
         CMCQuotesLatest CMCQuotesLatest = new CMCQuotesLatest();
-        CMCQuotesLatest.setId(dto.getId());
+        CMCQuotesLatest.setTid(dto.getId());
         CMCQuotesLatest.setName(dto.getName());
         CMCQuotesLatest.setSymbol(dto.getSymbol());
         CMCQuotesLatest.setSlug(dto.getSlug());
@@ -114,9 +117,7 @@ public class CopyUtil {
             e.printStackTrace();
         }
 
-        //CMCQuotesLatest.setLastUpdated(dto.getLast_updated());
         CMCQuotesLatest.setNumMarketPairs(dto.getNum_market_pairs());
-        //CMCQuotesLatest.setDateAdded(dto.getDate_added());
         CMCQuotesLatest.setMaxSupply(dto.getMax_supply());
         CMCQuotesLatest.setCirculatingSupply(dto.getCirculating_supply());
         CMCQuotesLatest.setTotalSupply(dto.getTotal_supply());
@@ -158,5 +159,5 @@ public class CopyUtil {
             }
         }
         return list;
-    }*/
+    }
 }

@@ -9,15 +9,19 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
+import org.lifxue.wuzhu.entity.CMCQuotesLatest;
 import org.lifxue.wuzhu.modules.note.NoteModule;
 import org.lifxue.wuzhu.modules.setting.PreferencesViewModule;
 import org.lifxue.wuzhu.service.ICMCMapService;
+import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -28,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
  * @auhthor lifxue
  * @date 2023/1/6 14:19
  */
+@Slf4j
 @Component
 public class PrimaryStageInitializer implements ApplicationListener<StageReadyEvent> {
 
@@ -39,18 +44,22 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
 
     private final ICMCMapService icmcMapService;
 
+    private final ICMCQuotesLatestService icmcQuotesLatestService;
+
     public PrimaryStageInitializer(
         Workbench workbench,
         NoteModule noteModule,
         PreferencesViewModule preferencesViewModule,
         InterfaceTheme interfaceTheme,
-        ICMCMapService icmcMapService
+        ICMCMapService icmcMapService,
+        ICMCQuotesLatestService icmcQuotesLatestService
     ) {
         this.workbench = workbench;
         this.noteModule = noteModule;
         this.preferencesViewModule = preferencesViewModule;
         this.interfaceTheme = interfaceTheme;
         this.icmcMapService = icmcMapService;
+        this.icmcQuotesLatestService = icmcQuotesLatestService;
     }
 
     @Override
@@ -164,8 +173,31 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         updatePriceItem.setOnAction(event ->
             workbench.showConfirmationDialog("更新当前价格", "你确定要更新当前价格数据吗？", buttonType -> {
                     if (buttonType == ButtonType.YES) {
-                        //CoinInfo coinInfo = new CoinInfo(workbench);
-                        //CompletableFuture.runAsync(coinInfo::handleUpdateCurPrice);
+                        CompletableFuture.runAsync(() -> {
+                            List<CMCQuotesLatest> list = icmcQuotesLatestService.getHttpJsonById(
+                                "1,1027,825,3408,1839,2010,4687,52,5426,74,4943", "USD");
+                            if (icmcQuotesLatestService.saveBatch(list)) {
+                                Platform.runLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        workbench.showInformationDialog("价格更新信息", "价格信息更新成功！",
+                                            buttonType1 -> {
+                                            }
+                                        );
+                                    }
+                                });
+                            } else {
+                                Platform.runLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        workbench.showErrorDialog("价格更新信息", "加价格信息更新失败！",
+                                            buttonType1 -> {
+                                            }
+                                        );
+                                    }
+                                });
+                            }
+                        });
                         workbench.hideNavigationDrawer();
                     }
                 }

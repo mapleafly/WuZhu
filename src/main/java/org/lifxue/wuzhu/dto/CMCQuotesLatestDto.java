@@ -23,7 +23,7 @@ public class CMCQuotesLatestDto {
     private Integer num_market_pairs;
     private Integer cmc_rank;
     private String last_updated;
-    private List<String> tags;
+    private List<Tag> tags;
     private Platform platform;
     private String self_reported_circulating_supply;
     private String self_reported_market_cap;
