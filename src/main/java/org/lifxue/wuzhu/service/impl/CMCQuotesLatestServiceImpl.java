@@ -57,7 +57,7 @@ public class CMCQuotesLatestServiceImpl extends ServiceImpl<CMCQuotesLatestMappe
         JsonNode data = rootNode.path("data");
         for (String key : ids.split(",")) {
             JsonNode coin = data.path(key);
-            if(coin.isArray()){
+            if (coin.isArray()) {
                 coin = coin.get(0);
             }
             CMCQuotesLatestDto cmcQuotesLatestDto = new CMCQuotesLatestDto();

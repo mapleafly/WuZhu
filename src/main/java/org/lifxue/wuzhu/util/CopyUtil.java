@@ -21,22 +21,23 @@ public class CopyUtil {
         if (source == null) {
             return null;
         }
-     return copy(source, c, (String) null);
+        return copy(source, c, (String) null);
     }
 
-    public static <T> T copy(Object source, Class<T> c, @Nullable String... ignoreProperties){
+    public static <T> T copy(Object source, Class<T> c, @Nullable String... ignoreProperties) {
         if (source == null) {
             return null;
         }
         try {
             T instance = c.getDeclaredConstructor().newInstance();
-            if(ignoreProperties == null){
+            if (ignoreProperties == null) {
                 BeanUtils.copyProperties(source, instance);
-            }else{
+            } else {
                 BeanUtils.copyProperties(source, instance, ignoreProperties);
             }
             return instance;
-        } catch (InvocationTargetException | InstantiationException | NoSuchMethodException | IllegalAccessException e) {
+        } catch (InvocationTargetException | InstantiationException | NoSuchMethodException |
+                 IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -51,8 +52,9 @@ public class CopyUtil {
         }
         return list;
     }
-    public static CMCMap copy(CMCMapDto dto){
-        if(dto == null){
+
+    public static CMCMap copy(CMCMapDto dto) {
+        if (dto == null) {
             return null;
         }
 
@@ -76,28 +78,29 @@ public class CopyUtil {
         }
 
         Platform platform = dto.getPlatform();
-        if(platform != null){
+        if (platform != null) {
             cmcMap.setPlatformId(platform.getId());
             cmcMap.setTokenAddress(platform.getToken_address());
         }
 
         return cmcMap;
     }
-    public static List<CMCMap> copyListCMCMap(List<CMCMapDto> dtoList){
-        if(dtoList == null || dtoList.isEmpty()){
+
+    public static List<CMCMap> copyListCMCMap(List<CMCMapDto> dtoList) {
+        if (dtoList == null || dtoList.isEmpty()) {
             return null;
         }
         List<CMCMap> list = new ArrayList<>();
-        for(CMCMapDto dto : dtoList){
-            if(dto != null) {
+        for (CMCMapDto dto : dtoList) {
+            if (dto != null) {
                 list.add(copy(dto));
             }
         }
         return list;
     }
 
-    public static CMCQuotesLatest copy(CMCQuotesLatestDto dto){
-        if(dto == null){
+    public static CMCQuotesLatest copy(CMCQuotesLatestDto dto) {
+        if (dto == null) {
             return null;
         }
         CMCQuotesLatest CMCQuotesLatest = new CMCQuotesLatest();
@@ -125,13 +128,13 @@ public class CopyUtil {
         CMCQuotesLatest.setCmcRank(dto.getCmc_rank());
 
         Platform platform = dto.getPlatform();
-        if(platform != null){
+        if (platform != null) {
             CMCQuotesLatest.setPlatformId(platform.getId());
             CMCQuotesLatest.setTokenAddress(platform.getToken_address());
         }
 
         Quote quote = dto.getQuote();
-        if(quote != null){
+        if (quote != null) {
             CMCQuotesLatest.setPrice(String.valueOf(quote.getPrice()));
             CMCQuotesLatest.setVolume24h(String.valueOf(quote.getVolume_24h()));
             CMCQuotesLatest.setVolumeChange24h(String.valueOf(quote.getVolume_change_24h()));
@@ -148,13 +151,13 @@ public class CopyUtil {
         return CMCQuotesLatest;
     }
 
-    public static List<CMCQuotesLatest> copyListCMCQuotes(List<CMCQuotesLatestDto> dtoList){
-        if(dtoList == null || dtoList.isEmpty()){
+    public static List<CMCQuotesLatest> copyListCMCQuotes(List<CMCQuotesLatestDto> dtoList) {
+        if (dtoList == null || dtoList.isEmpty()) {
             return null;
         }
         List<CMCQuotesLatest> list = new ArrayList<>();
-        for(CMCQuotesLatestDto dto : dtoList){
-            if(dto != null) {
+        for (CMCQuotesLatestDto dto : dtoList) {
+            if (dto != null) {
                 list.add(copy(dto));
             }
         }

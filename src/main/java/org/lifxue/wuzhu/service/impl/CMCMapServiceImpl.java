@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -67,7 +66,7 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
         return CopyUtil.copyListCMCMap(jsonToDto(jsonMap));
     }
 
-     private List<CMCMapDto> jsonToDto(String jsonMap) {
+    private List<CMCMapDto> jsonToDto(String jsonMap) {
         if (jsonMap == null || jsonMap.isEmpty()) {
             return null;
         }
@@ -142,15 +141,15 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
     public boolean saveOrUpdateBatch(String sort) {
         int start = 1;
         List<CMCMap> listAll = new ArrayList<>();
-        while (true){
+        while (true) {
             List<CMCMap> list = getJson(start, LIMIT, sort);
             if (list == null || list.isEmpty()) {
                 break;
             }
             listAll.addAll(list);
-            if(list.size() == LIMIT){
+            if (list.size() == LIMIT) {
                 start += LIMIT;
-            }else if(list.size() < LIMIT){
+            } else if (list.size() < LIMIT) {
                 break;
             }
             try {
@@ -159,7 +158,7 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
                 throw new RuntimeException(e);
             }
         }
-        if(listAll.isEmpty()){
+        if (listAll.isEmpty()) {
             return false;
         }
         return super.saveOrUpdateBatch(listAll);

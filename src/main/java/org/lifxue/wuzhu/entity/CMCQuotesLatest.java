@@ -8,12 +8,12 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
-  * @classname CMCQuotesLatest
-  * @description 指定品种的最新价格表
-  * @auhthor lifxue
-  * @date 2023/1/8 14:06
-  * @version 1.0
-*/
+ * @version 1.0
+ * @classname CMCQuotesLatest
+ * @description 指定品种的最新价格表
+ * @auhthor lifxue
+ * @date 2023/1/8 14:06
+ */
 @Data
 @TableName("cmc_quotes_latest")
 public class CMCQuotesLatest implements Serializable {
