@@ -14,13 +14,17 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
 import org.lifxue.wuzhu.entity.CMCQuotesLatest;
 import org.lifxue.wuzhu.modules.note.NoteModule;
+import org.lifxue.wuzhu.modules.selectcoin.SelectCoinModule;
 import org.lifxue.wuzhu.modules.setting.PreferencesViewModule;
 import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
+import org.lifxue.wuzhu.service.ISelectCoinService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -36,15 +40,20 @@ import java.util.concurrent.CompletableFuture;
 @Component
 public class PrimaryStageInitializer implements ApplicationListener<StageReadyEvent> {
 
+    @Value("${spring.application.name}")
+    private String applicationName;
     private final Workbench workbench;
 
     private final NoteModule noteModule;
     private final PreferencesViewModule preferencesViewModule;
+    private final SelectCoinModule selectCoinModule;
+
     private final InterfaceTheme interfaceTheme;
 
     private final ICMCMapService icmcMapService;
 
     private final ICMCQuotesLatestService icmcQuotesLatestService;
+
 
     public PrimaryStageInitializer(
         Workbench workbench,
@@ -52,20 +61,23 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         PreferencesViewModule preferencesViewModule,
         InterfaceTheme interfaceTheme,
         ICMCMapService icmcMapService,
-        ICMCQuotesLatestService icmcQuotesLatestService
+        ICMCQuotesLatestService icmcQuotesLatestService,
+        SelectCoinModule selectCoinModule
     ) {
         this.workbench = workbench;
-        this.noteModule = noteModule;
-        this.preferencesViewModule = preferencesViewModule;
         this.interfaceTheme = interfaceTheme;
         this.icmcMapService = icmcMapService;
         this.icmcQuotesLatestService = icmcQuotesLatestService;
+
+        this.noteModule = noteModule;
+        this.preferencesViewModule = preferencesViewModule;
+        this.selectCoinModule = selectCoinModule;
     }
 
     @Override
     public void onApplicationEvent(StageReadyEvent event) {
         Stage stage = event.stage;
-        stage.setTitle("WuZhu");
+        stage.setTitle(applicationName);
         stage.getIcons().add(new Image(Objects.requireNonNull(
             PrimaryStageInitializer.class.getResource("/org/lifxue/wuzhu/images/W-p5.png")).toString()));
 
@@ -85,6 +97,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         //增加模块
         workbench.getModules().addAll(
             noteModule,
+            selectCoinModule,
             preferencesViewModule
         );
 

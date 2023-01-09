@@ -18,7 +18,9 @@ package org.lifxue.wuzhu.modules.setting;
 import com.dlsc.workbenchfx.Workbench;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.lifxue.wuzhu.enums.BooleanEnum;
 import org.lifxue.wuzhu.enums.ThemeEnum;
@@ -27,6 +29,9 @@ import org.lifxue.wuzhu.util.PrefsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 /**
  * @version 1.0
  * @classname PreferencesViewController
@@ -34,9 +39,10 @@ import org.springframework.stereotype.Component;
  * @auhthor lifxue
  * @date 2023/1/6 14:25
  */
+@Slf4j
 @Component
 @FxmlView("PreferencesView.fxml")
-public class PreferencesViewController {
+public class PreferencesViewController implements Initializable {
 
     private final int PRICE_MIN = 50;
     private final int PRICE_MAX = 5000;
@@ -79,7 +85,7 @@ public class PreferencesViewController {
      * @date 2023/1/6 14:29
      **/
     @FXML
-    public void initialize() {
+    public void initialize(URL url, ResourceBundle rb) {
         //初始化界面主题
         lightRadio.setUserData(ThemeEnum.LIGHT);
         nightRadio.setUserData(ThemeEnum.NIGHT);

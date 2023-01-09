@@ -6,6 +6,7 @@ import org.lifxue.wuzhu.dto.Platform;
 import org.lifxue.wuzhu.dto.Quote;
 import org.lifxue.wuzhu.entity.CMCMap;
 import org.lifxue.wuzhu.entity.CMCQuotesLatest;
+import org.lifxue.wuzhu.modules.selectcoin.vo.SelectDataVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
@@ -162,5 +163,35 @@ public class CopyUtil {
             }
         }
         return list;
+    }
+
+    public static SelectDataVO copy(CMCMap cmcMap){
+        if(cmcMap == null){
+            return null;
+        }
+        SelectDataVO selectDataVO = new SelectDataVO();
+        selectDataVO.setId(cmcMap.getId().toString());
+        //数据库中IsSelected为0，表示未选，1表示选中
+        selectDataVO.setSelect(cmcMap.getIsSelected().equals(1));
+        selectDataVO.setName(cmcMap.getName());
+        selectDataVO.setSymbol(cmcMap.getSymbol());
+        selectDataVO.setRank(cmcMap.getRank().toString());
+        selectDataVO.setDate(cmcMap.getLastHistoricalData());
+        return selectDataVO;
+    }
+
+    public static List<SelectDataVO> copyList(List<CMCMap>  cmcMaps){
+        if(cmcMaps == null || cmcMaps.isEmpty()){
+            return null;
+        }
+
+        List<SelectDataVO> selectDataVOS = new ArrayList<>();
+        for (CMCMap cmcMap : cmcMaps){
+            SelectDataVO selectDataVO = new SelectDataVO();
+            if (cmcMap != null){
+                selectDataVOS.add(copy(cmcMap));
+            }
+        }
+        return selectDataVOS;
     }
 }
