@@ -14,4 +14,5 @@ import java.util.List;
 public interface ISelectCoinService {
 
     List<SelectDataVO> queryVO();
+    List<SelectDataVO> queryVOBySymbol(String symbol);
 }

@@ -1,5 +1,7 @@
 package org.lifxue.wuzhu.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.lifxue.wuzhu.entity.CMCMap;
 import org.lifxue.wuzhu.modules.selectcoin.vo.SelectDataVO;
@@ -31,6 +33,14 @@ public class SelectCoinServiceImpl implements ISelectCoinService {
     @Override
     public List<SelectDataVO> queryVO() {
         List<CMCMap> list = icmcMapService.list();
+        return CopyUtil.copyList(list);
+    }
+
+    @Override
+    public List<SelectDataVO> queryVOBySymbol(String symbol) {
+        QueryWrapper<CMCMap> wrapper = new QueryWrapper<>();
+        wrapper.like("symbol",symbol).or().like("symbol",symbol.toUpperCase());
+        List<CMCMap> list = icmcMapService.list(wrapper);
         return CopyUtil.copyList(list);
     }
 }
