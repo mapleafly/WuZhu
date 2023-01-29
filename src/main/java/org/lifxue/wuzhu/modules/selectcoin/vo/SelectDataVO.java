@@ -16,6 +16,7 @@
 package org.lifxue.wuzhu.modules.selectcoin.vo;
 
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 /**
@@ -23,25 +24,25 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class SelectDataVO {
 
-    private final SimpleStringProperty id;
+    private final SimpleIntegerProperty id;
     private final SimpleBooleanProperty select;
     private final SimpleStringProperty name;
     private final SimpleStringProperty symbol;
-    private final SimpleStringProperty rank;
+    private final SimpleIntegerProperty rank;
     // private final SimpleStringProperty price;
     private final SimpleStringProperty date;
 
     public SelectDataVO() {
-        this(null, false, null, null, null, null);
+        this(0, false, null, null, 0, null);
     }
 
     public SelectDataVO(
-        String id, boolean select, String name, String symbol, String rank, String date) {
-        this.id = new SimpleStringProperty(id);
+        Integer id, boolean select, String name, String symbol, Integer rank, String date) {
+        this.id = new SimpleIntegerProperty(id);
         this.select = new SimpleBooleanProperty(select);
         this.name = new SimpleStringProperty(name);
         this.symbol = new SimpleStringProperty(symbol);
-        this.rank = new SimpleStringProperty(rank);
+        this.rank = new SimpleIntegerProperty(rank);
         // this.price = new SimpleStringProperty(price);
         this.date = new SimpleStringProperty(date);
     }
@@ -49,18 +50,18 @@ public class SelectDataVO {
     /**
      * @return the id
      */
-    public String getId() {
+    public Integer getId() {
         return id.get();
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id.set(id);
     }
 
-    public SimpleStringProperty idProperty() {
+    public SimpleIntegerProperty idProperty() {
         return id;
     }
 
@@ -131,18 +132,18 @@ public class SelectDataVO {
     /**
      * @return the rank
      */
-    public String getRank() {
+    public Integer getRank() {
         return rank.get();
     }
 
     /**
      * @param rank the rank to set
      */
-    public void setRank(String rank) {
+    public void setRank(Integer rank) {
         this.rank.set(rank);
     }
 
-    public SimpleStringProperty rankProperty() {
+    public SimpleIntegerProperty rankProperty() {
         return rank;
     }
 

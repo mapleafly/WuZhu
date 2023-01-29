@@ -170,12 +170,12 @@ public class CopyUtil {
             return null;
         }
         SelectDataVO selectDataVO = new SelectDataVO();
-        selectDataVO.setId(cmcMap.getId().toString());
+        selectDataVO.setId(cmcMap.getId());
         //数据库中IsSelected为0，表示未选，1表示选中
         selectDataVO.setSelect(cmcMap.getIsSelected().equals(1));
         selectDataVO.setName(cmcMap.getName());
         selectDataVO.setSymbol(cmcMap.getSymbol());
-        selectDataVO.setRank(cmcMap.getRank().toString());
+        selectDataVO.setRank(cmcMap.getRank());
         selectDataVO.setDate(cmcMap.getLastHistoricalData());
         return selectDataVO;
     }

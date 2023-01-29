@@ -52,7 +52,7 @@ public class SelectCoinViewController implements Initializable {
     @FXML
     private TableView<SelectDataVO> priceTable;
     @FXML
-    private TableColumn<SelectDataVO, String> idCol;
+    private TableColumn<SelectDataVO, Number> idCol;
     @FXML
     private TableColumn<SelectDataVO, Boolean> selectCol;
     @FXML
@@ -60,7 +60,7 @@ public class SelectCoinViewController implements Initializable {
     @FXML
     private TableColumn<SelectDataVO, String> symbolCol;
     @FXML
-    private TableColumn<SelectDataVO, String> rankCol;
+    private TableColumn<SelectDataVO, Number> rankCol;
     @FXML
     private TableColumn<SelectDataVO, String> dateCol;
     @FXML
