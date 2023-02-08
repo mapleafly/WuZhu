@@ -228,7 +228,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
             workbench.showConfirmationDialog("更新货币数据", "你确定要更新货币数据吗？", buttonType -> {
                     if (buttonType == ButtonType.YES) {
                         CompletableFuture.runAsync(() -> {
-                            if (icmcMapService.saveOrUpdateBatch("cmc_rank")) {
+                            if (icmcMapService.saveNewBatch("cmc_rank")) {
                                 Platform.runLater(new Runnable() {
                                     @Override
                                     public void run() {

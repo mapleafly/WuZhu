@@ -20,8 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -136,11 +135,10 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
         return listTags;
     }
 
-    @Override
-    @Transactional
-    public boolean saveOrUpdateBatch(String sort) {
+    private List<CMCMap> getAllCmcMap(String sort) {
         int start = 1;
         List<CMCMap> listAll = new ArrayList<>();
+        //每次获取上限是LIMIT个，如果每次获取足额LIMIT，就继续获取，直到获取的数量不足LIMIT，表示已经全部获取，这时退出循环
         while (true) {
             List<CMCMap> list = getJson(start, LIMIT, sort);
             if (list == null || list.isEmpty()) {
@@ -158,11 +156,60 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
                 throw new RuntimeException(e);
             }
         }
+        return listAll;
+    }
+
+    /**
+     * @description 批量保存新数据，数据库中已有的数据保持不变
+     * @author lifxue
+     * @date 2023/2/8 12:53
+     * @param sort
+     * @return boolean
+     **/
+    @Override
+    @Transactional
+    public boolean saveNewBatch(String sort) {
+        //网络查询
+        List<CMCMap> listAll = getAllCmcMap(sort);
+        if (listAll.isEmpty()) {
+            return false;
+        }
+        //数据库查询所得
+        List<CMCMap> cmcMapList = list();
+        if(cmcMapList == null || cmcMapList.isEmpty()) {
+            return super.saveOrUpdateBatch(listAll);
+        }
+        //最后结果集
+        List<CMCMap> resultList = new ArrayList<>();
+        //中间存储
+        HashSet<CMCMap> hashSet = new HashSet<>();
+        cmcMapList.forEach(i -> {
+            i.setIsSelected(0);
+            hashSet.add(i);
+        });
+        listAll.forEach(i->{
+            if (!hashSet.contains(i)){
+                resultList.add(i);
+            }
+        });
+        log.info("resultList:{}", resultList.size());
+        //如果没有新的币种，返回true，不操作数据库
+        if(resultList.isEmpty()){
+            return true;
+        }
+        return super.saveOrUpdateBatch(resultList);
+    }
+
+    @Override
+    @Transactional
+    public boolean saveOrUpdateBatch(String sort) {
+        List<CMCMap> listAll = getAllCmcMap(sort);
         if (listAll.isEmpty()) {
             return false;
         }
         return super.saveOrUpdateBatch(listAll);
     }
+
 
     @Override
     public boolean saveOrUpdateBatch(Integer limit, String sort) {

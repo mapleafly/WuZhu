@@ -19,6 +19,8 @@ public interface ICMCMapService extends IService<CMCMap> {
 
     boolean saveOrUpdateBatch(String sort);
 
+    boolean saveNewBatch(String sort);
+
     boolean saveOrUpdateBatch(Integer limit, String sort);
 
     boolean saveOrUpdateBatch(Integer start, Integer limit, String sort);
