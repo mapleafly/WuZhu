@@ -1,14 +1,19 @@
 package org.lifxue.wuzhu.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lifxue.wuzhu.dto.*;
+import org.lifxue.wuzhu.entity.CMCMap;
 import org.lifxue.wuzhu.entity.CMCQuotesLatest;
 import org.lifxue.wuzhu.mapper.CMCQuotesLatestMapper;
+import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
 import org.lifxue.wuzhu.service.feignc.ICMCQuotesLatestFeignClient;
 import org.lifxue.wuzhu.util.CopyUtil;
@@ -28,12 +33,19 @@ public class CMCQuotesLatestServiceImpl extends ServiceImpl<CMCQuotesLatestMappe
         "max_supply,circulating_supply,total_supply,is_active,is_fiat";
 
     ICMCQuotesLatestFeignClient icmcQuotesLatestFeignClient;
+    ICMCMapService icmcMapService;
 
     @Autowired
     public void setIcmcQuotesLatestFeignClient(ICMCQuotesLatestFeignClient icmcQuotesLatestFeignClient) {
         this.icmcQuotesLatestFeignClient = icmcQuotesLatestFeignClient;
     }
 
+    @Autowired
+    public void setIcmcMapService(ICMCMapService icmcMapService) {
+        this.icmcMapService = icmcMapService;
+    }
+
+    @Nullable
     private List<CMCQuotesLatest> convertCmcQuotes(String ids, String convert, String strJson) {
         List<CMCQuotesLatestDto> listCMCQuotesLatestDto = new ArrayList<>();
 
@@ -128,7 +140,7 @@ public class CMCQuotesLatestServiceImpl extends ServiceImpl<CMCQuotesLatestMappe
         return CopyUtil.copyListCMCQuotes(listCMCQuotesLatestDto);
     }
 
-    private Status getStatus(JsonNode rootNode) {
+    private Status getStatus(@NotNull JsonNode rootNode) {
         Status status = null;
         if (rootNode.hasNonNull("status")) {
             JsonNode jsonStatus = rootNode.path("status");
@@ -142,7 +154,7 @@ public class CMCQuotesLatestServiceImpl extends ServiceImpl<CMCQuotesLatestMappe
         return status;
     }
 
-    private Quote getQuote(JsonNode coin, String convert) {
+    private Quote getQuote(@NotNull JsonNode coin, String convert) {
         Quote quote = null;
         if (coin.hasNonNull("quote")) {
             JsonNode jsonQuote = coin.path("quote");
@@ -158,7 +170,7 @@ public class CMCQuotesLatestServiceImpl extends ServiceImpl<CMCQuotesLatestMappe
         return quote;
     }
 
-    private List<Tag> getTags(JsonNode coin) {
+    private List<Tag> getTags(@NotNull JsonNode coin) {
         List<Tag> listTags = null;
         if (coin.hasNonNull("tags")) {
             JsonNode tags = coin.path("tags");
@@ -213,5 +225,23 @@ public class CMCQuotesLatestServiceImpl extends ServiceImpl<CMCQuotesLatestMappe
             return false;
         }
         return super.saveBatch(list);
+    }
+
+    @Override
+    @Transactional
+    public boolean saveBatch() {
+        QueryWrapper<CMCMap> wrapper = new QueryWrapper<>();
+        wrapper.eq("is_Selected", 1);
+        List<CMCMap> cmcMapList = icmcMapService.list(wrapper);
+        if(cmcMapList == null || cmcMapList.isEmpty()) {
+            return false;
+        }
+        StringBuilder ids = new StringBuilder();
+        for(CMCMap cmcMap : cmcMapList){
+            ids.append(cmcMap.getId()).append(",");
+        }
+        ids = new StringBuilder(ids.substring(0, ids.length() - 1));
+        List<CMCQuotesLatest> list = getHttpJsonById(ids.toString(),"USD");
+        return saveBatch(list);
     }
 }

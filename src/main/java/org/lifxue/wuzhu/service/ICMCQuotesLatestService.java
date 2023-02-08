@@ -22,4 +22,6 @@ public interface ICMCQuotesLatestService extends IService<CMCQuotesLatest> {
 
     boolean saveBatch(List<CMCQuotesLatest> list);
 
+    boolean saveBatch();
+
 }

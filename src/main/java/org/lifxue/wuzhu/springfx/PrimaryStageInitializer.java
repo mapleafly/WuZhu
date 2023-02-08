@@ -187,9 +187,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
             workbench.showConfirmationDialog("更新当前价格", "你确定要更新当前价格数据吗？", buttonType -> {
                     if (buttonType == ButtonType.YES) {
                         CompletableFuture.runAsync(() -> {
-                            List<CMCQuotesLatest> list = icmcQuotesLatestService.getHttpJsonById(
-                                "1,1027,825,3408,1839,2010,4687,52,5426,74,4943", "USD");
-                            if (icmcQuotesLatestService.saveBatch(list)) {
+                            if (icmcQuotesLatestService.saveBatch()) {
                                 Platform.runLater(new Runnable() {
                                     @Override
                                     public void run() {

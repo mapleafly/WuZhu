@@ -28,7 +28,7 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
 
     private final Integer LIMIT = 5000;
     private final String CMCMAP_AUX = "platform,first_historical_data,last_historical_data,is_active";
-    private ICMCMapFeignClient icmcMapFeignClient;
+    private final ICMCMapFeignClient icmcMapFeignClient;
 
     @Autowired
     public CMCMapServiceImpl(ICMCMapFeignClient icmcMapFeignClient) {
@@ -81,8 +81,6 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
             list = mapper.readValue(data.traverse(), new TypeReference<ArrayList<CMCMapDto>>() {
             });
 
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -135,6 +133,13 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
         return listTags;
     }
 
+    /**
+     * @description 获取全部CMCMap的网络数据
+     * @author lifxue
+     * @date 2023/2/8 12:56
+     * @param  sort
+     * @return java.util.List<org.lifxue.wuzhu.entity.CMCMap>
+     **/
     private List<CMCMap> getAllCmcMap(String sort) {
         int start = 1;
         List<CMCMap> listAll = new ArrayList<>();
@@ -192,7 +197,6 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
                 resultList.add(i);
             }
         });
-        log.info("resultList:{}", resultList.size());
         //如果没有新的币种，返回true，不操作数据库
         if(resultList.isEmpty()){
             return true;
