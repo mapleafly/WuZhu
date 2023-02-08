@@ -37,7 +37,7 @@ public class SelectCoinModule extends WorkbenchModule {
     private FxWeaver fxWeaver;
 
     public SelectCoinModule() {
-        super("可用币种管理", MaterialDesign.MDI_SELECT);
+        super("币种管理", MaterialDesign.MDI_SELECT);
     }
 
     @Autowired

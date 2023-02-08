@@ -227,21 +227,27 @@ public class CMCQuotesLatestServiceImpl extends ServiceImpl<CMCQuotesLatestMappe
         return super.saveBatch(list);
     }
 
+    /**
+     * @return boolean
+     * @description 获取并保存被选中的币种的当前价格数据
+     * @author lifxue
+     * @date 2023/2/8 17:12
+     **/
     @Override
     @Transactional
     public boolean saveBatch() {
         QueryWrapper<CMCMap> wrapper = new QueryWrapper<>();
         wrapper.eq("is_Selected", 1);
         List<CMCMap> cmcMapList = icmcMapService.list(wrapper);
-        if(cmcMapList == null || cmcMapList.isEmpty()) {
+        if (cmcMapList == null || cmcMapList.isEmpty()) {
             return false;
         }
         StringBuilder ids = new StringBuilder();
-        for(CMCMap cmcMap : cmcMapList){
+        for (CMCMap cmcMap : cmcMapList) {
             ids.append(cmcMap.getId()).append(",");
         }
         ids = new StringBuilder(ids.substring(0, ids.length() - 1));
-        List<CMCQuotesLatest> list = getHttpJsonById(ids.toString(),"USD");
+        List<CMCQuotesLatest> list = getHttpJsonById(ids.toString(), "USD");
         return saveBatch(list);
     }
 }

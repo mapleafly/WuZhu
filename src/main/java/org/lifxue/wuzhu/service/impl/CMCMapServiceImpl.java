@@ -20,7 +20,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -134,11 +136,11 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
     }
 
     /**
+     * @param sort
+     * @return java.util.List<org.lifxue.wuzhu.entity.CMCMap>
      * @description 获取全部CMCMap的网络数据
      * @author lifxue
      * @date 2023/2/8 12:56
-     * @param  sort
-     * @return java.util.List<org.lifxue.wuzhu.entity.CMCMap>
      **/
     private List<CMCMap> getAllCmcMap(String sort) {
         int start = 1;
@@ -165,11 +167,11 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
     }
 
     /**
+     * @param sort
+     * @return boolean
      * @description 批量保存新数据，数据库中已有的数据保持不变
      * @author lifxue
      * @date 2023/2/8 12:53
-     * @param sort
-     * @return boolean
      **/
     @Override
     @Transactional
@@ -181,7 +183,7 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
         }
         //数据库查询所得
         List<CMCMap> cmcMapList = list();
-        if(cmcMapList == null || cmcMapList.isEmpty()) {
+        if (cmcMapList == null || cmcMapList.isEmpty()) {
             return super.saveOrUpdateBatch(listAll);
         }
         //最后结果集
@@ -192,13 +194,13 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
             i.setIsSelected(0);
             hashSet.add(i);
         });
-        listAll.forEach(i->{
-            if (!hashSet.contains(i)){
+        listAll.forEach(i -> {
+            if (!hashSet.contains(i)) {
                 resultList.add(i);
             }
         });
         //如果没有新的币种，返回true，不操作数据库
-        if(resultList.isEmpty()){
+        if (resultList.isEmpty()) {
             return true;
         }
         return super.saveOrUpdateBatch(resultList);

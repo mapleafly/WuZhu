@@ -12,20 +12,16 @@ import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
-import org.lifxue.wuzhu.entity.CMCQuotesLatest;
 import org.lifxue.wuzhu.modules.note.NoteModule;
 import org.lifxue.wuzhu.modules.selectcoin.SelectCoinModule;
 import org.lifxue.wuzhu.modules.setting.PreferencesViewModule;
 import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
-import org.lifxue.wuzhu.service.ISelectCoinService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -201,7 +197,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
                                 Platform.runLater(new Runnable() {
                                     @Override
                                     public void run() {
-                                        workbench.showErrorDialog("价格更新信息", "加价格信息更新失败！",
+                                        workbench.showErrorDialog("价格更新失败", "请检查网络是否通畅，是否有关注的币种被选择！",
                                             buttonType1 -> {
                                             }
                                         );
