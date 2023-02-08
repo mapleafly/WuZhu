@@ -1,5 +1,6 @@
 package org.lifxue.wuzhu.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.lifxue.wuzhu.modules.selectcoin.vo.SelectDataVO;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface ISelectCoinService {
 
     List<SelectDataVO> queryVO();
     List<SelectDataVO> queryVOBySymbol(String symbol);
+
+    Boolean updateCheckStatus(@NotNull SelectDataVO selectDataVO);
 }

@@ -17,17 +17,16 @@ package org.lifxue.wuzhu.modules.selectcoin;
 
 import com.dlsc.workbenchfx.Workbench;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
+import javafx.util.Callback;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.lifxue.wuzhu.modules.selectcoin.vo.SelectDataVO;
@@ -36,8 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * FXML Controller class
@@ -67,7 +65,7 @@ public class SelectCoinViewController implements Initializable {
     private TextField searchField;
 
     private Workbench workbench;
-    private ISelectCoinService iSelectCoinService;
+    private final ISelectCoinService iSelectCoinService;
 
 
     @Autowired
@@ -103,21 +101,60 @@ public class SelectCoinViewController implements Initializable {
         coinTypeData.addAll(list);
         priceTable.setItems(coinTypeData);
 
-       /* coinTypeData.addListener(new ListChangeListener<SelectDataVO>() {
-            @Override
-            public void onChanged(Change<? extends SelectDataVO> c) {
-                while (c.next()) {
-                    if (c.wasUpdated()) {
-                        log.info("coinTypeData:{}", c.getAddedSubList());
-                    }
-                }
-            }
-        });*/
 
         idCol.setCellValueFactory(cellData -> cellData.getValue().idProperty());
 
-        selectCol.setCellFactory(CheckBoxTableCell.forTableColumn(selectCol));
+        selectCol.setCellFactory(new Callback<TableColumn<SelectDataVO, Boolean>, TableCell<SelectDataVO, Boolean>>() {
+
+            @Override
+            public TableCell<SelectDataVO, Boolean> call(TableColumn<SelectDataVO, Boolean> param) {
+                TableCell<SelectDataVO, Boolean> cell = new TableCell<SelectDataVO, Boolean>() {
+                    @Override
+                    protected void updateItem(Boolean item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (empty == false && item != null) {
+                            HBox hbox = new HBox();
+                            hbox.setAlignment(Pos.CENTER);
+                            hbox.prefWidthProperty().bind(this.getTableColumn().widthProperty());
+                            CheckBox checkBox = new CheckBox();
+                            checkBox.setSelected(item);
+                            if (this.getTableRow() != null) {
+                                ObservableList<SelectDataVO> items = this.getTableView().getItems();
+                                SelectDataVO svo = items.get(this.getTableRow().getIndex());
+                                //checkBox.selectedProperty().bindBidirectional(svo.selectProperty());
+                                checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                                    if (newValue != oldValue) {
+                                        svo.setSelect(newValue);
+                                        if (!iSelectCoinService.updateCheckStatus(svo)) {
+                                            workbench.showErrorDialog("错误", "选择操作没有保存成功！", buttonType -> {
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+
+
+                            hbox.getChildren().add(checkBox);
+                            this.setGraphic(hbox);
+                        }
+                    }
+                };
+                return cell;
+            }
+        });
+        //selectCol.setCellFactory(CheckBoxTableCell.forTableColumn(new Callback<Integer, ObservableValue<Boolean>>(){
+        //
+        //    @Override
+        //    public ObservableValue<Boolean> call(Integer param) {
+        //
+        //        System.out.println("getSelect "+coinTypeData.get(param).getSymbol()+" changed value to " +coinTypeData.get(param).getSelect());
+        //        return coinTypeData.get(param).selectProperty();
+        //
+        //    }
+        //}));
         selectCol.setCellValueFactory(new PropertyValueFactory<>("select"));
+        selectCol.setEditable(true);
 
         nameCol.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         symbolCol.setCellValueFactory(cellData -> cellData.getValue().symbolProperty());
@@ -127,10 +164,10 @@ public class SelectCoinViewController implements Initializable {
 
     }
 
-    @FXML
+ /*   @FXML
     private void handleSave(ActionEvent event) {
         //todo  窗口表格中按id 和 排名排序有问题，不是按数字来排名的，好像是按字符串方式排名的
-   /*     List<Integer> dbCurId = CoinTypeDao.queryCurID();
+        List<Integer> dbCurId = CoinTypeDao.queryCurID();
         Map<Integer, Integer> tableSelectedMap = new HashMap<>();
         List<Integer> items = new ArrayList<>();
         for (int i = 0; i < priceTable.getItems().size(); i++) {
@@ -157,9 +194,9 @@ public class SelectCoinViewController implements Initializable {
 
             workbench.showInformationDialog("信息", "完成可用品种保存操作！", buttonType -> {
             });
-        }*/
+        }
     }
-
+*/
     @FXML
     private void handleSearchFieldKeyReleased(KeyEvent event) {
         coinTypeData.clear();
@@ -167,15 +204,6 @@ public class SelectCoinViewController implements Initializable {
         if (list != null && !list.isEmpty()) {
             coinTypeData.addAll(list);
         }
-     /*   List<SelectDataVO> list = CoinTypeDao.queryCurFXC();
-        for (SelectDataVO coin : list) {
-            for (SelectDataVO coinTypeDatum : coinTypeData) {
-                if (coin.getId().equals(coinTypeDatum.getId())) {
-                    coinTypeDatum.setSelect(true);
-                    break;
-                }
-            }
-        }*/
     }
 
 
