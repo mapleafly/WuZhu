@@ -39,7 +39,7 @@ public class CSVHelper {
      * @Date 2023/1/6 13:47
      * @Param [header, data, filePath]
      **/
-    public static void writeCsv(String[] header, List<String[]> data, File filePath) {
+    public static boolean writeCsv(String[] header, List<String[]> data, File filePath) {
         // 初始化csvformat
         CSVFormat formator =
             CSVFormat.DEFAULT
@@ -58,10 +58,13 @@ public class CSVHelper {
                 }
             } catch (Exception e) {
                 log.error(e.toString());
+                return false;
             }
         } catch (IOException ex) {
             log.error(ex.toString());
+            return false;
         }
+        return true;
     }
 
     /**

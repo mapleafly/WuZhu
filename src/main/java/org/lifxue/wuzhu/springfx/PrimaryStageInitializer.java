@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
+import org.lifxue.wuzhu.modules.file.ExportTradeData;
 import org.lifxue.wuzhu.modules.file.ImportTradeData;
 import org.lifxue.wuzhu.modules.note.NoteModule;
 import org.lifxue.wuzhu.modules.selectcoin.SelectCoinViewModule;
@@ -57,6 +58,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
 
     private final ImportTradeData importTradeData;
 
+    private final ExportTradeData exportTradeData;
+
     public PrimaryStageInitializer(
         Workbench workbench,
         NoteModule noteModule,
@@ -66,7 +69,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         ICMCQuotesLatestService icmcQuotesLatestService,
         SelectCoinViewModule selectCoinViewModule,
         TradeInfoViewModule tradeInfoViewModule,
-        ImportTradeData importTradeData
+        ImportTradeData importTradeData,
+        ExportTradeData exportTradeData
     ) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
@@ -78,6 +82,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         this.selectCoinViewModule = selectCoinViewModule;
         this.tradeInfoViewModule = tradeInfoViewModule;
         this.importTradeData = importTradeData;
+        this.exportTradeData = exportTradeData;
     }
 
     @Override
@@ -150,8 +155,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         MenuItem exportItem = new MenuItem("导出CSV", new FontIcon(MaterialDesign.MDI_EXPORT));
         //执行事件监听
         exportItem.setOnAction(event -> {
-                //ExportTradeData exportData = new ExportTradeData(workbench);
-                //exportData.handleExportData();
+                exportTradeData.handleExportData();
                 workbench.hideNavigationDrawer();
             }
         );
