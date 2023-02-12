@@ -96,6 +96,7 @@ public class SelectCoinViewController implements Initializable {
      */
     @FXML
     public void initialize(URL url, ResourceBundle rb) {
+        coinTypeData.clear();
         //获取数据
         List<SelectDataVO> list = iSelectCoinService.queryVO();
         coinTypeData.addAll(list);

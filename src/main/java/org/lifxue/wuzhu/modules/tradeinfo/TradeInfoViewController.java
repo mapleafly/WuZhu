@@ -125,6 +125,7 @@ public class TradeInfoViewController implements Initializable {
      */
     @FXML
     public void initialize(URL url, ResourceBundle rb) {
+        tradeDataList.clear();
         //获取数据
         coinList = iTradeInfoService.queryCurSymbol();
         if (coinList != null && !coinList.isEmpty()) {
