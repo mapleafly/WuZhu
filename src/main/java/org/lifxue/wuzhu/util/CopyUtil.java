@@ -228,4 +228,25 @@ public class CopyUtil {
         return tradeInfoVOS;
     }
 
+    public static List<TradeInfo> copyTradeInfoList(List<String[]> list){
+        List<TradeInfo> tradeInfoList = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            String[] bean = list.get(i);
+            TradeInfo tradeInfo = new TradeInfo();
+            tradeInfo.setBaseId(Integer.valueOf(bean[1]));
+            tradeInfo.setBaseSymbol(bean[2]);
+            tradeInfo.setQuoteId(Integer.valueOf(bean[3]));
+            tradeInfo.setQuoteSymbol(bean[4]);
+            tradeInfo.setSaleOrBuy(bean[5]);
+            tradeInfo.setPrice(bean[6]);
+            tradeInfo.setBaseNum(bean[7]);
+            tradeInfo.setQuoteNum(bean[8]);
+            tradeInfo.setTradeDate(bean[9]);
+
+            tradeInfoList.add(tradeInfo);
+        }
+
+        return tradeInfoList;
+    }
+
 }

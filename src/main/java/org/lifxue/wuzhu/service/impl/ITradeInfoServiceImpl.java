@@ -30,9 +30,12 @@ public class ITradeInfoServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInf
 
     ICMCMapService icmcMapService;
 
+    TradeInfoMapper tradeInfoMapper;
+
     @Autowired
-    public void setIcmcMapService(ICMCMapService icmcMapService) {
+    public void setIcmcMapService(ICMCMapService icmcMapService, TradeInfoMapper tradeInfoMapper) {
         this.icmcMapService = icmcMapService;
+        this.tradeInfoMapper = tradeInfoMapper;
     }
 
     /***
@@ -66,6 +69,17 @@ public class ITradeInfoServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInf
     @Override
     public CMCMap queryCoinBySymbol(String symbol) {
         return icmcMapService.queryCoinBySymbo(symbol);
+    }
+
+    @Override
+    public void truncate() {
+        tradeInfoMapper.truncate();
+    }
+
+    @Override
+    public boolean saveBatch(List<String[]> list) {
+        List<TradeInfo> tradeInfoList = CopyUtil.copyTradeInfoList(list);
+        return saveBatch(tradeInfoList);
     }
 
     @Override

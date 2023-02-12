@@ -30,6 +30,11 @@ public interface ICMCMapService extends IService<CMCMap> {
     boolean saveOrUpdateBatch(Integer start, Integer limit, String sort, String aux);
 
     public List<String> queryCurSymbol();
+    public List<Integer> getSelectedIDs();
 
     public CMCMap queryCoinBySymbo(String symbo);
+
+    public boolean updateSelectedBatch(List<Integer> selected);
+
+
 }

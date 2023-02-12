@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
+import org.lifxue.wuzhu.modules.file.ImportTradeData;
 import org.lifxue.wuzhu.modules.note.NoteModule;
 import org.lifxue.wuzhu.modules.selectcoin.SelectCoinViewModule;
 import org.lifxue.wuzhu.modules.setting.PreferencesViewModule;
@@ -54,7 +55,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
 
     private final ICMCQuotesLatestService icmcQuotesLatestService;
 
-
+    private final ImportTradeData importTradeData;
 
     public PrimaryStageInitializer(
         Workbench workbench,
@@ -64,7 +65,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         ICMCMapService icmcMapService,
         ICMCQuotesLatestService icmcQuotesLatestService,
         SelectCoinViewModule selectCoinViewModule,
-        TradeInfoViewModule tradeInfoViewModule
+        TradeInfoViewModule tradeInfoViewModule,
+        ImportTradeData importTradeData
     ) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
@@ -75,6 +77,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         this.preferencesViewModule = preferencesViewModule;
         this.selectCoinViewModule = selectCoinViewModule;
         this.tradeInfoViewModule = tradeInfoViewModule;
+        this.importTradeData = importTradeData;
     }
 
     @Override
@@ -134,8 +137,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         MenuItem importItem = new MenuItem("导入CSV", new FontIcon(MaterialDesign.MDI_IMPORT));
         //执行事件监听
         importItem.setOnAction(event -> {
-                //ImportTradeData importData = new ImportTradeData(workbench);
-                //importData.handleImportData();
+                importTradeData.handleImportData();
                 workbench.hideNavigationDrawer();
             }
         );

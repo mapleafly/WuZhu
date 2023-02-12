@@ -1,6 +1,7 @@
 package org.lifxue.wuzhu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Update;
 import org.lifxue.wuzhu.entity.TradeInfo;
 
 /**
@@ -12,4 +13,6 @@ import org.lifxue.wuzhu.entity.TradeInfo;
  */
 public interface TradeInfoMapper extends BaseMapper<TradeInfo>{
 
+    @Update("truncate table trade_info")
+    void truncate();
 }

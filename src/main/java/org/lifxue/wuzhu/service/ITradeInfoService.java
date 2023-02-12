@@ -21,4 +21,8 @@ public interface ITradeInfoService extends IService<TradeInfo> {
     List<TradeInfoVO> queryTradeInfo(String symbol);
 
     CMCMap queryCoinBySymbol(String symbol);
+
+    void truncate();
+
+    boolean saveBatch(List<String[]> list);
 }

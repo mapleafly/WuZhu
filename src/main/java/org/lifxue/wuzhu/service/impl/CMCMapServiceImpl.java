@@ -11,6 +11,7 @@ import org.lifxue.wuzhu.dto.CMCMapDto;
 import org.lifxue.wuzhu.dto.Quote;
 import org.lifxue.wuzhu.dto.Status;
 import org.lifxue.wuzhu.entity.CMCMap;
+import org.lifxue.wuzhu.entity.TradeInfo;
 import org.lifxue.wuzhu.mapper.CMCMapMapper;
 import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.feignc.ICMCMapFeignClient;
@@ -257,8 +258,35 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
         return this.cmcMapMapper.getSymbolList();
     }
 
+    /***
+     * @description 获取所有背选中的coin
+     * @author lifxue
+     * @date 2023/2/12 22:35
+     * @param
+     * @return java.util.List<java.lang.Integer>
+     **/
+    @Override
+    public List<Integer> getSelectedIDs() {
+        return this.cmcMapMapper.getSelectedIDs();
+    }
+
     @Override
     public CMCMap queryCoinBySymbo(String symbo) {
         return this.cmcMapMapper.queryCoinBySymbo(symbo);
+    }
+
+    @Override
+    public boolean updateSelectedBatch(List<Integer> selected) {
+        log.info("selected size = {}", selected.size());
+        List<CMCMap> cmcMapList = listByIds(selected);
+
+        for(CMCMap cmcMap : cmcMapList) {
+            cmcMap.setIsSelected(1);
+        }
+
+        for(CMCMap cmcMap : cmcMapList) {
+            log.info(cmcMap.toString());
+        }
+        return updateBatchById(cmcMapList);
     }
 }

@@ -16,9 +16,12 @@ import java.util.List;
 */
 public interface CMCMapMapper extends BaseMapper<CMCMap> {
 
-    @Select("SELECT symbol FROM cmc_map WHERE is_selected = 1 order by id ")
+    @Select("SELECT symbol FROM cmc_map WHERE is_selected = 1 order by symbol ")
     List<String> getSymbolList();
 
     @Select("SELECT * FROM cmc_map WHERE symbol = #{symbol} order by symbol ")
     CMCMap queryCoinBySymbo(@Param("symbol") String symbol);
+
+    @Select("SELECT id FROM cmc_map WHERE is_selected = 1 order by symbol ")
+    List<Integer> getSelectedIDs();
 }
