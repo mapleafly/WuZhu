@@ -13,6 +13,7 @@ import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.util.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -77,6 +78,7 @@ public class ITradeInfoServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInf
     }
 
     @Override
+    @Transactional
     public boolean saveBatch(List<String[]> list) {
         List<TradeInfo> tradeInfoList = CopyUtil.copyTradeInfoList(list);
         return saveBatch(tradeInfoList);
