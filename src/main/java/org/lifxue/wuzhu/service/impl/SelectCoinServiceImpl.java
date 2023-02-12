@@ -34,7 +34,7 @@ public class SelectCoinServiceImpl implements ISelectCoinService {
     @Override
     public List<SelectDataVO> queryVO() {
         List<CMCMap> list = icmcMapService.list();
-        return CopyUtil.copyList(list);
+        return CopyUtil.copySelectDataList(list);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class SelectCoinServiceImpl implements ISelectCoinService {
         QueryWrapper<CMCMap> wrapper = new QueryWrapper<>();
         wrapper.like("symbol", symbol).or().like("symbol", symbol.toUpperCase());
         List<CMCMap> list = icmcMapService.list(wrapper);
-        return CopyUtil.copyList(list);
+        return CopyUtil.copySelectDataList(list);
     }
 
     @Override

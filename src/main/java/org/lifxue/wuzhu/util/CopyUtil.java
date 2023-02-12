@@ -6,7 +6,9 @@ import org.lifxue.wuzhu.dto.Platform;
 import org.lifxue.wuzhu.dto.Quote;
 import org.lifxue.wuzhu.entity.CMCMap;
 import org.lifxue.wuzhu.entity.CMCQuotesLatest;
+import org.lifxue.wuzhu.entity.TradeInfo;
 import org.lifxue.wuzhu.modules.selectcoin.vo.SelectDataVO;
+import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
@@ -180,7 +182,7 @@ public class CopyUtil {
         return selectDataVO;
     }
 
-    public static List<SelectDataVO> copyList(List<CMCMap>  cmcMaps){
+    public static List<SelectDataVO> copySelectDataList(List<CMCMap>  cmcMaps){
         if(cmcMaps == null || cmcMaps.isEmpty()){
             return null;
         }
@@ -194,4 +196,36 @@ public class CopyUtil {
         }
         return selectDataVOS;
     }
+
+    public static TradeInfoVO copy(TradeInfo tradeInfo){
+        if(tradeInfo == null){
+            return null;
+        }
+        TradeInfoVO tradeInfoVO = new TradeInfoVO();
+        tradeInfoVO.setId(tradeInfo.getId());
+        tradeInfoVO.setDate(tradeInfo.getTradeDate());
+        tradeInfoVO.setPrice(tradeInfo.getPrice());
+        tradeInfoVO.setCoinId(tradeInfo.getBaseId());
+        tradeInfoVO.setSaleOrBuy(tradeInfo.getSaleOrBuy());
+        tradeInfoVO.setSymbolPairs(tradeInfo.getBaseSymbol() + "/" + tradeInfo.getQuoteSymbol());
+        tradeInfoVO.setBaseNum(tradeInfo.getBaseNum());
+        tradeInfoVO.setQuoteNum(tradeInfo.getQuoteNum());
+
+        return tradeInfoVO;
+    }
+
+    public static List<TradeInfoVO> copyTradeInfoVOList(List<TradeInfo>  tradeInfos){
+        if(tradeInfos == null || tradeInfos.isEmpty()){
+            return null;
+        }
+
+        List<TradeInfoVO> tradeInfoVOS = new ArrayList<>();
+        for (TradeInfo tradeInfo : tradeInfos){
+            if (tradeInfo != null){
+                tradeInfoVOS.add(copy(tradeInfo));
+            }
+        }
+        return tradeInfoVOS;
+    }
+
 }

@@ -13,10 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
 import org.lifxue.wuzhu.modules.note.NoteModule;
-import org.lifxue.wuzhu.modules.selectcoin.SelectCoinModule;
+import org.lifxue.wuzhu.modules.selectcoin.SelectCoinViewModule;
 import org.lifxue.wuzhu.modules.setting.PreferencesViewModule;
+import org.lifxue.wuzhu.modules.tradeinfo.TradeInfoViewModule;
 import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
+import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
@@ -42,13 +44,16 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
 
     private final NoteModule noteModule;
     private final PreferencesViewModule preferencesViewModule;
-    private final SelectCoinModule selectCoinModule;
+    private final SelectCoinViewModule selectCoinViewModule;
+
+    private final TradeInfoViewModule tradeInfoViewModule;
 
     private final InterfaceTheme interfaceTheme;
 
     private final ICMCMapService icmcMapService;
 
     private final ICMCQuotesLatestService icmcQuotesLatestService;
+
 
 
     public PrimaryStageInitializer(
@@ -58,7 +63,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         InterfaceTheme interfaceTheme,
         ICMCMapService icmcMapService,
         ICMCQuotesLatestService icmcQuotesLatestService,
-        SelectCoinModule selectCoinModule
+        SelectCoinViewModule selectCoinViewModule,
+        TradeInfoViewModule tradeInfoViewModule
     ) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
@@ -67,7 +73,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
 
         this.noteModule = noteModule;
         this.preferencesViewModule = preferencesViewModule;
-        this.selectCoinModule = selectCoinModule;
+        this.selectCoinViewModule = selectCoinViewModule;
+        this.tradeInfoViewModule = tradeInfoViewModule;
     }
 
     @Override
@@ -93,7 +100,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         //增加模块
         workbench.getModules().addAll(
             noteModule,
-            selectCoinModule,
+            tradeInfoViewModule,
+            selectCoinViewModule,
             preferencesViewModule
         );
 

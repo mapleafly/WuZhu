@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,6 +32,9 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
     private final Integer LIMIT = 5000;
     private final String CMCMAP_AUX = "platform,first_historical_data,last_historical_data,is_active";
     private final ICMCMapFeignClient icmcMapFeignClient;
+
+    @Resource
+    private CMCMapMapper cmcMapMapper;
 
     @Autowired
     public CMCMapServiceImpl(ICMCMapFeignClient icmcMapFeignClient) {
@@ -246,5 +250,15 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
             return false;
         }
         return super.saveOrUpdateBatch(list);
+    }
+
+    @Override
+    public List<String> queryCurSymbol() {
+        return this.cmcMapMapper.getSymbolList();
+    }
+
+    @Override
+    public CMCMap queryCoinBySymbo(String symbo) {
+        return this.cmcMapMapper.queryCoinBySymbo(symbo);
     }
 }

@@ -16,27 +16,22 @@
 package org.lifxue.wuzhu.modules.selectcoin;
 
 import com.dlsc.workbenchfx.model.WorkbenchModule;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.layout.AnchorPane;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxWeaver;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
-import org.lifxue.wuzhu.modules.setting.PreferencesViewController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 /**
  * @author lif
  */
 @Slf4j
 @Component
-public class SelectCoinModule extends WorkbenchModule {
+public class SelectCoinViewModule extends WorkbenchModule {
     private FxWeaver fxWeaver;
 
-    public SelectCoinModule() {
+    public SelectCoinViewModule() {
         super("币种管理", MaterialDesign.MDI_SELECT);
     }
 

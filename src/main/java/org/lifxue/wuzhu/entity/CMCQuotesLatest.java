@@ -17,7 +17,7 @@ import java.io.Serializable;
 @Data
 @TableName("cmc_quotes_latest")
 public class CMCQuotesLatest implements Serializable {
-    //CoinMarketCap定义的id
+
     @TableId
     private Integer id;
     //coin or token id
