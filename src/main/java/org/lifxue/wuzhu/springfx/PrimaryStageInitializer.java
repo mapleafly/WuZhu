@@ -20,7 +20,6 @@ import org.lifxue.wuzhu.modules.setting.PreferencesViewModule;
 import org.lifxue.wuzhu.modules.tradeinfo.TradeInfoViewModule;
 import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
-import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
