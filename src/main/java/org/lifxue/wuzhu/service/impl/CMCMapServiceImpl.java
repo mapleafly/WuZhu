@@ -11,7 +11,6 @@ import org.lifxue.wuzhu.dto.CMCMapDto;
 import org.lifxue.wuzhu.dto.Quote;
 import org.lifxue.wuzhu.dto.Status;
 import org.lifxue.wuzhu.entity.CMCMap;
-import org.lifxue.wuzhu.entity.TradeInfo;
 import org.lifxue.wuzhu.mapper.CMCMapMapper;
 import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.feignc.ICMCMapFeignClient;
@@ -281,11 +280,11 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
         log.info("selected size = {}", selected.size());
         List<CMCMap> cmcMapList = listByIds(selected);
 
-        for(CMCMap cmcMap : cmcMapList) {
+        for (CMCMap cmcMap : cmcMapList) {
             cmcMap.setIsSelected(1);
         }
 
-        for(CMCMap cmcMap : cmcMapList) {
+        for (CMCMap cmcMap : cmcMapList) {
             log.info(cmcMap.toString());
         }
         return updateBatchById(cmcMapList);

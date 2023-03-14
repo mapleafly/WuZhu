@@ -20,7 +20,6 @@ import javafx.scene.Node;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxWeaver;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
-import org.lifxue.wuzhu.modules.tradeinfo.TradeInfoViewController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,24 +37,12 @@ public class PATableViewModule extends WorkbenchModule {
     }
 
     @Autowired
-    public void setFxWeaver(FxWeaver fxWeaver){
+    public void setFxWeaver(FxWeaver fxWeaver) {
         this.fxWeaver = fxWeaver;
     }
 
     @Override
     public Node activate() {
-      /*  AnchorPane view = null;
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(PATableModule.class.getResource("PATableView.fxml"));
-            view = loader.load();
-
-            PATableViewController controller = loader.getController();
-            controller.setWorkbench(getWorkbench());
-        } catch (IOException e) {
-            log.error(e.toString());
-        }
-        return view;*/
         return fxWeaver.loadView(PATableViewController.class);
     }
 }

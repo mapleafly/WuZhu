@@ -24,7 +24,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import net.rgielen.fxweaver.core.FxmlView;
-
 import org.lifxue.wuzhu.modules.statistics.vo.PATableVO;
 import org.lifxue.wuzhu.service.IPATableService;
 import org.lifxue.wuzhu.util.DateHelper;
@@ -50,8 +49,8 @@ public class PATableViewController implements Initializable {
      * The data as an observable list of TradeData.
      */
     private final ObservableList<PATableVO> tradeDataList;
-    private  List<String> coinSymbolList;
-    private  List<String> tradeTypeList;
+    private List<String> coinSymbolList;
+    private List<String> tradeTypeList;
     @FXML
     private DatePicker startDatePicker;
     @FXML

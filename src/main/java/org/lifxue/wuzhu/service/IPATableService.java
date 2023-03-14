@@ -14,10 +14,12 @@ import java.util.List;
  * @auhthor lifxue
  * @date 2023/3/14 14:33
  */
-public interface IPATableService  extends IService<TradeInfo> {
+public interface IPATableService extends IService<TradeInfo> {
 
     List<PATableVO> queryAllVos();
+
     List<PATableVO> queryVOBy(String strCoinSymbol, String strStartDate, String strEndDate, String tradeType);
+
     List<String> queryCurSymbol();
 
     CMCQuotesLatest queryBySymbol(String symbol);

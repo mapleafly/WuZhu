@@ -3,7 +3,6 @@ package org.lifxue.wuzhu.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.lifxue.wuzhu.entity.CMCMap;
 import org.lifxue.wuzhu.entity.CMCQuotesLatest;
 import org.lifxue.wuzhu.entity.TradeInfo;
 import org.lifxue.wuzhu.mapper.TradeInfoMapper;
@@ -39,7 +38,7 @@ public class PATableServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInfo> 
     public PATableServiceImpl(TradeInfoMapper tradeInfoMapper,
                               ITradeInfoService iTradeInfoService,
                               ICMCQuotesLatestService iCMCQuotesLatestService,
-                              ICMCMapService icmcMapService){
+                              ICMCMapService icmcMapService) {
         this.tradeInfoMapper = tradeInfoMapper;
         this.iTradeInfoService = iTradeInfoService;
         this.iCMCQuotesLatestService = iCMCQuotesLatestService;
@@ -53,10 +52,10 @@ public class PATableServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInfo> 
         List<TradeInfo> tradeInfoList = list(wrapper);
         List<CMCQuotesLatest> cmcQuotesLatests = iCMCQuotesLatestService.queryLatest();
         List<PATableVO> paTableVOS = new ArrayList<PATableVO>();
-        for(TradeInfo tradeInfo : tradeInfoList){
+        for (TradeInfo tradeInfo : tradeInfoList) {
             PATableVO paTableVO = CopyUtil.copy2(tradeInfo);
-            for(CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests){
-                if(paTableVO.getCoinId().equals(cmcQuotesLatest.getTid())){
+            for (CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests) {
+                if (paTableVO.getCoinId().equals(cmcQuotesLatest.getTid())) {
                     BigDecimal curPrice = new BigDecimal(cmcQuotesLatest.getPrice());
                     BigDecimal payPrice = new BigDecimal(cmcQuotesLatest.getPrice());
                     String chg = curPrice.subtract(payPrice)
@@ -77,10 +76,10 @@ public class PATableServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInfo> 
     @Override
     public List<PATableVO> queryVOBy(String strCoinSymbol, String strStartDate, String strEndDate, String tradeType) {
         QueryWrapper<TradeInfo> wrapper = new QueryWrapper<>();
-        if(strCoinSymbol != null && !strCoinSymbol.isBlank()){
+        if (strCoinSymbol != null && !strCoinSymbol.isBlank()) {
             wrapper.eq("base_symbol", strCoinSymbol);
         }
-        if(!tradeType.equals("全部")){
+        if (!tradeType.equals("全部")) {
             wrapper.eq("sale_or_buy", tradeType);
         }
         wrapper.between("trade_date", strStartDate, strEndDate);
@@ -90,10 +89,10 @@ public class PATableServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInfo> 
         //List<CMCMap> cmcMaps = icmcMapService.queryAll(1);
         List<CMCQuotesLatest> cmcQuotesLatests = iCMCQuotesLatestService.queryLatest();
         List<PATableVO> paTableVOS = new ArrayList<PATableVO>();
-        for(TradeInfo tradeInfo : tradeInfoList){
+        for (TradeInfo tradeInfo : tradeInfoList) {
             PATableVO paTableVO = CopyUtil.copy2(tradeInfo);
-            for(CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests){
-                if(paTableVO.getCoinId().equals(cmcQuotesLatest.getTid())){
+            for (CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests) {
+                if (paTableVO.getCoinId().equals(cmcQuotesLatest.getTid())) {
                     BigDecimal curPrice = new BigDecimal(cmcQuotesLatest.getPrice());
                     BigDecimal payPrice = new BigDecimal(cmcQuotesLatest.getPrice());
                     String chg = curPrice.subtract(payPrice)
@@ -120,8 +119,8 @@ public class PATableServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInfo> 
     public CMCQuotesLatest queryBySymbol(String symbol) {
         List<CMCQuotesLatest> cmcQuotesLatests = iCMCQuotesLatestService.queryLatest();
         CMCQuotesLatest c1 = null;
-        for(CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests){
-            if(cmcQuotesLatest.getSymbol().equals(symbol)){
+        for (CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests) {
+            if (cmcQuotesLatest.getSymbol().equals(symbol)) {
                 c1 = cmcQuotesLatest;
                 break;
             }
