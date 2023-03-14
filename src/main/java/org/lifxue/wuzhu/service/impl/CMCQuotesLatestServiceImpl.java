@@ -34,6 +34,7 @@ public class CMCQuotesLatestServiceImpl extends ServiceImpl<CMCQuotesLatestMappe
 
     ICMCQuotesLatestFeignClient icmcQuotesLatestFeignClient;
     ICMCMapService icmcMapService;
+    CMCQuotesLatestMapper cmcQuotesLatestMapper;
 
     @Autowired
     public void setIcmcQuotesLatestFeignClient(ICMCQuotesLatestFeignClient icmcQuotesLatestFeignClient) {
@@ -43,6 +44,11 @@ public class CMCQuotesLatestServiceImpl extends ServiceImpl<CMCQuotesLatestMappe
     @Autowired
     public void setIcmcMapService(ICMCMapService icmcMapService) {
         this.icmcMapService = icmcMapService;
+    }
+
+    @Autowired
+    public void setCmcQuotesLatestMapper(CMCQuotesLatestMapper cmcQuotesLatestMapper) {
+        this.cmcQuotesLatestMapper = cmcQuotesLatestMapper;
     }
 
     @Nullable
@@ -250,4 +256,11 @@ public class CMCQuotesLatestServiceImpl extends ServiceImpl<CMCQuotesLatestMappe
         List<CMCQuotesLatest> list = getHttpJsonById(ids.toString(), "USD");
         return saveBatch(list);
     }
+
+    @Override
+    public List<CMCQuotesLatest> queryLatest() {
+        return cmcQuotesLatestMapper.queryLatest();
+    }
+
+
 }

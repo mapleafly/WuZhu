@@ -17,6 +17,7 @@ import org.lifxue.wuzhu.modules.file.ImportTradeData;
 import org.lifxue.wuzhu.modules.note.NoteModule;
 import org.lifxue.wuzhu.modules.selectcoin.SelectCoinViewModule;
 import org.lifxue.wuzhu.modules.setting.PreferencesViewModule;
+import org.lifxue.wuzhu.modules.statistics.PATableViewModule;
 import org.lifxue.wuzhu.modules.tradeinfo.TradeInfoViewModule;
 import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
@@ -59,6 +60,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
 
     private final ExportTradeData exportTradeData;
 
+    private final PATableViewModule paTableViewModule;
+
     public PrimaryStageInitializer(
         Workbench workbench,
         NoteModule noteModule,
@@ -69,7 +72,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         SelectCoinViewModule selectCoinViewModule,
         TradeInfoViewModule tradeInfoViewModule,
         ImportTradeData importTradeData,
-        ExportTradeData exportTradeData
+        ExportTradeData exportTradeData,
+        PATableViewModule paTableViewModule
     ) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
@@ -82,6 +86,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         this.tradeInfoViewModule = tradeInfoViewModule;
         this.importTradeData = importTradeData;
         this.exportTradeData = exportTradeData;
+        this.paTableViewModule = paTableViewModule;
     }
 
     @Override
@@ -108,6 +113,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         workbench.getModules().addAll(
             noteModule,
             tradeInfoViewModule,
+            paTableViewModule,
             selectCoinViewModule,
             preferencesViewModule
         );

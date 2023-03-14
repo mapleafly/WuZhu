@@ -24,4 +24,6 @@ public interface CMCMapMapper extends BaseMapper<CMCMap> {
 
     @Select("SELECT id FROM cmc_map WHERE is_selected = 1 order by symbol ")
     List<Integer> getSelectedIDs();
+    @Select("SELECT * FROM cmc_map WHERE is_selected = #{is_selected} order by symbol ")
+    List<CMCMap> queryAll(@Param("is_selected") Integer is_selected);
 }

@@ -24,4 +24,15 @@ public interface ICMCQuotesLatestService extends IService<CMCQuotesLatest> {
 
     boolean saveBatch();
 
+    /***
+     * @description 从数据库获取最新的数据
+     * @author lifxue
+     * @date 2023/3/14 15:52
+     * @param
+     * @return java.util.List<org.lifxue.wuzhu.entity.CMCQuotesLatest>
+     **/
+    List<CMCQuotesLatest> queryLatest();
+
+
+
 }

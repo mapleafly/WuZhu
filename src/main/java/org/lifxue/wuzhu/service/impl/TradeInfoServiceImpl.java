@@ -27,18 +27,20 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class ITradeInfoServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInfo> implements ITradeInfoService {
+public class TradeInfoServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInfo> implements ITradeInfoService {
 
     ICMCMapService icmcMapService;
 
     TradeInfoMapper tradeInfoMapper;
 
     @Autowired
-    public void setIcmcMapService(ICMCMapService icmcMapService, TradeInfoMapper tradeInfoMapper) {
+    public void setIcmcMapService(ICMCMapService icmcMapService) {
         this.icmcMapService = icmcMapService;
+    }
+    @Autowired
+    public void setTradeInfoMapper(TradeInfoMapper tradeInfoMapper) {
         this.tradeInfoMapper = tradeInfoMapper;
     }
-
     /***
      * @description 查询可用coin的symbo集合
      * @author lifxue

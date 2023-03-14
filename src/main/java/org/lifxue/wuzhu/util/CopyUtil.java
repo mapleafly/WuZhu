@@ -8,6 +8,7 @@ import org.lifxue.wuzhu.entity.CMCMap;
 import org.lifxue.wuzhu.entity.CMCQuotesLatest;
 import org.lifxue.wuzhu.entity.TradeInfo;
 import org.lifxue.wuzhu.modules.selectcoin.vo.SelectDataVO;
+import org.lifxue.wuzhu.modules.statistics.vo.PATableVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.lang.Nullable;
@@ -249,4 +250,34 @@ public class CopyUtil {
         return tradeInfoList;
     }
 
+    public static PATableVO copy2(TradeInfo tradeInfo){
+        if(tradeInfo == null){
+            return null;
+        }
+        PATableVO paTableVO = new PATableVO();
+        paTableVO.setId(tradeInfo.getId());
+        paTableVO.setCoinId(tradeInfo.getBaseId());
+        paTableVO.setSaleOrBuy(tradeInfo.getSaleOrBuy());
+        paTableVO.setPrice(tradeInfo.getPrice());
+        paTableVO.setBaseNum(tradeInfo.getBaseNum());
+        paTableVO.setQuoteNum(tradeInfo.getQuoteNum());
+        paTableVO.setDate(tradeInfo.getTradeDate());
+        paTableVO.setSymbolPairs(tradeInfo.getBaseSymbol() + "/" + tradeInfo.getQuoteSymbol());
+
+        return paTableVO;
+    }
+
+    public static List<PATableVO> copyPATableVOList(List<TradeInfo>  tradeInfos){
+        if(tradeInfos == null || tradeInfos.isEmpty()){
+            return null;
+        }
+
+        List<PATableVO> paTableVOS = new ArrayList<>();
+        for (TradeInfo tradeInfo : tradeInfos){
+            if (tradeInfo != null){
+                paTableVOS.add(copy2(tradeInfo));
+            }
+        }
+        return paTableVOS;
+    }
 }

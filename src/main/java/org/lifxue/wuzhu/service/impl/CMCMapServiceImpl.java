@@ -290,4 +290,15 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
         }
         return updateBatchById(cmcMapList);
     }
+
+    /***
+     * @description 1-被选 0-未选
+     * @author lifxue
+     * @date 2023/3/14 15:25
+     * @param isSelect
+     * @return java.util.List<org.lifxue.wuzhu.entity.CMCMap>
+     **/
+    public List<CMCMap> queryAll(Integer isSelect) {
+        return this.cmcMapMapper.queryAll(1);
+    }
 }
