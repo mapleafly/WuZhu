@@ -15,6 +15,7 @@ import org.kordamp.ikonli.materialdesign.MaterialDesign;
 import org.lifxue.wuzhu.modules.file.ExportTradeData;
 import org.lifxue.wuzhu.modules.file.ImportTradeData;
 import org.lifxue.wuzhu.modules.note.NoteModule;
+import org.lifxue.wuzhu.modules.piechart.TypePieChartViewModule;
 import org.lifxue.wuzhu.modules.selectcoin.SelectCoinViewModule;
 import org.lifxue.wuzhu.modules.setting.PreferencesViewModule;
 import org.lifxue.wuzhu.modules.statistics.PATableViewModule;
@@ -61,6 +62,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
     private final ExportTradeData exportTradeData;
 
     private final PATableViewModule paTableViewModule;
+    private final TypePieChartViewModule typePieChartViewModule;
 
     public PrimaryStageInitializer(
         Workbench workbench,
@@ -73,7 +75,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         TradeInfoViewModule tradeInfoViewModule,
         ImportTradeData importTradeData,
         ExportTradeData exportTradeData,
-        PATableViewModule paTableViewModule
+        PATableViewModule paTableViewModule,
+        TypePieChartViewModule typePieChartViewModule
     ) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
@@ -87,6 +90,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         this.importTradeData = importTradeData;
         this.exportTradeData = exportTradeData;
         this.paTableViewModule = paTableViewModule;
+        this.typePieChartViewModule = typePieChartViewModule;
     }
 
     @Override
@@ -114,6 +118,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
             noteModule,
             tradeInfoViewModule,
             paTableViewModule,
+            typePieChartViewModule,
             selectCoinViewModule,
             preferencesViewModule
         );
