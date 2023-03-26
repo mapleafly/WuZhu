@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
+import org.lifxue.wuzhu.modules.cash.CashViewModule;
 import org.lifxue.wuzhu.modules.file.ExportTradeData;
 import org.lifxue.wuzhu.modules.file.ImportTradeData;
 import org.lifxue.wuzhu.modules.note.NoteModule;
@@ -64,6 +65,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
     private final PATableViewModule paTableViewModule;
     private final TypePieChartViewModule typePieChartViewModule;
 
+    private final CashViewModule cashViewModule;
+
     public PrimaryStageInitializer(
         Workbench workbench,
         NoteModule noteModule,
@@ -76,7 +79,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         ImportTradeData importTradeData,
         ExportTradeData exportTradeData,
         PATableViewModule paTableViewModule,
-        TypePieChartViewModule typePieChartViewModule
+        TypePieChartViewModule typePieChartViewModule,
+        CashViewModule cashViewModule
     ) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
@@ -91,6 +95,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         this.exportTradeData = exportTradeData;
         this.paTableViewModule = paTableViewModule;
         this.typePieChartViewModule = typePieChartViewModule;
+        this.cashViewModule = cashViewModule;
     }
 
     @Override
@@ -117,6 +122,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         workbench.getModules().addAll(
             noteModule,
             tradeInfoViewModule,
+            cashViewModule,
             paTableViewModule,
             typePieChartViewModule,
             selectCoinViewModule,
