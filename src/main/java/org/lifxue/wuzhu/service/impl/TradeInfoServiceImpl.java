@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.lifxue.wuzhu.entity.CMCMap;
 import org.lifxue.wuzhu.entity.TradeInfo;
 import org.lifxue.wuzhu.mapper.TradeInfoMapper;
+import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
 import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.ITradeInfoService;
@@ -53,6 +54,12 @@ public class TradeInfoServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInfo
        return icmcMapService.queryCurSymbol();
     }
 
+    @Override
+    public List<CoinChoiceBoxVO> queryCurCoin() {
+        List<CMCMap> cmcMaps = icmcMapService.getSelecteds();
+        return CopyUtil.copyCoinChoiceBoxVOList(cmcMaps);
+    }
+
     /***
      * @description 查询指定的币种信息并转变成TradeInfoVO列表格式
      * @author lifxue
@@ -61,9 +68,18 @@ public class TradeInfoServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInfo
      * @return java.util.List<org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO>
      **/
     @Override
-    public List<TradeInfoVO> queryTradeInfo(String symbol) {
+    public List<TradeInfoVO> queryTradeInfoByBaseSymbol(String symbol) {
         QueryWrapper<TradeInfo> wrapper = new QueryWrapper<>();
         wrapper.eq("base_symbol", symbol);
+        wrapper.orderByDesc("id");
+        List<TradeInfo> tradeInfoList = list(wrapper);
+        return CopyUtil.copyTradeInfoVOList(tradeInfoList);
+    }
+
+    @Override
+    public List<TradeInfoVO> queryTradeInfoByBaseCoinId(Integer coinId) {
+        QueryWrapper<TradeInfo> wrapper = new QueryWrapper<>();
+        wrapper.eq("base_id", coinId);
         wrapper.orderByDesc("id");
         List<TradeInfo> tradeInfoList = list(wrapper);
         return CopyUtil.copyTradeInfoVOList(tradeInfoList);

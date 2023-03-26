@@ -25,9 +25,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
+import javafx.util.StringConverter;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.lifxue.wuzhu.entity.TradeInfo;
+import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
 import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.util.CopyUtil;
@@ -56,8 +58,8 @@ public class TradeInfoViewController implements Initializable {
      * The data as an observable list of TradeData.
      */
     private final ObservableList<TradeInfoVO> tradeDataList;
-
-    private List<String> coinList;
+    private final ObservableList<CoinChoiceBoxVO> coinChoiceBoxList;
+    private List<CoinChoiceBoxVO> coinList;
     @FXML
     private TableView<TradeInfoVO> dataTable;
     @FXML
@@ -77,9 +79,9 @@ public class TradeInfoViewController implements Initializable {
     @FXML
     private TableColumn<TradeInfoVO, String> dateCol;
     @FXML
-    private ChoiceBox<String> baseChoiceBox;
+    private ChoiceBox<CoinChoiceBoxVO> baseChoiceBox;
     @FXML
-    private ChoiceBox<String> quoteChoiceBox;
+    private ChoiceBox<CoinChoiceBoxVO> quoteChoiceBox;
     @FXML
     private ChoiceBox<String> salebuyChoiceBox;
     @FXML
@@ -96,11 +98,9 @@ public class TradeInfoViewController implements Initializable {
 
     @Autowired
     public TradeInfoViewController(ITradeInfoService iTradeInfoService) {
-
         this.iTradeInfoService = iTradeInfoService;
         tradeDataList = FXCollections.observableArrayList();
-
-
+        coinChoiceBoxList = FXCollections.observableArrayList();
     }
 
     /***
@@ -127,13 +127,16 @@ public class TradeInfoViewController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         tradeDataList.clear();
         //获取数据
-        coinList = iTradeInfoService.queryCurSymbol();
+        //coinList = iTradeInfoService.queryCurSymbol();
+        coinList = iTradeInfoService.queryCurCoin();
         if (coinList != null && !coinList.isEmpty()) {
-            List<TradeInfoVO> tradeInfoList = iTradeInfoService.queryTradeInfo(coinList.get(0));
+            List<TradeInfoVO> tradeInfoList = iTradeInfoService.queryTradeInfoByBaseCoinId(coinList.get(0).getCoinId());
             if(tradeInfoList != null && !tradeInfoList.isEmpty()) {
                 this.tradeDataList.addAll(tradeInfoList);
             }
         }
+
+        coinChoiceBoxList.addAll(coinList);
 
         dataTable.setItems(tradeDataList);
 
@@ -146,11 +149,67 @@ public class TradeInfoViewController implements Initializable {
         quoteNumCol.setCellValueFactory(new PropertyValueFactory<>("quoteNum"));
         dateCol.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
 
-        baseChoiceBox.setItems(FXCollections.observableArrayList(coinList));
+        //baseChoiceBox.setItems(FXCollections.observableArrayList(coinList));
+        baseChoiceBox.setConverter(new StringConverter<CoinChoiceBoxVO>() {
+            @Override
+            public String toString(CoinChoiceBoxVO object) {
+                return object.getSymbol();
+            }
+
+            @Override
+            public CoinChoiceBoxVO fromString(String string) {
+                return null;
+            }
+        });
+        baseChoiceBox.setItems(coinChoiceBoxList);
+
+        baseChoiceBox.setSelectionModel(new SingleSelectionModel<CoinChoiceBoxVO>(){
+            @Override
+            protected CoinChoiceBoxVO getModelItem(int index) {
+                //return null;
+                if(coinChoiceBoxList == null || coinChoiceBoxList.isEmpty()) {return null;}
+                CoinChoiceBoxVO coinChoiceBoxVO = coinChoiceBoxList.get(index);
+                return coinChoiceBoxVO;
+            }
+
+            @Override
+            protected int getItemCount() {
+                return coinChoiceBoxList == null ? 0 : coinChoiceBoxList.size();
+            //return coinChoiceBoxList.size();
+            }
+        });
+
         baseChoiceBox.setTooltip(new Tooltip("选择基准货币"));
         baseChoiceBox.getSelectionModel().selectFirst();
 
-        quoteChoiceBox.setItems(FXCollections.observableArrayList("USDT"));
+        quoteChoiceBox.setConverter(new StringConverter<CoinChoiceBoxVO>() {
+            @Override
+            public String toString(CoinChoiceBoxVO object) {
+                return object.getSymbol();
+            }
+
+            @Override
+            public CoinChoiceBoxVO fromString(String string) {
+                return null;
+            }
+        });
+
+        CoinChoiceBoxVO quutechoiceBoxList = new CoinChoiceBoxVO("USDT",825);
+        quoteChoiceBox.setItems(FXCollections.observableArrayList(quutechoiceBoxList));
+        quoteChoiceBox.setSelectionModel(new SingleSelectionModel<CoinChoiceBoxVO>(){
+            @Override
+            protected CoinChoiceBoxVO getModelItem(int index) {
+                //return null;
+                if(coinChoiceBoxList == null || coinChoiceBoxList.isEmpty()) {return null;}
+                CoinChoiceBoxVO coinChoiceBoxVO = coinChoiceBoxList.get(index);
+                return coinChoiceBoxVO;
+            }
+
+            @Override
+            protected int getItemCount() {
+                return coinChoiceBoxList == null ? 0 : coinChoiceBoxList.size();
+            }
+        });
         quoteChoiceBox.setTooltip(new Tooltip("选择计价货币"));
         quoteChoiceBox.getSelectionModel().selectFirst();
 
@@ -175,8 +234,8 @@ public class TradeInfoViewController implements Initializable {
                 (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
                     if (newValue.intValue() >= 0) {
                         this.tradeDataList.clear();
-                        String selectedCoinSymbol = this.coinList.get(newValue.intValue());
-                        List<TradeInfoVO> tradeInfoVOS = iTradeInfoService.queryTradeInfo(selectedCoinSymbol);
+                        CoinChoiceBoxVO selectedCoin = this.coinChoiceBoxList.get(newValue.intValue());
+                        List<TradeInfoVO> tradeInfoVOS = iTradeInfoService.queryTradeInfoByBaseCoinId(selectedCoin.getCoinId());
                         if(tradeInfoVOS!= null &&!tradeInfoVOS.isEmpty()) {
                             this.tradeDataList.addAll(tradeInfoVOS);
                         }
@@ -224,10 +283,10 @@ public class TradeInfoViewController implements Initializable {
     }
 
     private void setTradeInfo(TradeInfo tradeInfo) {
-        tradeInfo.setBaseId(iTradeInfoService.queryCoinBySymbol(baseChoiceBox.getValue()).getId());
-        tradeInfo.setBaseSymbol(baseChoiceBox.getValue());
-        tradeInfo.setQuoteId(iTradeInfoService.queryCoinBySymbol(quoteChoiceBox.getValue()).getId());
-        tradeInfo.setQuoteSymbol(quoteChoiceBox.getValue());
+        tradeInfo.setBaseId(baseChoiceBox.getValue().getCoinId());
+        tradeInfo.setBaseSymbol(baseChoiceBox.getValue().getSymbol());
+        tradeInfo.setQuoteId(quoteChoiceBox.getValue().getCoinId());
+        tradeInfo.setQuoteSymbol(quoteChoiceBox.getValue().getSymbol());
         tradeInfo.setSaleOrBuy(salebuyChoiceBox.getValue());
         tradeInfo.setPrice(priceTextField.getText());
         tradeInfo.setBaseNum(numTextField.getText());
@@ -322,8 +381,8 @@ public class TradeInfoViewController implements Initializable {
             }
             String base = symbolPairs.substring(0, split);
             String quote = symbolPairs.substring(split + 1);
-            baseChoiceBox.setValue(base);
-            quoteChoiceBox.setValue(quote);
+            baseChoiceBox.setValue(new CoinChoiceBoxVO(base,tradeData.getCoinId()));
+            quoteChoiceBox.setValue(new CoinChoiceBoxVO("USDT", 825));
             salebuyChoiceBox.setValue(tradeData.getSaleOrBuy());
             priceTextField.setText(tradeData.getPrice());
             numTextField.setText(tradeData.getBaseNum());
@@ -347,10 +406,10 @@ public class TradeInfoViewController implements Initializable {
     private boolean isInputValid() {
         String errorMessage = "";
 
-        if (baseChoiceBox.getValue() == null || baseChoiceBox.getValue().length() == 0) {
+        if (baseChoiceBox.getValue() == null) {
             errorMessage += "无效的类别!\n";
         }
-        if (quoteChoiceBox.getValue() == null || quoteChoiceBox.getValue().length() == 0) {
+        if (quoteChoiceBox.getValue() == null) {
             errorMessage += "无效的类别!\n";
         }
         if (salebuyChoiceBox.getValue() == null || salebuyChoiceBox.getValue().length() == 0) {

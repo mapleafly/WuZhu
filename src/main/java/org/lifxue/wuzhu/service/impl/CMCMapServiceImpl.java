@@ -270,6 +270,11 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
     }
 
     @Override
+    public List<CMCMap> getSelecteds() {
+        return this.cmcMapMapper.getSelecteds();
+    }
+
+    @Override
     public CMCMap queryCoinBySymbo(String symbo) {
         return this.cmcMapMapper.queryCoinBySymbo(symbo);
     }

@@ -117,7 +117,7 @@ public class CashViewController implements Initializable {
         coinList = new ArrayList<>();
         coinList.add(BASESYMBOL);
         if (coinList != null && !coinList.isEmpty()) {
-            List<TradeInfoVO> tradeInfoList = iTradeInfoService.queryTradeInfo(coinList.get(0));
+            List<TradeInfoVO> tradeInfoList = iTradeInfoService.queryTradeInfoByBaseSymbol(coinList.get(0));
             if (tradeInfoList != null && !tradeInfoList.isEmpty()) {
                 this.tradeDataList.addAll(tradeInfoList);
             }
@@ -161,7 +161,7 @@ public class CashViewController implements Initializable {
                     if (newValue.intValue() >= 0) {
                         this.tradeDataList.clear();
                         String selectedCoin = this.coinList.get(newValue.intValue());
-                        List<TradeInfoVO> tradeInfoVOS = iTradeInfoService.queryTradeInfo(selectedCoin);
+                        List<TradeInfoVO> tradeInfoVOS = iTradeInfoService.queryTradeInfoByBaseSymbol(selectedCoin);
                         if (tradeInfoVOS != null && !tradeInfoVOS.isEmpty()) {
                             this.tradeDataList.addAll(tradeInfoVOS);
                         }

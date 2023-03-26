@@ -29,12 +29,12 @@ public interface ICMCMapService extends IService<CMCMap> {
 
     boolean saveOrUpdateBatch(Integer start, Integer limit, String sort, String aux);
 
-    public List<String> queryCurSymbol();
-    public List<Integer> getSelectedIDs();
+    List<String> queryCurSymbol();
+    List<Integer> getSelectedIDs();
+    List<CMCMap> getSelecteds();
+    CMCMap queryCoinBySymbo(String symbo);
 
-    public CMCMap queryCoinBySymbo(String symbo);
-
-    public boolean updateSelectedBatch(List<Integer> selected);
+    boolean updateSelectedBatch(List<Integer> selected);
 
     /***
      * @description 查询数据，参数为1 已选  参数为0 未选
@@ -43,5 +43,5 @@ public interface ICMCMapService extends IService<CMCMap> {
      * @param isSelect
      * @return java.util.List<org.lifxue.wuzhu.entity.CMCMap>
      **/
-    public List<CMCMap> queryAll(Integer isSelect);
+    List<CMCMap> queryAll(Integer isSelect);
 }

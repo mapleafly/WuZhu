@@ -3,6 +3,7 @@ package org.lifxue.wuzhu.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.lifxue.wuzhu.entity.CMCMap;
 import org.lifxue.wuzhu.entity.TradeInfo;
+import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
 
 import java.util.List;
@@ -17,8 +18,9 @@ import java.util.List;
 public interface ITradeInfoService extends IService<TradeInfo> {
 
     public List<String> queryCurSymbol();
-
-    List<TradeInfoVO> queryTradeInfo(String symbol);
+    List<CoinChoiceBoxVO> queryCurCoin();
+    List<TradeInfoVO> queryTradeInfoByBaseSymbol(String symbol);
+    List<TradeInfoVO> queryTradeInfoByBaseCoinId(Integer coinId);
 
     CMCMap queryCoinBySymbol(String symbol);
 

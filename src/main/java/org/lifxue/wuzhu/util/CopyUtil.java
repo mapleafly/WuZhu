@@ -9,6 +9,7 @@ import org.lifxue.wuzhu.entity.CMCQuotesLatest;
 import org.lifxue.wuzhu.entity.TradeInfo;
 import org.lifxue.wuzhu.modules.selectcoin.vo.SelectDataVO;
 import org.lifxue.wuzhu.modules.statistics.vo.PATableVO;
+import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.lang.Nullable;
@@ -279,5 +280,25 @@ public class CopyUtil {
             }
         }
         return paTableVOS;
+    }
+
+    public static CoinChoiceBoxVO copyCoinChoiceBoxVO(CMCMap cmcMap){
+        if(cmcMap == null){
+            return null;
+        }
+        CoinChoiceBoxVO coinChoiceBoxVO = new CoinChoiceBoxVO("", 0);
+        coinChoiceBoxVO.setCoinId(cmcMap.getId());
+        coinChoiceBoxVO.setSymbol(cmcMap.getSymbol());
+
+        return coinChoiceBoxVO;
+    }
+
+    public static List<CoinChoiceBoxVO> copyCoinChoiceBoxVOList(List<CMCMap> list){
+        List<CoinChoiceBoxVO> coinChoiceBoxVOS = new ArrayList<>();
+        for (CMCMap cmcMap : list) {
+            coinChoiceBoxVOS.add(copyCoinChoiceBoxVO(cmcMap));
+        }
+
+        return coinChoiceBoxVOS;
     }
 }

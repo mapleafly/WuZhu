@@ -24,6 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.lifxue.wuzhu.enums.BooleanEnum;
 import org.lifxue.wuzhu.enums.ThemeEnum;
+import org.lifxue.wuzhu.service.ICMCMapService;
+import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
+import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.lifxue.wuzhu.util.PrefsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,10 +76,22 @@ public class PreferencesViewController implements Initializable {
     private Workbench workbench;
     private InterfaceTheme interfaceTheme;
 
+    private ICMCQuotesLatestService icmcQuotesLatestService;
+    private ICMCMapService icmcMapService;
+    private ITradeInfoService iTradeInfoService;
+
     @Autowired
-    public PreferencesViewController(Workbench workbench, InterfaceTheme interfaceTheme) {
+    public PreferencesViewController(
+        Workbench workbench,
+        InterfaceTheme interfaceTheme,
+        ICMCQuotesLatestService icmcQuotesLatestService,
+        ICMCMapService icmcMapService,
+        ITradeInfoService iTradeInfoService) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
+        this.icmcQuotesLatestService = icmcQuotesLatestService;
+        this.icmcMapService = icmcMapService;
+        this.iTradeInfoService = iTradeInfoService;
     }
 
     /**
@@ -215,16 +230,32 @@ public class PreferencesViewController implements Initializable {
      **/
     @FXML
     private void handleInitDB(ActionEvent event) {
-        //InitTable.dropTable();
-        //InitTable.createTable();
-        //CoinInfo info = new CoinInfo(workbench,null);
-        //if (info.updateCoinIDMap()) {
-        //    workbench.showInformationDialog("消息", "初始化数据库成功！", buttonType -> {
-        //    });
-        //} else {
-        //    workbench.showInformationDialog("消息", "初始化数据库失败！", buttonType -> {
-        //    });
-        //}
+        if (iTradeInfoService.remove(null)) {
+            workbench.showInformationDialog("消息", "初始化数据库交易信息成功！", buttonType -> {
+            });
+        } else {
+            workbench.showErrorDialog("消息", "初始化数据库交易信息失败！", buttonType -> {
+            });
+            return;
+        }
+
+        if (icmcQuotesLatestService.remove(null)) {
+            workbench.showInformationDialog("消息", "初始化数据库最新价格成功！", buttonType -> {
+            });
+        } else {
+            workbench.showErrorDialog("消息", "初始化数据库最新价格失败！", buttonType -> {
+            });
+            return;
+        }
+
+        if (icmcMapService.remove(null)) {
+            workbench.showInformationDialog("消息", "初始化数据库币种信息成功！", buttonType -> {
+            });
+        } else {
+            workbench.showErrorDialog("消息", "初始化数据库币种信息失败！", buttonType -> {
+            });
+            return;
+        }
     }
 
     /**

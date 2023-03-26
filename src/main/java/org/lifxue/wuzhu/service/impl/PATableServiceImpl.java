@@ -51,19 +51,29 @@ public class PATableServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInfo> 
         wrapper.orderByDesc("trade_date");
         List<TradeInfo> tradeInfoList = list(wrapper);
         List<CMCQuotesLatest> cmcQuotesLatests = iCMCQuotesLatestService.queryLatest();
+        /*log.info("queryAllVos cmcQuotesLatests={}", cmcQuotesLatests.size());
+        for(CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests){
+            log.info("queryAllVos cmcQuotesLatests={}", cmcQuotesLatest.toString());
+        }*/
+
         List<PATableVO> paTableVOS = new ArrayList<PATableVO>();
         for (TradeInfo tradeInfo : tradeInfoList) {
             PATableVO paTableVO = CopyUtil.copy2(tradeInfo);
             for (CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests) {
                 if (paTableVO.getCoinId().equals(cmcQuotesLatest.getTid())) {
                     BigDecimal curPrice = new BigDecimal(cmcQuotesLatest.getPrice());
-                    BigDecimal payPrice = new BigDecimal(cmcQuotesLatest.getPrice());
+                    BigDecimal payPrice = new BigDecimal(paTableVO.getPrice());
+                    log.info("curPrice: " + curPrice);
+                    log.info("payPrice: " + payPrice);
+
                     String chg = curPrice.subtract(payPrice)
                         .divide(payPrice, 5, RoundingMode.HALF_UP)
                         .multiply(new BigDecimal("100"))
                         .setScale(2, RoundingMode.HALF_UP)
                         .toPlainString();
                     paTableVO.setChg(chg + "%");
+                    log.info("chg: " + chg);
+
                     break;
                 }
             }
@@ -94,7 +104,7 @@ public class PATableServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInfo> 
             for (CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests) {
                 if (paTableVO.getCoinId().equals(cmcQuotesLatest.getTid())) {
                     BigDecimal curPrice = new BigDecimal(cmcQuotesLatest.getPrice());
-                    BigDecimal payPrice = new BigDecimal(cmcQuotesLatest.getPrice());
+                    BigDecimal payPrice = new BigDecimal(paTableVO.getPrice());
                     String chg = curPrice.subtract(payPrice)
                         .divide(payPrice, 5, RoundingMode.HALF_UP)
                         .multiply(new BigDecimal("100"))

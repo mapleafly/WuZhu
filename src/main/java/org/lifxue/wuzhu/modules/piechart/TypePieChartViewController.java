@@ -23,6 +23,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.text.Font;
+import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
 
 import org.lifxue.wuzhu.entity.CMCQuotesLatest;
@@ -45,6 +46,7 @@ import java.util.*;
  *
  * @author xuelf
  */
+@Slf4j
 @Component
 @FxmlView("TypePieChartView.fxml")
 public class TypePieChartViewController implements Initializable {
@@ -119,7 +121,6 @@ public class TypePieChartViewController implements Initializable {
 
         List<TradeInfo> tdList = iTradeInfoService.list();
         List<CMCQuotesLatest> typeList = icmcQuotesLatestService.queryLatest();
-        //List<CoinQuotesLatestBean> typeList = TypePieChartDao.queryByTradeData();
         BigDecimal usdtNum = new BigDecimal("0");
         // 计算USDT之外的coin现价
         double otherAllPrice = 0;
