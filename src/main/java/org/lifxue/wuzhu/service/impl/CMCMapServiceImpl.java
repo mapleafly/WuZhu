@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+//import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -33,7 +33,7 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
     private final String CMCMAP_AUX = "platform,first_historical_data,last_historical_data,is_active";
     private final ICMCMapFeignClient icmcMapFeignClient;
 
-    @Resource
+    @Autowired
     private CMCMapMapper cmcMapMapper;
 
     @Autowired

@@ -128,7 +128,7 @@ public class TypePieChartViewController implements Initializable {
             Integer id = coinType.getTid();
             String symbol = coinType.getSymbol();
             BigDecimal price;
-            if (coinType.getPrice() == null || coinType.getPrice().isBlank()) {
+            if (coinType.getPrice() == null || coinType.getPrice().isEmpty()) {
                 price = new BigDecimal("0");
             } else {
                 price = new BigDecimal(coinType.getPrice());
