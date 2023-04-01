@@ -282,16 +282,12 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
     @Override
     @Transactional
     public boolean updateSelectedBatch(List<Integer> selected) {
-        log.info("selected size = {}", selected.size());
         List<CMCMap> cmcMapList = listByIds(selected);
 
         for (CMCMap cmcMap : cmcMapList) {
             cmcMap.setIsSelected(1);
         }
 
-        for (CMCMap cmcMap : cmcMapList) {
-            log.info(cmcMap.toString());
-        }
         return updateBatchById(cmcMapList);
     }
 

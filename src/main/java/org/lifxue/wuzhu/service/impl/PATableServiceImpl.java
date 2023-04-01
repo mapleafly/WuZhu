@@ -51,10 +51,6 @@ public class PATableServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInfo> 
         wrapper.orderByDesc("trade_date");
         List<TradeInfo> tradeInfoList = list(wrapper);
         List<CMCQuotesLatest> cmcQuotesLatests = iCMCQuotesLatestService.queryLatest();
-        /*log.info("queryAllVos cmcQuotesLatests={}", cmcQuotesLatests.size());
-        for(CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests){
-            log.info("queryAllVos cmcQuotesLatests={}", cmcQuotesLatest.toString());
-        }*/
 
         List<PATableVO> paTableVOS = new ArrayList<PATableVO>();
         for (TradeInfo tradeInfo : tradeInfoList) {
@@ -63,8 +59,6 @@ public class PATableServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInfo> 
                 if (paTableVO.getCoinId().equals(cmcQuotesLatest.getTid())) {
                     BigDecimal curPrice = new BigDecimal(cmcQuotesLatest.getPrice());
                     BigDecimal payPrice = new BigDecimal(paTableVO.getPrice());
-                    log.info("curPrice: " + curPrice);
-                    log.info("payPrice: " + payPrice);
 
                     String chg = curPrice.subtract(payPrice)
                         .divide(payPrice, 5, RoundingMode.HALF_UP)
@@ -72,7 +66,6 @@ public class PATableServiceImpl extends ServiceImpl<TradeInfoMapper, TradeInfo> 
                         .setScale(2, RoundingMode.HALF_UP)
                         .toPlainString();
                     paTableVO.setChg(chg + "%");
-                    log.info("chg: " + chg);
 
                     break;
                 }

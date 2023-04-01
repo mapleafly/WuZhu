@@ -63,7 +63,7 @@ public class FeignClientConfig {
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
             List<Proxy> proxyList = new ArrayList<>(1);
             proxyList.add(proxy);
-            //log.info("proxy=" + ((InetSocketAddress) proxy.address()).toString());
+
             builder.proxySelector(new ProxySelector() {
                 @Override
                 public List<Proxy> select(URI uri) {
