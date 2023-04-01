@@ -33,11 +33,10 @@ build/
 .vscode/
 
 
-!/src/main/resources/rebel.xml
+/src/main/resources/rebel.xml
 
 ### gradle ###
 .gradle
 .gradle/*
 /gradle-plugins/gradle*
-!gradle/wrapper/gradle-wrapper.jar
 local.properties
