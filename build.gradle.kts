@@ -5,11 +5,12 @@
 plugins {
     java
 //    `maven-publish`
-//    id("application")
     application
     id("org.openjfx.javafxplugin") version "0.0.13"
     id("org.springframework.boot") version "2.7.10"
     id("io.spring.dependency-management") version "1.0.15.RELEASE"
+    //对于Windows，需要安装 https://wixtoolset.org
+    id("org.panteleyev.jpackageplugin") version "1.5.1"
 }
 
 configurations {
@@ -76,4 +77,31 @@ application {
 javafx {
     version = "17.0.1"
     modules("javafx.controls", "javafx.fxml")
+}
+
+task("copyDependencies", Copy::class) {
+    from(configurations.runtimeClasspath).into("$buildDir/jars")
+}
+
+task("copyJar", Copy::class) {
+    from(tasks.jar).into("$buildDir/jars")
+}
+
+tasks.jpackage {
+    dependsOn("build", "copyDependencies", "copyJar")
+
+    input  = "$buildDir/jars"
+    destination = "$buildDir/dist"
+
+    appName = "WuZhu"
+    vendor = "wuzhu.org"
+
+    mainJar = tasks.jar.get().archiveFileName.get()
+    mainClass = "org.lifxue.wuzhu.WuZhuApplication"
+
+    javaOptions = listOf("-Dfile.encoding=UTF-8")
+
+    windows {
+        winConsole = true
+    }
 }
