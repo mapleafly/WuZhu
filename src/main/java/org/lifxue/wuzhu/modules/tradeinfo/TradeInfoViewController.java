@@ -194,20 +194,17 @@ public class TradeInfoViewController implements Initializable {
             }
         });
 
-        CoinChoiceBoxVO quutechoiceBoxList = new CoinChoiceBoxVO("USDT",825);
-        quoteChoiceBox.setItems(FXCollections.observableArrayList(quutechoiceBoxList));
+        CoinChoiceBoxVO quoteChoiceBoxVO = new CoinChoiceBoxVO("USDT",825);
+        quoteChoiceBox.setItems(FXCollections.observableArrayList(quoteChoiceBoxVO));
         quoteChoiceBox.setSelectionModel(new SingleSelectionModel<CoinChoiceBoxVO>(){
             @Override
             protected CoinChoiceBoxVO getModelItem(int index) {
-                //return null;
-                if(coinChoiceBoxList == null || coinChoiceBoxList.isEmpty()) {return null;}
-                CoinChoiceBoxVO coinChoiceBoxVO = coinChoiceBoxList.get(index);
-                return coinChoiceBoxVO;
+                return quoteChoiceBoxVO;
             }
 
             @Override
             protected int getItemCount() {
-                return coinChoiceBoxList == null ? 0 : coinChoiceBoxList.size();
+                return 1;
             }
         });
         quoteChoiceBox.setTooltip(new Tooltip("选择计价货币"));
