@@ -27,10 +27,6 @@ import java.util.Set;
 @Slf4j
 @Configuration
 public class FeignClientConfig {
-    private final BooleanEnum proxyEnum =
-        BooleanEnum.valueOf(PrefsHelper.getPreferencesValue(PrefsHelper.PROXY, BooleanEnum.NO.toString()));
-    private final String proxyHost = PrefsHelper.getPreferencesValue(PrefsHelper.HOST, "127.0.0.1");
-    private final Integer proxyPort = Integer.valueOf(PrefsHelper.getPreferencesValue(PrefsHelper.PORT, "56908"));
     @Value("#{'${proxy.domains}'.split(',')}")
     private Set<String> domainList;
 
@@ -40,7 +36,7 @@ public class FeignClientConfig {
      * @author lifxue
      * @date 2023/1/6 22:54
      **/
-    @Bean
+    @Bean(name = "feignAuthRequestInterceptor")
     public FeignAuthRequestInterceptor feignAuthRequestInterceptor() {
         return new FeignAuthRequestInterceptor();
     }
@@ -52,12 +48,18 @@ public class FeignClientConfig {
      * @author lifxue
      * @date 2023/1/6 22:56
      **/
-    @Bean
+    @Bean(name="okHttpClientFactory")
     public OkHttpClientFactory okHttpClientFactory(OkHttpClient.Builder builder) {
         return new ProxyOkHttpClientFactory(builder);
     }
 
     public class ProxyOkHttpClientFactory extends DefaultOkHttpClientFactory {
+
+        private BooleanEnum proxyEnum =
+            BooleanEnum.valueOf(PrefsHelper.getPreferencesValue(PrefsHelper.PROXY, BooleanEnum.NO.toString()));
+        private String proxyHost = PrefsHelper.getPreferencesValue(PrefsHelper.HOST, "127.0.0.1");
+        private Integer proxyPort = Integer.valueOf(PrefsHelper.getPreferencesValue(PrefsHelper.PORT, "56908"));
+
         public ProxyOkHttpClientFactory(OkHttpClient.Builder builder) {
             super(builder);
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));

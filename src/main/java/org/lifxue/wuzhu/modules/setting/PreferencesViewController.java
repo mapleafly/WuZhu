@@ -22,6 +22,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
+
+import okhttp3.OkHttpClient;
+import org.lifxue.wuzhu.config.FeignAuthRequestInterceptor;
+import org.lifxue.wuzhu.config.FeignClientConfig;
 import org.lifxue.wuzhu.enums.BooleanEnum;
 import org.lifxue.wuzhu.enums.ThemeEnum;
 import org.lifxue.wuzhu.service.ICMCMapService;
@@ -30,8 +34,13 @@ import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.lifxue.wuzhu.util.PrefsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.cloud.commons.httpclient.OkHttpClientFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -79,6 +88,9 @@ public class PreferencesViewController implements Initializable {
     private ICMCQuotesLatestService icmcQuotesLatestService;
     private ICMCMapService icmcMapService;
     private ITradeInfoService iTradeInfoService;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Autowired
     public PreferencesViewController(
@@ -208,6 +220,7 @@ public class PreferencesViewController implements Initializable {
         } else {
             PrefsHelper.updatePreferencesValue(PrefsHelper.PROXY, BooleanEnum.NO.toString());
         }
+
         //保存apikey
         PrefsHelper.updatePreferencesValue(PrefsHelper.CMC_API_KEY, apikeyTextField.getText());
 
@@ -218,7 +231,7 @@ public class PreferencesViewController implements Initializable {
         //InterfaceTheme theme = new InterfaceTheme(workbench);
         interfaceTheme.initNightMode();
 
-        workbench.showInformationDialog("消息", "设置信息保存成功！", buttonType -> {
+        workbench.showInformationDialog("消息", "设置信息保存成功, 请重启软件使设置生效！", buttonType -> {
         });
     }
 
