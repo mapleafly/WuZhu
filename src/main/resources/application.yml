@@ -8,6 +8,14 @@ spring:
     url: jdbc:h2:~/.wuzhu/h2/wuzhudb;AUTO_SERVER=TRUE
     username: root
     password: test
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update # none, update, create
+    show-sql: true
+    # database: h2
   sql:
     init:
       mode: always

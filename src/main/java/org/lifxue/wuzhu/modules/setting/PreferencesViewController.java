@@ -28,6 +28,7 @@ import org.lifxue.wuzhu.config.FeignAuthRequestInterceptor;
 import org.lifxue.wuzhu.config.FeignClientConfig;
 import org.lifxue.wuzhu.enums.BooleanEnum;
 import org.lifxue.wuzhu.enums.ThemeEnum;
+import org.lifxue.wuzhu.service.ICMCMapJpaService;
 import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
 import org.lifxue.wuzhu.service.ITradeInfoService;
@@ -89,6 +90,7 @@ public class PreferencesViewController implements Initializable {
     private ICMCMapService icmcMapService;
     private ITradeInfoService iTradeInfoService;
 
+
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -104,6 +106,7 @@ public class PreferencesViewController implements Initializable {
         this.icmcQuotesLatestService = icmcQuotesLatestService;
         this.icmcMapService = icmcMapService;
         this.iTradeInfoService = iTradeInfoService;
+
     }
 
     /**

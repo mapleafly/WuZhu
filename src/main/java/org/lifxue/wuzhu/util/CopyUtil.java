@@ -4,13 +4,14 @@ import org.lifxue.wuzhu.dto.CMCMapDto;
 import org.lifxue.wuzhu.dto.CMCQuotesLatestDto;
 import org.lifxue.wuzhu.dto.Platform;
 import org.lifxue.wuzhu.dto.Quote;
-import org.lifxue.wuzhu.entity.CMCMap;
 import org.lifxue.wuzhu.entity.CMCQuotesLatest;
 import org.lifxue.wuzhu.entity.TradeInfo;
 import org.lifxue.wuzhu.modules.selectcoin.vo.SelectDataVO;
 import org.lifxue.wuzhu.modules.statistics.vo.PATableVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
+import org.lifxue.wuzhu.entity.CMCMap;
+import org.lifxue.wuzhu.pojo.CMCMapJpa;
 import org.springframework.beans.BeanUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
@@ -54,6 +55,52 @@ public class CopyUtil {
         List<T> list = new ArrayList<>();
         for (E source : sources) {
             list.add(copy(source, c));
+        }
+        return list;
+    }
+
+    public static CMCMapJpa copyjpa(CMCMapDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        CMCMapJpa cmcMap = new CMCMapJpa();
+        cmcMap.setId(dto.getId());
+        cmcMap.setName(dto.getName());
+        cmcMap.setSymbol(dto.getSymbol());
+        cmcMap.setSlug(dto.getSlug());
+        cmcMap.setIsActive(dto.getIsActive());
+        cmcMap.setRank(dto.getRank());
+
+        String firstDateTime = dto.getFirstHistoricalData().replace("Z", " UTC");
+        String lastDateTime = dto.getLastHistoricalData().replace("Z", " UTC");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS Z");
+        SimpleDateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            cmcMap.setFirstHistoricalData(defaultFormat.format(format.parse(firstDateTime)));
+            cmcMap.setLastHistoricalData(defaultFormat.format(format.parse(lastDateTime)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Platform platform = dto.getPlatform();
+        if (platform != null) {
+            cmcMap.setPlatformId(platform.getId());
+            cmcMap.setTokenAddress(platform.getToken_address());
+        }
+
+        return cmcMap;
+    }
+
+    public static List<CMCMapJpa> copyListCMCMapjpa(List<CMCMapDto> dtoList) {
+        if (dtoList == null || dtoList.isEmpty()) {
+            return null;
+        }
+        List<CMCMapJpa> list = new ArrayList<>();
+        for (CMCMapDto dto : dtoList) {
+            if (dto != null) {
+                list.add(copyjpa(dto));
+            }
         }
         return list;
     }

@@ -1,6 +1,5 @@
 package org.lifxue.wuzhu.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -10,66 +9,71 @@ import lombok.extern.slf4j.Slf4j;
 import org.lifxue.wuzhu.dto.CMCMapDto;
 import org.lifxue.wuzhu.dto.Quote;
 import org.lifxue.wuzhu.dto.Status;
-import org.lifxue.wuzhu.entity.CMCMap;
-import org.lifxue.wuzhu.mapper.CMCMapMapper;
-import org.lifxue.wuzhu.service.ICMCMapService;
+
+import org.lifxue.wuzhu.pojo.CMCMapJpa;
+import org.lifxue.wuzhu.repository.CMCMapRepository;
+import org.lifxue.wuzhu.service.ICMCMapJpaService;
 import org.lifxue.wuzhu.service.feignc.ICMCMapFeignClient;
 import org.lifxue.wuzhu.util.CopyUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-//import javax.annotation.Resource;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * @ClassName CMCMapJpaServiceImpl
+ * @Description TODO
+ * @Auhthor lifxu
+ * @Date 2023/5/7 11:08
+ * @Version 1.0
+ */
 @Slf4j
 @Service
-public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> implements ICMCMapService {
+public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
 
     private final Integer LIMIT = 5000;
     private final String CMCMAP_AUX = "platform,first_historical_data,last_historical_data,is_active";
     private final ICMCMapFeignClient icmcMapFeignClient;
 
     @Resource
-    private CMCMapMapper cmcMapMapper;
+    private CMCMapRepository cmcMapRepository;
 
-    public CMCMapServiceImpl(ICMCMapFeignClient icmcMapFeignClient) {
+    public CMCMapJpaServiceImpl(ICMCMapFeignClient icmcMapFeignClient) {
         this.icmcMapFeignClient = icmcMapFeignClient;
     }
 
     @Override
-    public List<CMCMap> getJson(String listing_status, Integer start, Integer limit, String sort, String aux) {
+    public List<CMCMapJpa> getJson(String listing_status, Integer start, Integer limit, String sort, String aux) {
         String jsonMap = icmcMapFeignClient.getHttpJson(listing_status, start, limit, sort, aux);
-        return CopyUtil.copyListCMCMap(jsonToDto(jsonMap));
+        return CopyUtil.copyListCMCMapjpa(jsonToDto(jsonMap));
     }
 
     @Override
-    public List<CMCMap> getJson(Integer start, Integer limit, String sort, String aux) {
+    public List<CMCMapJpa> getJson(Integer start, Integer limit, String sort, String aux) {
         String jsonMap = icmcMapFeignClient.getHttpJson(start, limit, sort, aux);
-        return CopyUtil.copyListCMCMap(jsonToDto(jsonMap));
+        return CopyUtil.copyListCMCMapjpa(jsonToDto(jsonMap));
     }
 
     @Override
-    public List<CMCMap> getJson(Integer start, Integer limit, String sort) {
+    public List<CMCMapJpa> getJson(Integer start, Integer limit, String sort) {
         String jsonMap = icmcMapFeignClient.getHttpJson(start, limit, sort);
-        return CopyUtil.copyListCMCMap(jsonToDto(jsonMap));
+        return CopyUtil.copyListCMCMapjpa(jsonToDto(jsonMap));
     }
 
     @Override
-    public List<CMCMap> getJson(Integer limit, String sort) {
+    public List<CMCMapJpa> getJson(Integer limit, String sort) {
         String jsonMap = icmcMapFeignClient.getHttpJson(limit, sort);
-        return CopyUtil.copyListCMCMap(jsonToDto(jsonMap));
+        return CopyUtil.copyListCMCMapjpa(jsonToDto(jsonMap));
     }
 
     @Override
-    public List<CMCMap> getJson(Integer limit) {
+    public List<CMCMapJpa> getJson(Integer limit) {
         String jsonMap = icmcMapFeignClient.getHttpJson(limit);
-        return CopyUtil.copyListCMCMap(jsonToDto(jsonMap));
+        return CopyUtil.copyListCMCMapjpa(jsonToDto(jsonMap));
     }
 
     private List<CMCMapDto> jsonToDto(String jsonMap) {
@@ -147,12 +151,12 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
      * @author lifxue
      * @date 2023/2/8 12:56
      **/
-    private List<CMCMap> getAllCmcMap(String sort) {
+    private List<CMCMapJpa> getAllCmcMap(String sort) {
         int start = 1;
-        List<CMCMap> listAll = new ArrayList<>();
+        List<CMCMapJpa> listAll = new ArrayList<>();
         //每次获取上限是LIMIT个，如果每次获取足额LIMIT，就继续获取，直到获取的数量不足LIMIT，表示已经全部获取，这时退出循环
         while (true) {
-            List<CMCMap> list = getJson(start, LIMIT, sort);
+            List<CMCMapJpa> list = getJson(start, LIMIT, sort);
             if (list == null || list.isEmpty()) {
                 break;
             }
@@ -182,19 +186,19 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
     @Transactional
     public boolean saveNewBatch(String sort) {
         //网络查询
-        List<CMCMap> listAll = getAllCmcMap(sort);
+        List<CMCMapJpa> listAll = getAllCmcMap(sort);
         if (listAll.isEmpty()) {
             return false;
         }
         //数据库查询所得
-        List<CMCMap> cmcMapList = list();
-        if (cmcMapList == null || cmcMapList.isEmpty()) {
-            return super.saveOrUpdateBatch(listAll);
+        List<CMCMapJpa> cmcMapList = cmcMapRepository.findAll();
+        if (cmcMapList.isEmpty()) {
+            return cmcMapRepository.saveAll(listAll) == null ? false : true;
         }
         //最后结果集
-        List<CMCMap> resultList = new ArrayList<>();
+        List<CMCMapJpa> resultList = new ArrayList<>();
         //中间存储
-        HashSet<CMCMap> hashSet = new HashSet<>();
+        HashSet<CMCMapJpa> hashSet = new HashSet<>();
         cmcMapList.forEach(i -> {
             i.setIsSelected(0);
             hashSet.add(i);
@@ -208,17 +212,17 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
         if (resultList.isEmpty()) {
             return true;
         }
-        return super.saveOrUpdateBatch(resultList);
+        return cmcMapRepository.saveAll(resultList) == null ? false : true;
     }
 
     @Override
     @Transactional
     public boolean saveOrUpdateBatch(String sort) {
-        List<CMCMap> listAll = getAllCmcMap(sort);
+        List<CMCMapJpa> listAll = getAllCmcMap(sort);
         if (listAll.isEmpty()) {
             return false;
         }
-        return super.saveOrUpdateBatch(listAll);
+        return cmcMapRepository.saveAll(listAll) == null ? false : true;
     }
 
 
@@ -231,11 +235,11 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
     @Override
     @Transactional
     public boolean saveOrUpdateBatch(Integer start, Integer limit, String sort) {
-        List<CMCMap> list = getJson(start, limit, sort);
+        List<CMCMapJpa> list = getJson(start, limit, sort);
         if (list == null || list.isEmpty()) {
             return false;
         }
-        return super.saveOrUpdateBatch(list);
+        return cmcMapRepository.saveAll(list) == null ? false : true;
     }
 
     @Override
@@ -246,16 +250,16 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
     @Override
     @Transactional
     public boolean saveOrUpdateBatch(Integer start, Integer limit, String sort, String aux) {
-        List<CMCMap> list = getJson(start, limit, sort, aux);
+        List<CMCMapJpa> list = getJson(start, limit, sort, aux);
         if (list == null || list.isEmpty()) {
             return false;
         }
-        return super.saveOrUpdateBatch(list);
+        return cmcMapRepository.saveAll(list) == null ? false : true;
     }
 
     @Override
     public List<String> queryCurSymbol() {
-        return this.cmcMapMapper.getSymbolList();
+        return cmcMapRepository.getSymbolList();
     }
 
     /***
@@ -267,29 +271,29 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
      **/
     @Override
     public List<Integer> getSelectedIDs() {
-        return this.cmcMapMapper.getSelectedIDs();
+        return cmcMapRepository.getSelectedIDs();
     }
 
     @Override
-    public List<CMCMap> getSelecteds() {
-        return this.cmcMapMapper.getSelecteds();
+    public List<CMCMapJpa> getSelecteds() {
+        return cmcMapRepository.getSelecteds();
     }
 
     @Override
-    public CMCMap queryCoinBySymbo(String symbo) {
-        return this.cmcMapMapper.queryCoinBySymbo(symbo);
+    public CMCMapJpa queryCoinBySymbo(String symbo) {
+        return cmcMapRepository.queryCoinBySymbo(symbo);
     }
 
     @Override
     @Transactional
     public boolean updateSelectedBatch(List<Integer> selected) {
-        List<CMCMap> cmcMapList = listByIds(selected);
+        List<CMCMapJpa> cmcMapList = cmcMapRepository.findAllById(selected);
 
-        for (CMCMap cmcMap : cmcMapList) {
+        for (CMCMapJpa cmcMap : cmcMapList) {
             cmcMap.setIsSelected(1);
         }
 
-        return updateBatchById(cmcMapList);
+        return cmcMapRepository.saveAll(cmcMapList) == null ? false : true;
     }
 
     /***
@@ -299,7 +303,13 @@ public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> impleme
      * @param isSelect
      * @return java.util.List<org.lifxue.wuzhu.entity.CMCMap>
      **/
-    public List<CMCMap> queryAll(Integer isSelect) {
-        return this.cmcMapMapper.queryAll(1);
+    public List<CMCMapJpa> queryAll(Integer isSelect) {
+        return cmcMapRepository.queryAll(1);
     }
+
+    @Override
+    public List<CMCMapJpa> list() {
+        return cmcMapRepository.findAll();
+    }
+
 }

@@ -21,6 +21,7 @@ import org.lifxue.wuzhu.modules.selectcoin.SelectCoinViewModule;
 import org.lifxue.wuzhu.modules.setting.PreferencesViewModule;
 import org.lifxue.wuzhu.modules.statistics.PATableViewModule;
 import org.lifxue.wuzhu.modules.tradeinfo.TradeInfoViewModule;
+import org.lifxue.wuzhu.service.ICMCMapJpaService;
 import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
@@ -67,6 +68,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
 
     private final CashViewModule cashViewModule;
 
+    private final ICMCMapJpaService icmcMapJpaService;
+
     public PrimaryStageInitializer(
         Workbench workbench,
         NoteModule noteModule,
@@ -80,7 +83,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         ExportTradeData exportTradeData,
         PATableViewModule paTableViewModule,
         TypePieChartViewModule typePieChartViewModule,
-        CashViewModule cashViewModule
+        CashViewModule cashViewModule,
+        ICMCMapJpaService icmcMapJpaService
     ) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
@@ -96,6 +100,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         this.paTableViewModule = paTableViewModule;
         this.typePieChartViewModule = typePieChartViewModule;
         this.cashViewModule = cashViewModule;
+        this.icmcMapJpaService = icmcMapJpaService;
     }
 
     @Override
@@ -252,7 +257,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
             workbench.showConfirmationDialog("更新货币数据", "你确定要更新货币数据吗？", buttonType -> {
                     if (buttonType == ButtonType.YES) {
                         CompletableFuture.runAsync(() -> {
-                            if (icmcMapService.saveNewBatch("cmc_rank")) {
+                            if (icmcMapJpaService.saveNewBatch("cmc_rank")) {
                                 Platform.runLater(new Runnable() {
                                     @Override
                                     public void run() {

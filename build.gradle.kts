@@ -28,6 +28,8 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    runtimeOnly("com.h2database:h2:2.1.214")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -45,13 +47,13 @@ dependencies {
     implementation("com.dlsc.workbenchfx:workbenchfx-core:11.3.1")
     implementation("org.fxmisc.richtext:richtextfx:0.11.0")
     implementation("org.apache.commons:commons-csv:1.9.0")
-    runtimeOnly("com.h2database:h2:2.1.214")
+
 }
 
 group = "org.lifxue"
 version = "1.0"
 description = "WuZhu"
-java.sourceCompatibility = JavaVersion.VERSION_11
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 //publishing {
 //    publications.create<MavenPublication>("maven") {
