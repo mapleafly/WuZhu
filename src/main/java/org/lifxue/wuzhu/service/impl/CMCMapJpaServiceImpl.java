@@ -15,6 +15,7 @@ import org.lifxue.wuzhu.repository.CMCMapRepository;
 import org.lifxue.wuzhu.service.ICMCMapJpaService;
 import org.lifxue.wuzhu.service.feignc.ICMCMapFeignClient;
 import org.lifxue.wuzhu.util.CopyUtil;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -310,6 +311,17 @@ public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
     @Override
     public List<CMCMapJpa> list() {
         return cmcMapRepository.findAll();
+    }
+
+    @Override
+    public List<CMCMapJpa> getById(Integer tid) {
+        return cmcMapRepository.findByTid(tid);
+    }
+
+    @Override
+    public boolean update(CMCMapJpa cmcMapJpa) {
+        CMCMapJpa res = cmcMapRepository.save(cmcMapJpa);
+        return res == null ? false : true;
     }
 
 }

@@ -30,4 +30,6 @@ public interface CMCMapRepository extends JpaRepository<CMCMapJpa, Integer> {
     List<CMCMapJpa> getSelecteds();
     @Query(value = "SELECT s FROM CMCMapJpa s WHERE s.isSelected = (:is_selected) order by s.symbol ")
     List<CMCMapJpa> list(@Param("is_selected") Integer is_selected);
+
+    List<CMCMapJpa> findByTid(Integer tid);
 }

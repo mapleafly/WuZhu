@@ -52,4 +52,7 @@ public interface ICMCMapJpaService {
 
     List<CMCMapJpa> list();
 
+    List<CMCMapJpa> getById(Integer tid);
+
+    boolean update(CMCMapJpa cmcMapJpa);
 }
