@@ -303,8 +303,8 @@ public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
      * @param isSelect
      * @return java.util.List<org.lifxue.wuzhu.entity.CMCMap>
      **/
-    public List<CMCMapJpa> queryAll(Integer isSelect) {
-        return cmcMapRepository.queryAll(1);
+    public List<CMCMapJpa> list(Integer isSelect) {
+        return cmcMapRepository.list(1);
     }
 
     @Override

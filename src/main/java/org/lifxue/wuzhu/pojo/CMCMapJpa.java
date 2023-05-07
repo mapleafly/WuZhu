@@ -28,6 +28,8 @@ public class CMCMapJpa implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Integer id;
+    //coin or token id
+    private Integer tid;
     private String name;
     private String symbol;
     private String slug;

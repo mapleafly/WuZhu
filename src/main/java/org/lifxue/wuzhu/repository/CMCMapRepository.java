@@ -29,5 +29,5 @@ public interface CMCMapRepository extends JpaRepository<CMCMapJpa, Integer> {
     @Query(value = "SELECT * FROM cmc_map_jpa WHERE is_selected = 1 order by symbol ", nativeQuery=true)
     List<CMCMapJpa> getSelecteds();
     @Query(value = "SELECT s FROM CMCMapJpa s WHERE s.isSelected = (:is_selected) order by s.symbol ")
-    List<CMCMapJpa> queryAll(@Param("is_selected") Integer is_selected);
+    List<CMCMapJpa> list(@Param("is_selected") Integer is_selected);
 }

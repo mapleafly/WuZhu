@@ -23,6 +23,7 @@ import org.lifxue.wuzhu.modules.statistics.PATableViewModule;
 import org.lifxue.wuzhu.modules.tradeinfo.TradeInfoViewModule;
 import org.lifxue.wuzhu.service.ICMCMapJpaService;
 import org.lifxue.wuzhu.service.ICMCMapService;
+import org.lifxue.wuzhu.service.ICMCQuotesLatestJpaService;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,6 +70,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
     private final CashViewModule cashViewModule;
 
     private final ICMCMapJpaService icmcMapJpaService;
+    private final ICMCQuotesLatestJpaService icmcQuotesLatestJpaService;
 
     public PrimaryStageInitializer(
         Workbench workbench,
@@ -84,7 +86,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         PATableViewModule paTableViewModule,
         TypePieChartViewModule typePieChartViewModule,
         CashViewModule cashViewModule,
-        ICMCMapJpaService icmcMapJpaService
+        ICMCMapJpaService icmcMapJpaService,
+        ICMCQuotesLatestJpaService icmcQuotesLatestJpaService
     ) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
@@ -101,6 +104,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         this.typePieChartViewModule = typePieChartViewModule;
         this.cashViewModule = cashViewModule;
         this.icmcMapJpaService = icmcMapJpaService;
+        this.icmcQuotesLatestJpaService = icmcQuotesLatestJpaService;
     }
 
     @Override
@@ -218,7 +222,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
             workbench.showConfirmationDialog("更新当前价格", "你确定要更新当前价格数据吗？", buttonType -> {
                     if (buttonType == ButtonType.YES) {
                         CompletableFuture.runAsync(() -> {
-                            if (icmcQuotesLatestService.saveBatch()) {
+                            if (icmcQuotesLatestJpaService.saveBatch()) {
                                 Platform.runLater(new Runnable() {
                                     @Override
                                     public void run() {

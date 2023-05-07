@@ -17,27 +17,26 @@ import org.lifxue.wuzhu.service.feignc.ICMCMapFeignClient;
 import org.lifxue.wuzhu.util.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 //import javax.annotation.Resource;
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 @Slf4j
-@Service
+@Component
 public class CMCMapServiceImpl extends ServiceImpl<CMCMapMapper, CMCMap> implements ICMCMapService {
 
     private final Integer LIMIT = 5000;
     private final String CMCMAP_AUX = "platform,first_historical_data,last_historical_data,is_active";
     private final ICMCMapFeignClient icmcMapFeignClient;
 
-    @Resource
+    @Autowired
     private CMCMapMapper cmcMapMapper;
 
+    @Autowired
     public CMCMapServiceImpl(ICMCMapFeignClient icmcMapFeignClient) {
         this.icmcMapFeignClient = icmcMapFeignClient;
     }

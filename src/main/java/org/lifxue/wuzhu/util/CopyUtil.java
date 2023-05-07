@@ -12,6 +12,7 @@ import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
 import org.lifxue.wuzhu.entity.CMCMap;
 import org.lifxue.wuzhu.pojo.CMCMapJpa;
+import org.lifxue.wuzhu.pojo.CMCQuotesLatestJpa;
 import org.springframework.beans.BeanUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
@@ -65,7 +66,7 @@ public class CopyUtil {
         }
 
         CMCMapJpa cmcMap = new CMCMapJpa();
-        cmcMap.setId(dto.getId());
+        cmcMap.setTid(dto.getId());
         cmcMap.setName(dto.getName());
         cmcMap.setSymbol(dto.getSymbol());
         cmcMap.setSlug(dto.getSlug());
@@ -211,6 +212,71 @@ public class CopyUtil {
         for (CMCQuotesLatestDto dto : dtoList) {
             if (dto != null) {
                 list.add(copy(dto));
+            }
+        }
+        return list;
+    }
+
+    public static CMCQuotesLatestJpa copyjpa(CMCQuotesLatestDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        CMCQuotesLatestJpa cmcQuotesLatestJpa = new CMCQuotesLatestJpa();
+        cmcQuotesLatestJpa.setTid(dto.getId());
+        cmcQuotesLatestJpa.setName(dto.getName());
+        cmcQuotesLatestJpa.setSymbol(dto.getSymbol());
+        cmcQuotesLatestJpa.setSlug(dto.getSlug());
+
+        String lastUpdated = dto.getLast_updated().replace("Z", " UTC");
+        String dataAdded = dto.getDate_added().replace("Z", " UTC");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS Z");
+        SimpleDateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            cmcQuotesLatestJpa.setLastUpdated(defaultFormat.format(format.parse(lastUpdated)));
+            cmcQuotesLatestJpa.setDateAdded(defaultFormat.format(format.parse(dataAdded)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        cmcQuotesLatestJpa.setNumMarketPairs(dto.getNum_market_pairs());
+        cmcQuotesLatestJpa.setMaxSupply(dto.getMax_supply());
+        cmcQuotesLatestJpa.setCirculatingSupply(dto.getCirculating_supply());
+        cmcQuotesLatestJpa.setTotalSupply(dto.getTotal_supply());
+        cmcQuotesLatestJpa.setIsActive(dto.getIs_active());
+        cmcQuotesLatestJpa.setCmcRank(dto.getCmc_rank());
+
+        Platform platform = dto.getPlatform();
+        if (platform != null) {
+            cmcQuotesLatestJpa.setPlatformId(platform.getId());
+            cmcQuotesLatestJpa.setTokenAddress(platform.getToken_address());
+        }
+
+        Quote quote = dto.getQuote();
+        if (quote != null) {
+            cmcQuotesLatestJpa.setPrice(String.valueOf(quote.getPrice()));
+            cmcQuotesLatestJpa.setVolume24h(String.valueOf(quote.getVolume_24h()));
+            cmcQuotesLatestJpa.setVolumeChange24h(String.valueOf(quote.getVolume_change_24h()));
+            cmcQuotesLatestJpa.setPercentChange1h(String.valueOf(quote.getPercent_change_1h()));
+            cmcQuotesLatestJpa.setPercentChange24h(String.valueOf(quote.getPercent_change_24h()));
+            cmcQuotesLatestJpa.setPercentChange7d(String.valueOf(quote.getPercent_change_7d()));
+            cmcQuotesLatestJpa.setPercentChange30d(String.valueOf(quote.getPercent_change_30d()));
+            cmcQuotesLatestJpa.setPercentChange60d(String.valueOf(quote.getPercent_change_60d()));
+            cmcQuotesLatestJpa.setPercentChange90d(String.valueOf(quote.getPercent_change_90d()));
+            cmcQuotesLatestJpa.setMarketCap(String.valueOf(quote.getMarket_cap()));
+            cmcQuotesLatestJpa.setMarketCapDominance(String.valueOf(quote.getMarket_cap_dominance()));
+        }
+
+        return cmcQuotesLatestJpa;
+    }
+
+    public static List<CMCQuotesLatestJpa> copyListCMCQuotesJap(List<CMCQuotesLatestDto> dtoList) {
+        if (dtoList == null || dtoList.isEmpty()) {
+            return null;
+        }
+        List<CMCQuotesLatestJpa> list = new ArrayList<>();
+        for (CMCQuotesLatestDto dto : dtoList) {
+            if (dto != null) {
+                list.add(copyjpa(dto));
             }
         }
         return list;

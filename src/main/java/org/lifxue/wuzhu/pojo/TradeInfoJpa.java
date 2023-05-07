@@ -1,10 +1,9 @@
 package org.lifxue.wuzhu.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -15,19 +14,27 @@ import java.io.Serializable;
  * @date 2023/2/12 15:40
  */
 
+
 @Data
-@TableName("trade_info")
-public class TradeInfo implements Serializable {
+@Entity
+@Table(name = "trade_info_jpa")
+public class TradeInfoJpa implements Serializable {
     //自增id
-    @TableId
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private Integer id;
     //base coin id
+    @Column(name = "BASE_ID")
     private Integer baseId;
     // base coin 简称
+    @Column(name = "BASE_SYMBOL")
     private String baseSymbol;
     //quote coin id
+    @Column(name = "QUOTE_ID")
     private Integer quoteId;
     // quote coin 简称
+    @Column(name = "QUOTE_SYMBOL")
     private String quoteSymbol;
     //买或者卖
     @TableField("sale_or_buy")
@@ -35,9 +42,12 @@ public class TradeInfo implements Serializable {
     //买入或卖出价格
     private String price;
     //基准货币买入或卖出数量
+    @Column(name = "BASE_NUM")
     private String baseNum;
     //计价货币数量
+    @Column(name = "QUOTE_NUM")
     private String quoteNum;
     //交易时间
+    @Column(name = "TRADE_DATE")
     private String tradeDate;
 }

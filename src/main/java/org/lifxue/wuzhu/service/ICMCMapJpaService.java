@@ -48,7 +48,8 @@ public interface ICMCMapJpaService {
      * @param isSelect
      * @return java.util.List<org.lifxue.wuzhu.entity.CMCMap>
      **/
-    List<CMCMapJpa> queryAll(Integer isSelect);
+    List<CMCMapJpa> list(Integer isSelect);
 
     List<CMCMapJpa> list();
+
 }
