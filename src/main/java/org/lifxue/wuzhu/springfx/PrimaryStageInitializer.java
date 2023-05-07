@@ -56,9 +56,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
 
     private final InterfaceTheme interfaceTheme;
 
-    private final ICMCMapService icmcMapService;
 
-    private final ICMCQuotesLatestService icmcQuotesLatestService;
 
     private final ImportTradeData importTradeData;
 
@@ -77,8 +75,6 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         NoteModule noteModule,
         PreferencesViewModule preferencesViewModule,
         InterfaceTheme interfaceTheme,
-        ICMCMapService icmcMapService,
-        ICMCQuotesLatestService icmcQuotesLatestService,
         SelectCoinViewModule selectCoinViewModule,
         TradeInfoViewModule tradeInfoViewModule,
         ImportTradeData importTradeData,
@@ -91,8 +87,6 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
     ) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
-        this.icmcMapService = icmcMapService;
-        this.icmcQuotesLatestService = icmcQuotesLatestService;
 
         this.noteModule = noteModule;
         this.preferencesViewModule = preferencesViewModule;
