@@ -19,9 +19,7 @@ import com.dlsc.workbenchfx.Workbench;
 import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import lombok.extern.slf4j.Slf4j;
-import org.lifxue.wuzhu.service.ICMCMapService;
-import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
-import org.lifxue.wuzhu.service.ITradeInfoService;
+import org.lifxue.wuzhu.service.*;
 import org.lifxue.wuzhu.util.CSVHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -41,25 +39,26 @@ public class ImportTradeData {
 
     private final Workbench workbench;
 
-    private final ICMCMapService icmcMapService;
+    private final ICMCMapJpaService icmcMapJpaService;
 
-    private final ITradeInfoService iTradeInfoService;
+    private final ITradeInfoJpaService iTradeInfoJpaService;
 
-    private final ICMCQuotesLatestService icmcQuotesLatestService;
+    private final ICMCQuotesLatestJpaService icmcQuotesLatestJpaService;
 
 
 
     @Autowired
-    public ImportTradeData(Workbench workbench,
-                           ICMCMapService icmcMapService,
-                           ITradeInfoService iTradeInfoService,
-                           ICMCQuotesLatestService icmcQuotesLatestService
+    public ImportTradeData(
+            Workbench workbench,
+            ICMCMapJpaService icmcMapJpaService,
+            ITradeInfoJpaService iTradeInfoJpaService,
+            ICMCQuotesLatestJpaService icmcQuotesLatestJpaService
     ) {
 
         this.workbench = workbench;
-        this.icmcMapService = icmcMapService;
-        this.iTradeInfoService = iTradeInfoService;
-        this.icmcQuotesLatestService = icmcQuotesLatestService;
+        this.icmcMapJpaService = icmcMapJpaService;
+        this.iTradeInfoJpaService = iTradeInfoJpaService;
+        this.icmcQuotesLatestJpaService = icmcQuotesLatestJpaService;
     }
 
     public void handleImportData() {
@@ -95,25 +94,25 @@ public class ImportTradeData {
                 LinkedHashSet<Integer> hashSet = new LinkedHashSet<>(coinid);
                 List<Integer> listWithoutDuplicates = new ArrayList<>(hashSet);
 
-                List<Integer> usedid = icmcMapService.getSelectedIDs();
+                List<Integer> usedid = icmcMapJpaService.getSelectedIDs();
                 // 差集 (list1 - list2)
                 listWithoutDuplicates.removeAll(usedid);
                 // 将csv文件中的可用类型和数据库中的可用类型做差集后，将差集更新进数据库中
                 if (listWithoutDuplicates.size() > 0) {
-                    icmcMapService.updateSelectedBatch(listWithoutDuplicates);
+                    icmcMapJpaService.updateSelectedBatch(listWithoutDuplicates);
                 }
 
                 // 删除数据库中的原有数据
-                iTradeInfoService.truncate();
+                iTradeInfoJpaService.truncate();
                 // 导入到数据库
-                if(!iTradeInfoService.saveBatch(list)){
+                if(!iTradeInfoJpaService.saveBatch(list)){
                     //导入失败
                     workbench.showErrorDialog("错误", "导入数据失败！", "导入失败！", buttonType -> {});
                     return;
                 }
 
                 // 导入数据后自动更新价格
-                icmcQuotesLatestService.saveBatch();
+                icmcQuotesLatestJpaService.saveBatch();
                 workbench.showInformationDialog(
                     "完成导入",
                     "数据导入行数：" + list.size() + ";\n",
