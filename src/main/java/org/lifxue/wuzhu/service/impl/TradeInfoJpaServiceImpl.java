@@ -103,4 +103,20 @@ public class TradeInfoJpaServiceImpl implements ITradeInfoJpaService {
         return tradeInfoRepository.findByTradeDateBetweenOrderByTradeDateDesc(startDate, endDate);
     }
 
+    @Override
+    public boolean save(TradeInfoJpa tradeInfoJpa) {
+        return tradeInfoRepository.save(tradeInfoJpa) == null ? false : true;
+    }
+
+    @Override
+    public TradeInfoJpa findById(Integer id) {
+        return tradeInfoRepository.getReferenceById(id);
+    }
+
+    @Override
+    public boolean deleteById(Integer id) {
+        tradeInfoRepository.deleteById(id);
+        return true;
+    }
+
 }

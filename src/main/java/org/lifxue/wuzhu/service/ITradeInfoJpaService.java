@@ -28,4 +28,10 @@ public interface ITradeInfoJpaService {
 
     List<TradeInfoJpa> findOrderByTradeDate();
     List<TradeInfoJpa> findByTradeDateBetweenOrderByTradeDateDesc(String startDate, String endDate);
+
+    boolean save(TradeInfoJpa tradeInfoJpa);
+
+    TradeInfoJpa findById(Integer id);
+
+    boolean deleteById(Integer id);
 }

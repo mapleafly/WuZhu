@@ -318,7 +318,7 @@ public class CopyUtil {
             return null;
         }
         SelectDataVO selectDataVO = new SelectDataVO();
-        selectDataVO.setId(cmcMap.getId());
+        selectDataVO.setId(cmcMap.getTid());
         //数据库中IsSelected为0，表示未选，1表示选中
         selectDataVO.setSelect(cmcMap.getIsSelected().equals(1));
         selectDataVO.setName(cmcMap.getName());
