@@ -18,7 +18,6 @@ package org.lifxue.wuzhu.modules.selectcoin;
 import com.dlsc.workbenchfx.Workbench;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -30,12 +29,13 @@ import javafx.util.Callback;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.lifxue.wuzhu.modules.selectcoin.vo.SelectDataVO;
-import org.lifxue.wuzhu.service.ISelectCoinService;
+import org.lifxue.wuzhu.service.ISelectCoinJpaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.*;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * FXML Controller class
@@ -65,12 +65,11 @@ public class SelectCoinViewController implements Initializable {
     private TextField searchField;
 
     private Workbench workbench;
-    private final ISelectCoinService iSelectCoinService;
+    private final ISelectCoinJpaService iSelectCoinJpaService;
 
 
-    @Autowired
-    public SelectCoinViewController(ISelectCoinService iSelectCoinService) {
-        this.iSelectCoinService = iSelectCoinService;
+    public SelectCoinViewController(ISelectCoinJpaService iSelectCoinJpaService) {
+        this.iSelectCoinJpaService = iSelectCoinJpaService;
         this.coinTypeData = FXCollections.observableArrayList();
     }
 
@@ -98,7 +97,7 @@ public class SelectCoinViewController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         coinTypeData.clear();
         //获取数据
-        List<SelectDataVO> list = iSelectCoinService.queryVO();
+        List<SelectDataVO> list = iSelectCoinJpaService.queryVO();
         coinTypeData.addAll(list);
         priceTable.setItems(coinTypeData);
 
@@ -127,7 +126,7 @@ public class SelectCoinViewController implements Initializable {
                                 checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
                                     if (newValue != oldValue) {
                                         svo.setSelect(newValue);
-                                        if (!iSelectCoinService.updateCheckStatus(svo)) {
+                                        if (!iSelectCoinJpaService.updateCheckStatus(svo)) {
                                             workbench.showErrorDialog("错误", "选择操作没有保存成功！", buttonType -> {
                                             });
                                         }
@@ -201,7 +200,7 @@ public class SelectCoinViewController implements Initializable {
     @FXML
     private void handleSearchFieldKeyReleased(KeyEvent event) {
         coinTypeData.clear();
-        List<SelectDataVO> list = iSelectCoinService.queryVOBySymbol(searchField.getText().trim());
+        List<SelectDataVO> list = iSelectCoinJpaService.queryVOBySymbol(searchField.getText().trim());
         if (list != null && !list.isEmpty()) {
             coinTypeData.addAll(list);
         }
