@@ -119,4 +119,10 @@ public class TradeInfoJpaServiceImpl implements ITradeInfoJpaService {
         return true;
     }
 
+    @Override
+    public boolean delete() {
+        tradeInfoRepository.deleteAll();
+        return true;
+    }
+
 }

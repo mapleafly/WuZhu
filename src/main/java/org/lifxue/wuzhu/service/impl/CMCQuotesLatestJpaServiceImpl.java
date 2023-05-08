@@ -269,5 +269,11 @@ public class CMCQuotesLatestJpaServiceImpl implements ICMCQuotesLatestJpaService
         return cmcQuotesLatestRepository.queryLatest();
     }
 
+    @Override
+    public boolean delete() {
+        cmcQuotesLatestRepository.deleteAll();
+        return true;
+    }
+
 
 }

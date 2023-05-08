@@ -324,4 +324,10 @@ public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
         return res == null ? false : true;
     }
 
+    @Override
+    public boolean delete() {
+        cmcMapRepository.deleteAll();
+        return true;
+    }
+
 }

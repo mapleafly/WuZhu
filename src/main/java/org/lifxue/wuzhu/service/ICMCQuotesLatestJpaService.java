@@ -38,4 +38,6 @@ public interface ICMCQuotesLatestJpaService {
      **/
     List<CMCQuotesLatestJpa> queryLatest();
 
+    boolean delete();
+
 }

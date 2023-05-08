@@ -22,26 +22,17 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
-
-import okhttp3.OkHttpClient;
-import org.lifxue.wuzhu.config.FeignAuthRequestInterceptor;
-import org.lifxue.wuzhu.config.FeignClientConfig;
 import org.lifxue.wuzhu.enums.BooleanEnum;
 import org.lifxue.wuzhu.enums.ThemeEnum;
 import org.lifxue.wuzhu.service.ICMCMapJpaService;
-import org.lifxue.wuzhu.service.ICMCMapService;
-import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
-import org.lifxue.wuzhu.service.ITradeInfoService;
+import org.lifxue.wuzhu.service.ICMCQuotesLatestJpaService;
+import org.lifxue.wuzhu.service.ITradeInfoJpaService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.lifxue.wuzhu.util.PrefsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.cloud.commons.httpclient.OkHttpClientFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -86,10 +77,11 @@ public class PreferencesViewController implements Initializable {
     private Workbench workbench;
     private InterfaceTheme interfaceTheme;
 
-    private ICMCQuotesLatestService icmcQuotesLatestService;
-    private ICMCMapService icmcMapService;
-    private ITradeInfoService iTradeInfoService;
+    private final ICMCMapJpaService icmcMapJpaService;
 
+    private final ITradeInfoJpaService iTradeInfoJpaService;
+
+    private final ICMCQuotesLatestJpaService icmcQuotesLatestJpaService;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -98,14 +90,15 @@ public class PreferencesViewController implements Initializable {
     public PreferencesViewController(
         Workbench workbench,
         InterfaceTheme interfaceTheme,
-        ICMCQuotesLatestService icmcQuotesLatestService,
-        ICMCMapService icmcMapService,
-        ITradeInfoService iTradeInfoService) {
+        ICMCMapJpaService icmcMapJpaService,
+        ITradeInfoJpaService iTradeInfoJpaService,
+        ICMCQuotesLatestJpaService icmcQuotesLatestJpaService
+    ) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
-        this.icmcQuotesLatestService = icmcQuotesLatestService;
-        this.icmcMapService = icmcMapService;
-        this.iTradeInfoService = iTradeInfoService;
+        this.icmcMapJpaService = icmcMapJpaService;
+        this.iTradeInfoJpaService = iTradeInfoJpaService;
+        this.icmcQuotesLatestJpaService = icmcQuotesLatestJpaService;
 
     }
 
@@ -246,7 +239,7 @@ public class PreferencesViewController implements Initializable {
      **/
     @FXML
     private void handleInitDB(ActionEvent event) {
-        if (iTradeInfoService.remove(null)) {
+        if (iTradeInfoJpaService.delete()) {
             workbench.showInformationDialog("消息", "初始化数据库交易信息成功！", buttonType -> {
             });
         } else {
@@ -255,7 +248,7 @@ public class PreferencesViewController implements Initializable {
             return;
         }
 
-        if (icmcQuotesLatestService.remove(null)) {
+        if (icmcQuotesLatestJpaService.delete()) {
             workbench.showInformationDialog("消息", "初始化数据库最新价格成功！", buttonType -> {
             });
         } else {
@@ -264,7 +257,7 @@ public class PreferencesViewController implements Initializable {
             return;
         }
 
-        if (icmcMapService.remove(null)) {
+        if (icmcMapJpaService.delete()) {
             workbench.showInformationDialog("消息", "初始化数据库币种信息成功！", buttonType -> {
             });
         } else {

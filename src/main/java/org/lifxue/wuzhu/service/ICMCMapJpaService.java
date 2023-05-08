@@ -55,4 +55,6 @@ public interface ICMCMapJpaService {
     List<CMCMapJpa> getById(Integer tid);
 
     boolean update(CMCMapJpa cmcMapJpa);
+
+    boolean delete();
 }

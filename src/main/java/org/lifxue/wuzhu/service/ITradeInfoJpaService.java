@@ -34,4 +34,5 @@ public interface ITradeInfoJpaService {
     TradeInfoJpa findById(Integer id);
 
     boolean deleteById(Integer id);
+    boolean delete();
 }
