@@ -20,9 +20,8 @@ import javafx.stage.FileChooser;
 import lombok.extern.slf4j.Slf4j;
 
 import org.lifxue.wuzhu.entity.TradeInfo;
-import org.lifxue.wuzhu.service.ICMCMapService;
-import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
-import org.lifxue.wuzhu.service.ITradeInfoService;
+import org.lifxue.wuzhu.pojo.TradeInfoJpa;
+import org.lifxue.wuzhu.service.*;
 import org.lifxue.wuzhu.util.CSVHelper;
 import org.springframework.stereotype.Component;
 
@@ -39,24 +38,27 @@ public class ExportTradeData {
 
     private final Workbench workbench;
 
-    private final ICMCMapService icmcMapService;
+    private final ICMCMapJpaService icmcMapJpaService;
 
-    private final ITradeInfoService iTradeInfoService;
+    private final ITradeInfoJpaService iTradeInfoJpaService;
 
-    private final ICMCQuotesLatestService icmcQuotesLatestService;
+    private final ICMCQuotesLatestJpaService icmcQuotesLatestJpaService;
 
-    public ExportTradeData(Workbench workbench,
-                           ICMCMapService icmcMapService,
-                           ITradeInfoService iTradeInfoService,
-                           ICMCQuotesLatestService icmcQuotesLatestService) {
+    public ExportTradeData(
+            Workbench workbench,
+            ICMCMapJpaService icmcMapJpaService,
+            ITradeInfoJpaService iTradeInfoJpaService,
+            ICMCQuotesLatestJpaService icmcQuotesLatestJpaService
+    ) {
+
         this.workbench = workbench;
-        this.icmcMapService = icmcMapService;
-        this.iTradeInfoService = iTradeInfoService;
-        this.icmcQuotesLatestService = icmcQuotesLatestService;
+        this.icmcMapJpaService = icmcMapJpaService;
+        this.iTradeInfoJpaService = iTradeInfoJpaService;
+        this.icmcQuotesLatestJpaService = icmcQuotesLatestJpaService;
     }
 
     public void handleExportData() {
-        List<TradeInfo> tradeInfoList = iTradeInfoService.list();
+        List<TradeInfoJpa> tradeInfoList = iTradeInfoJpaService.findOrderByTradeDate();
         String[] headers = {
             "id",
             "base_id",
