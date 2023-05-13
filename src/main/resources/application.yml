@@ -5,7 +5,7 @@ spring:
     web-application-type: none
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:~/.wuzhu/h2/wuzhudb;AUTO_SERVER=TRUE
+    url: jdbc:h2:~/.wuzhu/h2/wuzhudbjpa;AUTO_SERVER=TRUE
     username: root
     password: test
   jpa:

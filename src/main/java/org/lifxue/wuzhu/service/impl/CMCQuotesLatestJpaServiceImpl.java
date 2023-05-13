@@ -257,7 +257,7 @@ public class CMCQuotesLatestJpaServiceImpl implements ICMCQuotesLatestJpaService
         }
         StringBuilder ids = new StringBuilder();
         for (CMCMapJpa cmcMap : cmcMapList) {
-            ids.append(cmcMap.getId()).append(",");
+            ids.append(cmcMap.getTid()).append(",");
         }
         ids = new StringBuilder(ids.substring(0, ids.length() - 1));
         List<CMCQuotesLatestJpa> list = getHttpJsonById(ids.toString(), "USD");

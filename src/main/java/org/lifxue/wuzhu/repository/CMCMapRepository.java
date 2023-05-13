@@ -23,7 +23,7 @@ public interface CMCMapRepository extends JpaRepository<CMCMapJpa, Integer> {
     @Query(value = "SELECT s FROM CMCMapJpa s WHERE s.symbol = (:symbol) order by s.symbol ")
     CMCMapJpa queryCoinBySymbo(@Param("symbol") String symbol);
 
-    @Query(value = "SELECT id FROM cmc_map_jpa WHERE is_selected = 1 order by symbol ", nativeQuery=true)
+    @Query(value = "SELECT tid FROM cmc_map_jpa WHERE is_selected = 1 order by symbol ", nativeQuery=true)
     List<Integer> getSelectedIDs();
 
     @Query(value = "SELECT * FROM cmc_map_jpa WHERE is_selected = 1 order by symbol ", nativeQuery=true)
@@ -32,4 +32,5 @@ public interface CMCMapRepository extends JpaRepository<CMCMapJpa, Integer> {
     List<CMCMapJpa> list(@Param("is_selected") Integer is_selected);
 
     List<CMCMapJpa> findByTid(Integer tid);
+    List<CMCMapJpa> findByTidIn(List<Integer> tidList);
 }

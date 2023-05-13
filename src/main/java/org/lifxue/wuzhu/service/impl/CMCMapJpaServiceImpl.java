@@ -288,7 +288,7 @@ public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
     @Override
     @Transactional
     public boolean updateSelectedBatch(List<Integer> selected) {
-        List<CMCMapJpa> cmcMapList = cmcMapRepository.findAllById(selected);
+        List<CMCMapJpa> cmcMapList = cmcMapRepository.findByTidIn(selected);
 
         for (CMCMapJpa cmcMap : cmcMapList) {
             cmcMap.setIsSelected(1);
