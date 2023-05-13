@@ -125,9 +125,9 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         workbench.getModules().addAll(
             noteModule,
             tradeInfoViewModule,
-            cashViewModule,
             paTableViewModule,
             typePieChartViewModule,
+            cashViewModule,
             selectCoinViewModule,
             preferencesViewModule
         );

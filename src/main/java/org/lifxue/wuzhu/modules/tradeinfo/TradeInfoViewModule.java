@@ -33,7 +33,7 @@ public class TradeInfoViewModule extends WorkbenchModule {
     private FxWeaver fxWeaver;
 
     public TradeInfoViewModule() {
-        super("交易信息管理", MaterialDesign.MDI_HAND_POINTING_RIGHT);
+        super("交易操作", MaterialDesign.MDI_HAND_POINTING_RIGHT);
     }
 
     @Autowired
