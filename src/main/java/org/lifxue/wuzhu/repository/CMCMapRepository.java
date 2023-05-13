@@ -33,4 +33,6 @@ public interface CMCMapRepository extends JpaRepository<CMCMapJpa, Integer> {
 
     List<CMCMapJpa> findByTid(Integer tid);
     List<CMCMapJpa> findByTidIn(List<Integer> tidList);
+
+    List<CMCMapJpa> findBySymbolLikeOrderByTidAsc(String symbol);
 }

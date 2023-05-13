@@ -15,7 +15,6 @@ import org.lifxue.wuzhu.repository.CMCMapRepository;
 import org.lifxue.wuzhu.service.ICMCMapJpaService;
 import org.lifxue.wuzhu.service.feignc.ICMCMapFeignClient;
 import org.lifxue.wuzhu.util.CopyUtil;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -285,6 +284,10 @@ public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
         return cmcMapRepository.queryCoinBySymbo(symbo);
     }
 
+    @Override
+    public List<CMCMapJpa> findBySymbolLikeOrderByTid(String symbol){
+        return cmcMapRepository.findBySymbolLikeOrderByTidAsc("%"+symbol+"%");
+    }
     @Override
     @Transactional
     public boolean updateSelectedBatch(List<Integer> selected) {

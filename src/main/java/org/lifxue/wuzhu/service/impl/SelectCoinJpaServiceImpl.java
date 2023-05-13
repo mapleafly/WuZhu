@@ -36,8 +36,7 @@ public class SelectCoinJpaServiceImpl implements ISelectCoinJpaService {
 
     @Override
     public List<SelectDataVO> queryVOBySymbol(String symbol) {
-        List<CMCMapJpa> list = new ArrayList<>();
-        list.add(icmcMapJpaService.queryCoinBySymbo(symbol));
+        List<CMCMapJpa> list = icmcMapJpaService.findBySymbolLikeOrderByTid(symbol);
         return CopyUtil.copySelectDataListJpa(list);
     }
 

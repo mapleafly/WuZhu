@@ -39,6 +39,8 @@ public interface ICMCMapJpaService {
     List<CMCMapJpa> getSelecteds();
     CMCMapJpa queryCoinBySymbo(String symbo);
 
+    List<CMCMapJpa> findBySymbolLikeOrderByTid(String symbol);
+
     boolean updateSelectedBatch(List<Integer> selected);
 
     /***
