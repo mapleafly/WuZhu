@@ -182,6 +182,20 @@ public class TradeInfoViewController implements Initializable {
 
         baseChoiceBox.setTooltip(new Tooltip("选择基准货币"));
         baseChoiceBox.getSelectionModel().selectFirst();
+        baseChoiceBox
+                .getSelectionModel()
+                .selectedIndexProperty()
+                .addListener(
+                        (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+                            if (newValue.intValue() >= 0) {
+                                this.tradeDataList.clear();
+                                CoinChoiceBoxVO selectedCoin = this.coinChoiceBoxList.get(newValue.intValue());
+                                List<TradeInfoVO> tradeInfoVOS = iTradeInfoJpaService.queryTradeInfoByBaseCoinId(selectedCoin.getCoinId());
+                                if(tradeInfoVOS!= null &&!tradeInfoVOS.isEmpty()) {
+                                    this.tradeDataList.addAll(tradeInfoVOS);
+                                }
+                            }
+                        });
 
         quoteChoiceBox.setConverter(new StringConverter<CoinChoiceBoxVO>() {
             @Override
@@ -225,20 +239,6 @@ public class TradeInfoViewController implements Initializable {
             .selectedItemProperty()
             .addListener((observable, oldValue, newValue) -> showTradeDataDetails(newValue));
 
-        baseChoiceBox
-            .getSelectionModel()
-            .selectedIndexProperty()
-            .addListener(
-                (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-                    if (newValue.intValue() >= 0) {
-                        this.tradeDataList.clear();
-                        CoinChoiceBoxVO selectedCoin = this.coinChoiceBoxList.get(newValue.intValue());
-                        List<TradeInfoVO> tradeInfoVOS = iTradeInfoJpaService.queryTradeInfoByBaseCoinId(selectedCoin.getCoinId());
-                        if(tradeInfoVOS!= null &&!tradeInfoVOS.isEmpty()) {
-                            this.tradeDataList.addAll(tradeInfoVOS);
-                        }
-                    }
-                });
 
         priceTextField
             .textProperty()

@@ -24,9 +24,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.StringConverter;
+import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
+import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
 import org.lifxue.wuzhu.pojo.TradeInfoJpa;
+import org.lifxue.wuzhu.service.ICashService;
 import org.lifxue.wuzhu.service.ITradeInfoJpaService;
 import org.lifxue.wuzhu.util.CopyUtil;
 import org.lifxue.wuzhu.util.DateHelper;
@@ -44,19 +48,21 @@ import java.util.ResourceBundle;
  *
  * @author lif
  */
+@Slf4j
 @Component
 @FxmlView("CashView.fxml")
 public class CashViewController implements Initializable {
 
     // USDT
     private static final String BASESYMBOL = "USDT";
-    private static final String BASEID = "825";
+    private static final Integer BASEID = 825;
     /**
      * The data as an observable list of TradeData.
      */
     private final ObservableList<TradeInfoVO> tradeDataList;
 
-    private List<String> coinList;
+    private final ObservableList<CoinChoiceBoxVO> coinChoiceBoxList;
+    private List<CoinChoiceBoxVO> coinList;
     @FXML
     private TableView<TradeInfoVO> dataTable;
     @FXML
@@ -76,7 +82,7 @@ public class CashViewController implements Initializable {
     @FXML
     private TableColumn<TradeInfoVO, String> dateCol;
     @FXML
-    private ChoiceBox<String> baseChoiceBox;
+    private ChoiceBox<CoinChoiceBoxVO> baseChoiceBox;
     @FXML
     private ChoiceBox<String> salebuyChoiceBox;
     @FXML
@@ -87,6 +93,8 @@ public class CashViewController implements Initializable {
     private Workbench workbench;
 
     private final ITradeInfoJpaService iTradeInfoJpaService;
+
+    private final ICashService iCashService;
 
     /***
      * @description
@@ -101,9 +109,11 @@ public class CashViewController implements Initializable {
     }
 
     @Autowired
-    public CashViewController(ITradeInfoJpaService iTradeInfoJpaService) {
+    public CashViewController(ITradeInfoJpaService iTradeInfoJpaService, ICashService iCashService) {
         this.iTradeInfoJpaService = iTradeInfoJpaService;
+        this.iCashService = iCashService;
         tradeDataList = FXCollections.observableArrayList();
+        coinChoiceBoxList = FXCollections.observableArrayList();
     }
 
     /**
@@ -115,14 +125,15 @@ public class CashViewController implements Initializable {
 
         //获取数据
         coinList = new ArrayList<>();
-        coinList.add(BASESYMBOL);
+        coinList.add(new CoinChoiceBoxVO(BASESYMBOL, BASEID));
         if (coinList != null && !coinList.isEmpty()) {
-            List<TradeInfoVO> tradeInfoList = iTradeInfoJpaService.queryTradeInfoByBaseSymbol(coinList.get(0));
+            List<TradeInfoVO> tradeInfoList = iCashService.queryTradeInfoByBaseCoinId(coinList.get(0).getCoinId());
             if (tradeInfoList != null && !tradeInfoList.isEmpty()) {
                 this.tradeDataList.addAll(tradeInfoList);
             }
         }
 
+        coinChoiceBoxList.addAll(coinList);
 
         dataTable.setItems(tradeDataList);
 
@@ -135,9 +146,52 @@ public class CashViewController implements Initializable {
         quoteNumCol.setCellValueFactory(new PropertyValueFactory<>("quoteNum"));
         dateCol.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
 
-        baseChoiceBox.setItems(FXCollections.observableArrayList(coinList));
+        //baseChoiceBox.setItems(FXCollections.observableArrayList(coinList));
+        baseChoiceBox.setConverter(new StringConverter<CoinChoiceBoxVO>() {
+            @Override
+            public String toString(CoinChoiceBoxVO object) {
+                return object.getSymbol();
+            }
+
+            @Override
+            public CoinChoiceBoxVO fromString(String string) {
+                return null;
+            }
+        });
+        baseChoiceBox.setItems(coinChoiceBoxList);
         baseChoiceBox.setTooltip(new Tooltip("选择货币"));
+        baseChoiceBox.setSelectionModel(new SingleSelectionModel<CoinChoiceBoxVO>(){
+            @Override
+            protected CoinChoiceBoxVO getModelItem(int index) {
+                //return null;
+                if(coinChoiceBoxList == null || coinChoiceBoxList.isEmpty()) {return null;}
+                CoinChoiceBoxVO coinChoiceBoxVO = coinChoiceBoxList.get(index);
+                return coinChoiceBoxVO;
+            }
+
+            @Override
+            protected int getItemCount() {
+                return coinChoiceBoxList == null ? 0 : coinChoiceBoxList.size();
+                //return coinChoiceBoxList.size();
+            }
+        });
         baseChoiceBox.getSelectionModel().selectFirst();
+
+        baseChoiceBox
+                .getSelectionModel()
+                .selectedIndexProperty()
+                .addListener(
+                        (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+                            if (newValue.intValue() >= 0) {
+                                this.tradeDataList.clear();
+                                //String selectedCoin = this.coinList.get(newValue.intValue());
+                                CoinChoiceBoxVO selectedCoin = this.coinChoiceBoxList.get(newValue.intValue());
+                                List<TradeInfoVO> tradeInfoVOS = iCashService.queryTradeInfoByBaseCoinId(selectedCoin.getCoinId());
+                                if (tradeInfoVOS != null && !tradeInfoVOS.isEmpty()) {
+                                    this.tradeDataList.addAll(tradeInfoVOS);
+                                }
+                            }
+                        });
 
         salebuyChoiceBox.setItems(FXCollections.observableArrayList("入金", "出金"));
         salebuyChoiceBox.setTooltip(new Tooltip("选择出入金类型"));
@@ -153,20 +207,6 @@ public class CashViewController implements Initializable {
             .selectedItemProperty()
             .addListener((observable, oldValue, newValue) -> showTradeDataDetails(newValue));
 
-        baseChoiceBox
-            .getSelectionModel()
-            .selectedIndexProperty()
-            .addListener(
-                (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-                    if (newValue.intValue() >= 0) {
-                        this.tradeDataList.clear();
-                        String selectedCoin = this.coinList.get(newValue.intValue());
-                        List<TradeInfoVO> tradeInfoVOS = iTradeInfoJpaService.queryTradeInfoByBaseSymbol(selectedCoin);
-                        if (tradeInfoVOS != null && !tradeInfoVOS.isEmpty()) {
-                            this.tradeDataList.addAll(tradeInfoVOS);
-                        }
-                    }
-                });
 
         numTextField
             .textProperty()
@@ -184,24 +224,16 @@ public class CashViewController implements Initializable {
             TradeInfoJpa tradeInfo = new TradeInfoJpa();
             setTradeInfo(tradeInfo);
             if (iTradeInfoJpaService.save(tradeInfo)) {
-                tradeDataList.add(0, CopyUtil.copyjpa(tradeInfo));
+                tradeDataList.add(0, CopyUtil.copyforCash(tradeInfo));
                 numTextField.setText("");
             }
-           /* TradeDataBean bean = new TradeDataBean();
-            setTradeDataBean(bean);
-            Integer id = TradeDataDao.insert(bean);
-            if (id != -1) {
-                bean.setId(id);
-                tradeDataList.add(0, beanToFXC(bean));
-                numTextField.setText("");
-            }*/
-        }
+              }
     }
 
     private void setTradeInfo(TradeInfoJpa tradeInfo) {
-        tradeInfo.setBaseId(iTradeInfoJpaService.queryCoinBySymbol(baseChoiceBox.getValue()).getId());
-        tradeInfo.setBaseSymbol(baseChoiceBox.getValue());
-        tradeInfo.setQuoteId(Integer.valueOf(BASEID));
+        tradeInfo.setBaseId(baseChoiceBox.getValue().getCoinId());
+        tradeInfo.setBaseSymbol(baseChoiceBox.getValue().getSymbol());
+        tradeInfo.setQuoteId(BASEID);
         tradeInfo.setQuoteSymbol(BASESYMBOL);
         if (salebuyChoiceBox.getValue().equals("入金")) {
             tradeInfo.setSaleOrBuy("卖");
@@ -214,21 +246,7 @@ public class CashViewController implements Initializable {
         tradeInfo.setTradeDate(DateHelper.toString(this.dateDatePicker.getValue()));
 
     }
-    /*private void setTradeDataBean(TradeDataBean bean) {
-        bean.setBase_id(TradeDataDao.queryCoinBySymbol(baseChoiceBox.getValue()).getId());
-        bean.setBase_symbol(baseChoiceBox.getValue());
-        bean.setQuote_id(Integer.valueOf(BASEID));
-        bean.setQuote_symbol(BASESYMBOL);
-        if (salebuyChoiceBox.getValue().equals("入金")) {
-            bean.setSale_or_buy("卖");
-        } else {
-            bean.setSale_or_buy("买");
-        }
-        bean.setPrice("1");
-        bean.setBase_num(numTextField.getText());
-        bean.setQuote_num(numTextField.getText());
-        bean.setTrade_date(DateHelper.toString(this.dateDatePicker.getValue()));
-    }*/
+
 
     @FXML
     private void handleEdtitData(ActionEvent event) {
@@ -237,10 +255,13 @@ public class CashViewController implements Initializable {
             if (selectedIndex >= 0) {
                 TradeInfoVO tradeInfoVO = dataTable.getItems().get(selectedIndex);
                 TradeInfoJpa tradeInfo = iTradeInfoJpaService.findById(tradeInfoVO.getId());
+                if(null == tradeInfo){
+                    return;
+                }
                 setTradeInfo(tradeInfo);
 
                 if (iTradeInfoJpaService.save(tradeInfo)) {
-                    tradeInfoVO = CopyUtil.copyjpa(tradeInfo);
+                    tradeInfoVO = CopyUtil.copyforCash(tradeInfo);
                     for (int i = 0; i < tradeDataList.size(); i++) {
                         if (tradeDataList.get(i).getId().equals(tradeInfoVO.getId())) {
                             tradeDataList.remove(i);
@@ -290,8 +311,9 @@ public class CashViewController implements Initializable {
      */
     private void showTradeDataDetails(TradeInfoVO tradeData) {
         if (tradeData != null) {
-            String symbolPairs = tradeData.getSymbolPairs();
-            baseChoiceBox.setValue(symbolPairs);
+            //String symbolPairs = tradeData.getSymbolPairs();
+            //baseChoiceBox.setValue(symbolPairs);
+            baseChoiceBox.setValue(new CoinChoiceBoxVO(BASESYMBOL,BASEID));
             salebuyChoiceBox.setValue(tradeData.getSaleOrBuy());
             numTextField.setText(tradeData.getBaseNum());
             dateDatePicker.setValue(DateHelper.fromString(tradeData.getDate()));
@@ -310,7 +332,7 @@ public class CashViewController implements Initializable {
     private boolean isInputValid() {
         String errorMessage = "";
 
-        if (baseChoiceBox.getValue() == null || baseChoiceBox.getValue().length() == 0) {
+        if (baseChoiceBox.getValue() == null) {
             errorMessage += "无效的类别!\n";
         }
         if (salebuyChoiceBox.getValue() == null || salebuyChoiceBox.getValue().length() == 0) {

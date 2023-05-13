@@ -110,7 +110,7 @@ public class TradeInfoJpaServiceImpl implements ITradeInfoJpaService {
 
     @Override
     public TradeInfoJpa findById(Integer id) {
-        return tradeInfoRepository.getReferenceById(id);
+        return tradeInfoRepository.findById(id).orElse(null);
     }
 
     @Override

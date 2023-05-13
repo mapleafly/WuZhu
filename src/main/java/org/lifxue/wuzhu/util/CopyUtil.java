@@ -406,6 +406,37 @@ public class CopyUtil {
         return tradeInfoVOS;
     }
 
+    public static TradeInfoVO copyforCash(TradeInfoJpa tradeInfo){
+        if(tradeInfo == null){
+            return null;
+        }
+        TradeInfoVO tradeInfoVO = new TradeInfoVO();
+        tradeInfoVO.setId(tradeInfo.getId());
+        tradeInfoVO.setDate(tradeInfo.getTradeDate());
+        tradeInfoVO.setPrice(tradeInfo.getPrice());
+        tradeInfoVO.setCoinId(tradeInfo.getBaseId());
+        tradeInfoVO.setSaleOrBuy(tradeInfo.getSaleOrBuy().equals("卖") ? "入金" : "出金");
+        tradeInfoVO.setSymbolPairs(tradeInfo.getBaseSymbol() + "/" + tradeInfo.getQuoteSymbol());
+        tradeInfoVO.setBaseNum(tradeInfo.getBaseNum());
+        tradeInfoVO.setQuoteNum(tradeInfo.getQuoteNum());
+
+        return tradeInfoVO;
+    }
+
+    public static List<TradeInfoVO> copyTradeInfoVOListForCash(List<TradeInfoJpa>  tradeInfos){
+        if(tradeInfos == null || tradeInfos.isEmpty()){
+            return null;
+        }
+
+        List<TradeInfoVO> tradeInfoVOS = new ArrayList<>();
+        for (TradeInfoJpa tradeInfo : tradeInfos){
+            if (tradeInfo != null){
+                tradeInfoVOS.add(copyforCash(tradeInfo));
+            }
+        }
+        return tradeInfoVOS;
+    }
+
     public static List<TradeInfo> copyTradeInfoList(List<String[]> list){
         List<TradeInfo> tradeInfoList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
