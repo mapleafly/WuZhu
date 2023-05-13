@@ -374,6 +374,7 @@ public class CopyUtil {
         return tradeInfoVOS;
     }
 
+
     public static TradeInfoVO copyjpa(TradeInfoJpa tradeInfo){
         if(tradeInfo == null){
             return null;
@@ -494,6 +495,7 @@ public class CopyUtil {
         }
         return paTableVOS;
     }
+
 
     public static CoinChoiceBoxVO copyCoinChoiceBoxVO(CMCMap cmcMap){
         if(cmcMap == null){

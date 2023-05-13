@@ -25,7 +25,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.lifxue.wuzhu.modules.statistics.vo.PATableVO;
-import org.lifxue.wuzhu.service.IPATableService;
+import org.lifxue.wuzhu.service.IPATableJpaService;
 import org.lifxue.wuzhu.util.DateHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -93,7 +93,7 @@ public class PATableViewController implements Initializable {
     private TableColumn<PATableVO, String> dateCol;
     private Workbench workbench;
 
-    IPATableService iPATableService;
+    private IPATableJpaService ipaTableJpaService;
 
     /***
      * @description
@@ -107,9 +107,8 @@ public class PATableViewController implements Initializable {
         this.workbench = workbench;
     }
 
-    @Autowired
-    public PATableViewController(IPATableService iPATableService) {
-        this.iPATableService = iPATableService;
+    public PATableViewController(IPATableJpaService ipaTableJpaService) {
+        this.ipaTableJpaService = ipaTableJpaService;
         tradeDataList = FXCollections.observableArrayList();
     }
 
@@ -126,10 +125,10 @@ public class PATableViewController implements Initializable {
         tradeDataList.clear();
 
         //获取数据
-        List<PATableVO> list = iPATableService.queryAllVos();
+        List<PATableVO> list = ipaTableJpaService.queryAllVos();
         tradeDataList.addAll(list);
 
-        coinSymbolList = iPATableService.queryCurSymbol();
+        coinSymbolList = ipaTableJpaService.queryCurSymbol();
 
         tradeTypeList = new ArrayList<>();
         tradeTypeList.add("全部");
@@ -174,7 +173,7 @@ public class PATableViewController implements Initializable {
             String startDate = DateHelper.toString(this.startDatePicker.getValue());
             String endDate = DateHelper.toString(this.endDatePicker.getValue());
 
-            List<PATableVO> list = iPATableService.queryVOBy(coinSymbol, startDate, endDate, tradeType);
+            List<PATableVO> list = ipaTableJpaService.queryVOBy(coinSymbol, startDate, endDate, tradeType);
 
             tradeDataList.clear();
             tradeDataList.addAll(list);
@@ -210,7 +209,7 @@ public class PATableViewController implements Initializable {
                 }
             }
         }
-        BigDecimal curPrice = new BigDecimal(iPATableService.queryBySymbol(strCoinSymbol).getPrice());
+        BigDecimal curPrice = new BigDecimal(ipaTableJpaService.queryBySymbol(strCoinSymbol).getPrice());
         BigDecimal paPrice = new BigDecimal("0");
         BigDecimal paPriceTotal = buy.subtract(sale);
         if (numTotal.compareTo(new BigDecimal("0")) > 0) {
