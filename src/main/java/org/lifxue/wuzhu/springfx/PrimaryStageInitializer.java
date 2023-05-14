@@ -1,7 +1,6 @@
 package org.lifxue.wuzhu.springfx;
 
 import com.dlsc.workbenchfx.Workbench;
-import com.dlsc.workbenchfx.view.controls.ToolbarItem;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
@@ -22,9 +21,7 @@ import org.lifxue.wuzhu.modules.setting.PreferencesViewModule;
 import org.lifxue.wuzhu.modules.statistics.PATableViewModule;
 import org.lifxue.wuzhu.modules.tradeinfo.TradeInfoViewModule;
 import org.lifxue.wuzhu.service.ICMCMapJpaService;
-import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestJpaService;
-import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
@@ -197,7 +194,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
      * @author lifxue
      * @date 2023/1/6 14:21
      **/
-    private ToolbarItem initFileToolbarItem() {
+   /* private ToolbarItem initFileToolbarItem() {
         //组合file菜单
         ToolbarItem fileItem = new ToolbarItem("文件", new FontIcon(MaterialDesign.MDI_FILE_WORD));
         fileItem.getItems().addAll(
@@ -206,7 +203,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         );
 
         return fileItem;
-    }
+    }*/
 
     private MenuItem updatePriceItem() {
         // 更新现价菜单项
@@ -301,7 +298,7 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
      * @author lifxue
      * @date 2023/1/6 14:21
      **/
-    private ToolbarItem initUpdateToolbarItem() {
+   /* private ToolbarItem initUpdateToolbarItem() {
         // 组合update菜单
         ToolbarItem updateItem = new ToolbarItem("更新", new FontIcon(MaterialDesign.MDI_UPDATE));
         updateItem.getItems().addAll(
@@ -310,5 +307,5 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         );
 
         return updateItem;
-    }
+    }*/
 }
