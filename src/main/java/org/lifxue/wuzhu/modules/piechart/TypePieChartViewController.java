@@ -82,6 +82,7 @@ public class TypePieChartViewController implements Initializable {
     @FXML
     public void initialize(URL url, ResourceBundle rb) {
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+        pieChartData.clear();
         pieChartData.addAll(getData());
         pieChart.setData(pieChartData);
         double n = 0;
@@ -124,6 +125,8 @@ public class TypePieChartViewController implements Initializable {
 
         List<TradeInfoJpa> tdList = iTradeInfoJpaService.findOrderByTradeDate();
         List<CMCQuotesLatestJpa> typeList = icmcQuotesLatestJpaService.queryLatest();
+        log.info("typeList.size==", typeList.size());
+        log.info("typeList:{}", typeList);
         BigDecimal usdtNum = new BigDecimal("0");
         // 计算USDT之外的coin现价
         double otherAllPrice = 0;
