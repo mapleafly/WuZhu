@@ -28,12 +28,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.util.StringConverter;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
-import org.lifxue.wuzhu.entity.TradeInfo;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
 import org.lifxue.wuzhu.pojo.TradeInfoJpa;
 import org.lifxue.wuzhu.service.ITradeInfoJpaService;
-import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.util.CopyUtil;
 import org.lifxue.wuzhu.util.DateHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,9 +125,11 @@ public class TradeInfoViewController implements Initializable {
     @FXML
     public void initialize(URL url, ResourceBundle rb) {
         tradeDataList.clear();
+        coinChoiceBoxList.clear();
         //获取数据
         //coinList = iTradeInfoService.queryCurSymbol();
         coinList = iTradeInfoJpaService.queryCurCoin();
+        log.info("coinList:{}", coinList);
         if (coinList != null && !coinList.isEmpty()) {
             List<TradeInfoVO> tradeInfoList = iTradeInfoJpaService.queryTradeInfoByBaseCoinId(coinList.get(0).getCoinId());
             if(tradeInfoList != null && !tradeInfoList.isEmpty()) {
@@ -154,6 +154,7 @@ public class TradeInfoViewController implements Initializable {
         baseChoiceBox.setConverter(new StringConverter<CoinChoiceBoxVO>() {
             @Override
             public String toString(CoinChoiceBoxVO object) {
+                if(object == null) {return null;}
                 return object.getSymbol();
             }
 
