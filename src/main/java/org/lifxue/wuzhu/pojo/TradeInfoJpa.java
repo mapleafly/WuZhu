@@ -1,6 +1,5 @@
 package org.lifxue.wuzhu.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -37,7 +36,7 @@ public class TradeInfoJpa implements Serializable {
     @Column(name = "QUOTE_SYMBOL")
     private String quoteSymbol;
     //买或者卖
-    @TableField("sale_or_buy")
+    @Column(name = "sale_or_buy")
     private String saleOrBuy;
     //买入或卖出价格
     private String price;

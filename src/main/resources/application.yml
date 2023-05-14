@@ -16,17 +16,13 @@ spring:
       ddl-auto: create-drop # none, update, create, create-drop
     show-sql: true
     # database: h2
-  sql:
-    init:
-      mode: always
-      platform: h2
-      #data-locations: classpath:db/data-h2.sql
-      schema-locations: classpath:db/schema-h2.sql
+#  sql:
+#    init:
+#      mode: always
+#      platform: h2
+#      #data-locations: classpath:db/data-h2.sql
+#      schema-locations: classpath:db/schema-h2.sql
 
-mybatis-plus:
-  global-config:
-    db-config:
-      id-type: auto #id生成规则：数据库id自增
 
 coin-market-cap:
   customHeader: X-CMC_PRO_API_KEY

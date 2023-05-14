@@ -40,8 +40,6 @@ dependencies {
     implementation("io.github.openfeign:feign-okhttp:11.8")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
-    implementation("com.baomidou:mybatis-plus-boot-starter:3.5.3.1")
-    implementation("com.baomidou:mybatis-plus-generator:3.5.3.1")
     implementation("org.openjfx:javafx-fxml:17.0.1")
     implementation("net.rgielen:javafx-weaver-spring-boot-starter:1.3.0")
     implementation("com.dlsc.workbenchfx:workbenchfx-core:11.3.1")

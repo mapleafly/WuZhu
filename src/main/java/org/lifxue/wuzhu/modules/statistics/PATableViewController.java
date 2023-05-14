@@ -25,6 +25,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.lifxue.wuzhu.modules.statistics.vo.PATableVO;
+import org.lifxue.wuzhu.pojo.CMCQuotesLatestJpa;
 import org.lifxue.wuzhu.service.IPATableJpaService;
 import org.lifxue.wuzhu.util.DateHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -209,7 +210,16 @@ public class PATableViewController implements Initializable {
                 }
             }
         }
-        BigDecimal curPrice = new BigDecimal(ipaTableJpaService.queryBySymbol(strCoinSymbol).getPrice());
+
+        String strPrice;
+        CMCQuotesLatestJpa cmcQuotesLatestJpa = ipaTableJpaService.queryBySymbol(strCoinSymbol);
+        if(cmcQuotesLatestJpa == null){
+            strPrice = "0";
+        }else {
+            strPrice = cmcQuotesLatestJpa.getPrice();
+        }
+
+        BigDecimal curPrice = new BigDecimal(strPrice);
         BigDecimal paPrice = new BigDecimal("0");
         BigDecimal paPriceTotal = buy.subtract(sale);
         if (numTotal.compareTo(new BigDecimal("0")) > 0) {
