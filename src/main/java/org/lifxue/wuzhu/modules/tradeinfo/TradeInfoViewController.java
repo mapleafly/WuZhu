@@ -30,8 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
-import org.lifxue.wuzhu.pojo.TradeInfoJpa;
-import org.lifxue.wuzhu.service.ITradeInfoJpaService;
+import org.lifxue.wuzhu.pojo.TradeInfo;
+import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.util.CopyUtil;
 import org.lifxue.wuzhu.util.DateHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,9 +94,9 @@ public class TradeInfoViewController implements Initializable {
     private TextField totalTextField;
 
     private Workbench workbench;
-    private final ITradeInfoJpaService iTradeInfoJpaService;
+    private final ITradeInfoService iTradeInfoJpaService;
 
-    public TradeInfoViewController(ITradeInfoJpaService iTradeInfoJpaService) {
+    public TradeInfoViewController(ITradeInfoService iTradeInfoJpaService) {
         this.iTradeInfoJpaService = iTradeInfoJpaService;
         tradeDataList = FXCollections.observableArrayList();
         coinChoiceBoxList = FXCollections.observableArrayList();
@@ -127,9 +127,7 @@ public class TradeInfoViewController implements Initializable {
         tradeDataList.clear();
         coinChoiceBoxList.clear();
         //获取数据
-        //coinList = iTradeInfoService.queryCurSymbol();
         coinList = iTradeInfoJpaService.queryCurCoin();
-        log.info("coinList:{}", coinList);
         if (coinList != null && !coinList.isEmpty()) {
             List<TradeInfoVO> tradeInfoList = iTradeInfoJpaService.queryTradeInfoByBaseCoinId(coinList.get(0).getCoinId());
             if(tradeInfoList != null && !tradeInfoList.isEmpty()) {
@@ -270,7 +268,7 @@ public class TradeInfoViewController implements Initializable {
     @FXML
     private void handleAddData(ActionEvent event) {
         if (isInputValid()) {
-            TradeInfoJpa tradeInfo = new TradeInfoJpa();
+            TradeInfo tradeInfo = new TradeInfo();
             setTradeInfo(tradeInfo);
             if(iTradeInfoJpaService.save(tradeInfo)){
                 tradeDataList.add(0, CopyUtil.copyjpa(tradeInfo));
@@ -281,7 +279,7 @@ public class TradeInfoViewController implements Initializable {
         }
     }
 
-    private void setTradeInfo(TradeInfoJpa tradeInfo) {
+    private void setTradeInfo(TradeInfo tradeInfo) {
         tradeInfo.setBaseId(baseChoiceBox.getValue().getCoinId());
         tradeInfo.setBaseSymbol(baseChoiceBox.getValue().getSymbol());
         tradeInfo.setQuoteId(quoteChoiceBox.getValue().getCoinId());
@@ -300,7 +298,7 @@ public class TradeInfoViewController implements Initializable {
             int selectedIndex = dataTable.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
                 TradeInfoVO tradeInfoVO = dataTable.getItems().get(selectedIndex);
-                TradeInfoJpa tradeInfo = iTradeInfoJpaService.findById(tradeInfoVO.getId());
+                TradeInfo tradeInfo = iTradeInfoJpaService.findById(tradeInfoVO.getId());
                 setTradeInfo(tradeInfo);
                 if (iTradeInfoJpaService.save(tradeInfo)) {
                     tradeInfoVO = CopyUtil.copyjpa(tradeInfo);

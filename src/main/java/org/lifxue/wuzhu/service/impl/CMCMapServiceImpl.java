@@ -10,9 +10,9 @@ import org.lifxue.wuzhu.dto.CMCMapDto;
 import org.lifxue.wuzhu.dto.Quote;
 import org.lifxue.wuzhu.dto.Status;
 
-import org.lifxue.wuzhu.pojo.CMCMapJpa;
+import org.lifxue.wuzhu.pojo.CMCMap;
 import org.lifxue.wuzhu.repository.CMCMapRepository;
-import org.lifxue.wuzhu.service.ICMCMapJpaService;
+import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.feignc.ICMCMapFeignClient;
 import org.lifxue.wuzhu.util.CopyUtil;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
+public class CMCMapServiceImpl implements ICMCMapService {
 
     private final Integer LIMIT = 5000;
     private final String CMCMAP_AUX = "platform,first_historical_data,last_historical_data,is_active";
@@ -42,36 +42,36 @@ public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
     @Resource
     private CMCMapRepository cmcMapRepository;
 
-    public CMCMapJpaServiceImpl(ICMCMapFeignClient icmcMapFeignClient) {
+    public CMCMapServiceImpl(ICMCMapFeignClient icmcMapFeignClient) {
         this.icmcMapFeignClient = icmcMapFeignClient;
     }
 
     @Override
-    public List<CMCMapJpa> getJson(String listing_status, Integer start, Integer limit, String sort, String aux) {
+    public List<CMCMap> getJson(String listing_status, Integer start, Integer limit, String sort, String aux) {
         String jsonMap = icmcMapFeignClient.getHttpJson(listing_status, start, limit, sort, aux);
         return CopyUtil.copyListCMCMapjpa(jsonToDto(jsonMap));
     }
 
     @Override
-    public List<CMCMapJpa> getJson(Integer start, Integer limit, String sort, String aux) {
+    public List<CMCMap> getJson(Integer start, Integer limit, String sort, String aux) {
         String jsonMap = icmcMapFeignClient.getHttpJson(start, limit, sort, aux);
         return CopyUtil.copyListCMCMapjpa(jsonToDto(jsonMap));
     }
 
     @Override
-    public List<CMCMapJpa> getJson(Integer start, Integer limit, String sort) {
+    public List<CMCMap> getJson(Integer start, Integer limit, String sort) {
         String jsonMap = icmcMapFeignClient.getHttpJson(start, limit, sort);
         return CopyUtil.copyListCMCMapjpa(jsonToDto(jsonMap));
     }
 
     @Override
-    public List<CMCMapJpa> getJson(Integer limit, String sort) {
+    public List<CMCMap> getJson(Integer limit, String sort) {
         String jsonMap = icmcMapFeignClient.getHttpJson(limit, sort);
         return CopyUtil.copyListCMCMapjpa(jsonToDto(jsonMap));
     }
 
     @Override
-    public List<CMCMapJpa> getJson(Integer limit) {
+    public List<CMCMap> getJson(Integer limit) {
         String jsonMap = icmcMapFeignClient.getHttpJson(limit);
         return CopyUtil.copyListCMCMapjpa(jsonToDto(jsonMap));
     }
@@ -151,12 +151,12 @@ public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
      * @author lifxue
      * @date 2023/2/8 12:56
      **/
-    private List<CMCMapJpa> getAllCmcMap(String sort) {
+    private List<CMCMap> getAllCmcMap(String sort) {
         int start = 1;
-        List<CMCMapJpa> listAll = new ArrayList<>();
+        List<CMCMap> listAll = new ArrayList<>();
         //每次获取上限是LIMIT个，如果每次获取足额LIMIT，就继续获取，直到获取的数量不足LIMIT，表示已经全部获取，这时退出循环
         while (true) {
-            List<CMCMapJpa> list = getJson(start, LIMIT, sort);
+            List<CMCMap> list = getJson(start, LIMIT, sort);
             if (list == null || list.isEmpty()) {
                 break;
             }
@@ -186,25 +186,28 @@ public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
     @Transactional
     public boolean saveNewBatch(String sort) {
         //网络查询
-        List<CMCMapJpa> listAll = getAllCmcMap(sort);
+        List<CMCMap> listAll = getAllCmcMap(sort);
         if (listAll.isEmpty()) {
             return false;
         }
         //数据库查询所得
-        List<CMCMapJpa> cmcMapList = cmcMapRepository.findAll();
+        List<CMCMap> cmcMapList = cmcMapRepository.findAll();
+        //log.info("cmcMapList:{}", cmcMapList);
+        log.info("cmcMapList.size==={}", cmcMapList.size());
+
         if (cmcMapList.isEmpty()) {
             return cmcMapRepository.saveAll(listAll) == null ? false : true;
         }
         //最后结果集
-        List<CMCMapJpa> resultList = new ArrayList<>();
+        List<CMCMap> resultList = new ArrayList<>();
         //中间存储
-        HashSet<CMCMapJpa> hashSet = new HashSet<>();
+        HashSet<Integer> hashSet = new HashSet<>();
         cmcMapList.forEach(i -> {
-            i.setIsSelected(0);
-            hashSet.add(i);
+            //i.setIsSelected(0);
+            hashSet.add(i.getTid());
         });
         listAll.forEach(i -> {
-            if (!hashSet.contains(i)) {
+            if (!hashSet.contains(i.getTid())) {
                 resultList.add(i);
             }
         });
@@ -218,7 +221,7 @@ public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
     @Override
     @Transactional
     public boolean saveOrUpdateBatch(String sort) {
-        List<CMCMapJpa> listAll = getAllCmcMap(sort);
+        List<CMCMap> listAll = getAllCmcMap(sort);
         if (listAll.isEmpty()) {
             return false;
         }
@@ -235,7 +238,7 @@ public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
     @Override
     @Transactional
     public boolean saveOrUpdateBatch(Integer start, Integer limit, String sort) {
-        List<CMCMapJpa> list = getJson(start, limit, sort);
+        List<CMCMap> list = getJson(start, limit, sort);
         if (list == null || list.isEmpty()) {
             return false;
         }
@@ -250,7 +253,7 @@ public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
     @Override
     @Transactional
     public boolean saveOrUpdateBatch(Integer start, Integer limit, String sort, String aux) {
-        List<CMCMapJpa> list = getJson(start, limit, sort, aux);
+        List<CMCMap> list = getJson(start, limit, sort, aux);
         if (list == null || list.isEmpty()) {
             return false;
         }
@@ -275,25 +278,25 @@ public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
     }
 
     @Override
-    public List<CMCMapJpa> getSelecteds() {
+    public List<CMCMap> getSelecteds() {
         return cmcMapRepository.getSelecteds();
     }
 
     @Override
-    public CMCMapJpa queryCoinBySymbo(String symbo) {
+    public CMCMap queryCoinBySymbo(String symbo) {
         return cmcMapRepository.queryCoinBySymbo(symbo);
     }
 
     @Override
-    public List<CMCMapJpa> findBySymbolLikeOrderByTid(String symbol){
-        return cmcMapRepository.findBySymbolLikeOrderByTidAsc("%"+symbol+"%");
+    public List<CMCMap> findBySymbolLikeOrderByTid(String symbol){
+        return cmcMapRepository.findBySymbolLikeOrderByRankAsc("%"+symbol+"%");
     }
     @Override
     @Transactional
     public boolean updateSelectedBatch(List<Integer> selected) {
-        List<CMCMapJpa> cmcMapList = cmcMapRepository.findByTidIn(selected);
+        List<CMCMap> cmcMapList = cmcMapRepository.findByTidIn(selected);
 
-        for (CMCMapJpa cmcMap : cmcMapList) {
+        for (CMCMap cmcMap : cmcMapList) {
             cmcMap.setIsSelected(1);
         }
 
@@ -307,23 +310,23 @@ public class CMCMapJpaServiceImpl implements ICMCMapJpaService {
      * @param isSelect
      * @return java.util.List<org.lifxue.wuzhu.entity.CMCMap>
      **/
-    public List<CMCMapJpa> list(Integer isSelect) {
+    public List<CMCMap> list(Integer isSelect) {
         return cmcMapRepository.list(1);
     }
 
     @Override
-    public List<CMCMapJpa> list() {
+    public List<CMCMap> list() {
         return cmcMapRepository.findAll();
     }
 
     @Override
-    public List<CMCMapJpa> getById(Integer tid) {
+    public List<CMCMap> getById(Integer tid) {
         return cmcMapRepository.findByTid(tid);
     }
 
     @Override
-    public boolean update(CMCMapJpa cmcMapJpa) {
-        CMCMapJpa res = cmcMapRepository.save(cmcMapJpa);
+    public boolean update(CMCMap cmcMapJpa) {
+        CMCMap res = cmcMapRepository.save(cmcMapJpa);
         return res == null ? false : true;
     }
 

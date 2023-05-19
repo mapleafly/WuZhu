@@ -20,8 +20,8 @@ import org.lifxue.wuzhu.modules.selectcoin.SelectCoinViewModule;
 import org.lifxue.wuzhu.modules.setting.PreferencesViewModule;
 import org.lifxue.wuzhu.modules.statistics.PATableViewModule;
 import org.lifxue.wuzhu.modules.tradeinfo.TradeInfoViewModule;
-import org.lifxue.wuzhu.service.ICMCMapJpaService;
-import org.lifxue.wuzhu.service.ICMCQuotesLatestJpaService;
+import org.lifxue.wuzhu.service.ICMCMapService;
+import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
@@ -64,8 +64,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
 
     private final CashViewModule cashViewModule;
 
-    private final ICMCMapJpaService icmcMapJpaService;
-    private final ICMCQuotesLatestJpaService icmcQuotesLatestJpaService;
+    private final ICMCMapService icmcMapJpaService;
+    private final ICMCQuotesLatestService icmcQuotesLatestJpaService;
 
     public PrimaryStageInitializer(
         Workbench workbench,
@@ -79,8 +79,8 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         PATableViewModule paTableViewModule,
         TypePieChartViewModule typePieChartViewModule,
         CashViewModule cashViewModule,
-        ICMCMapJpaService icmcMapJpaService,
-        ICMCQuotesLatestJpaService icmcQuotesLatestJpaService
+        ICMCMapService icmcMapJpaService,
+        ICMCQuotesLatestService icmcQuotesLatestJpaService
     ) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;

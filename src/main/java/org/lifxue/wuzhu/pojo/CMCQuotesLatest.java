@@ -14,8 +14,8 @@ import java.io.Serializable;
  */
 @Data
 @Entity
-@Table(name = "cmc_quotes_latest_jpa")
-public class CMCQuotesLatestJpa implements Serializable {
+@Table(name = "cmc_quotes_latest")
+public class CMCQuotesLatest implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

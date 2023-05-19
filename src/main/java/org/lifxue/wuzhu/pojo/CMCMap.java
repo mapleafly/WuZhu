@@ -22,8 +22,8 @@ import java.util.Objects;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "cmc_map_jpa")
-public class CMCMapJpa implements Serializable {
+@Table(name = "cmc_map")
+public class CMCMap implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -57,8 +57,8 @@ public class CMCMapJpa implements Serializable {
         if (this == o) {
             return true;
         }
-        if (o instanceof CMCMapJpa) {
-            CMCMapJpa bean = (CMCMapJpa) o;
+        if (o instanceof CMCMap) {
+            CMCMap bean = (CMCMap) o;
             //查看两个对象的id和is_active属性值是否相等,返回结果
             return Objects.equals(id, bean.id) && Objects.equals(isActive, bean.isActive);
         }

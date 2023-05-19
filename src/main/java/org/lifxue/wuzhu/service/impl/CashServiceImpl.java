@@ -1,7 +1,7 @@
 package org.lifxue.wuzhu.service.impl;
 
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
-import org.lifxue.wuzhu.pojo.TradeInfoJpa;
+import org.lifxue.wuzhu.pojo.TradeInfo;
 import org.lifxue.wuzhu.repository.TradeInfoRepository;
 import org.lifxue.wuzhu.service.ICashService;
 import org.lifxue.wuzhu.util.CopyUtil;
@@ -29,7 +29,7 @@ public class CashServiceImpl implements ICashService {
 
     @Override
     public List<TradeInfoVO> queryTradeInfoByBaseCoinId(Integer coinId) {
-        List<TradeInfoJpa> tradeInfoList = tradeInfoRepository.findByBaseIdOrderByIdDesc(coinId);
+        List<TradeInfo> tradeInfoList = tradeInfoRepository.findByBaseIdOrderByIdDesc(coinId);
         return CopyUtil.copyTradeInfoVOListForCash(tradeInfoList);
     }
 }

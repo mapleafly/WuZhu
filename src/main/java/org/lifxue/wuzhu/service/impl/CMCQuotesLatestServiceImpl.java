@@ -4,15 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lifxue.wuzhu.dto.*;
-import org.lifxue.wuzhu.pojo.CMCMapJpa;
-import org.lifxue.wuzhu.pojo.CMCQuotesLatestJpa;
+import org.lifxue.wuzhu.pojo.CMCMap;
+import org.lifxue.wuzhu.pojo.CMCQuotesLatest;
 import org.lifxue.wuzhu.repository.CMCQuotesLatestRepository;
-import org.lifxue.wuzhu.service.ICMCMapJpaService;
-import org.lifxue.wuzhu.service.ICMCQuotesLatestJpaService;
+import org.lifxue.wuzhu.service.ICMCMapService;
+import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
 import org.lifxue.wuzhu.service.feignc.ICMCQuotesLatestFeignClient;
 import org.lifxue.wuzhu.util.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +29,14 @@ import java.util.List;
  * @Date 2023/5/7 14:43
  * @Version 1.0
  */
-@Slf4j
 @Service
-public class CMCQuotesLatestJpaServiceImpl implements ICMCQuotesLatestJpaService {
+public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
 
     private final String ICMCQUOTESLATEST_AUX = "num_market_pairs,cmc_rank,date_added,tags,platform," +
         "max_supply,circulating_supply,total_supply,is_active,is_fiat";
 
     private ICMCQuotesLatestFeignClient icmcQuotesLatestFeignClient;
-    private ICMCMapJpaService icmcMapJpaService;
+    private ICMCMapService icmcMapJpaService;
 
     private CMCQuotesLatestRepository cmcQuotesLatestRepository;
 
@@ -52,14 +50,14 @@ public class CMCQuotesLatestJpaServiceImpl implements ICMCQuotesLatestJpaService
     }
 
     @Autowired
-    public void setIcmcMapJpaService(ICMCMapJpaService icmcMapJpaService) {
+    public void setIcmcMapJpaService(ICMCMapService icmcMapJpaService) {
         this.icmcMapJpaService = icmcMapJpaService;
     }
 
 
 
     @Nullable
-    private List<CMCQuotesLatestJpa> convertCmcQuotes(String ids, String convert, String strJson) {
+    private List<CMCQuotesLatest> convertCmcQuotes(String ids, String convert, String strJson) {
         List<CMCQuotesLatestDto> listCMCQuotesLatestDto = new ArrayList<>();
 
         if (strJson == null || strJson.isEmpty()) {
@@ -199,41 +197,41 @@ public class CMCQuotesLatestJpaServiceImpl implements ICMCQuotesLatestJpaService
     }
 
     @Override
-    public List<CMCQuotesLatestJpa> getHttpJsonById(String id, String convert) {
+    public List<CMCQuotesLatest> getHttpJsonById(String id, String convert) {
         return getHttpJsonById(id, convert, ICMCQUOTESLATEST_AUX);
     }
 
     @Override
-    public List<CMCQuotesLatestJpa> getHttpJsonById(String id, String convert, String aux) {
+    public List<CMCQuotesLatest> getHttpJsonById(String id, String convert, String aux) {
         String strJson = icmcQuotesLatestFeignClient.getHttpJsonById(id, convert, aux);
         return convertCmcQuotes(id, convert, strJson);
     }
 
     @Override
-    public List<CMCQuotesLatestJpa> getHttpJsonByIdAndConvertId(String id, String convert_id) {
+    public List<CMCQuotesLatest> getHttpJsonByIdAndConvertId(String id, String convert_id) {
         return getHttpJsonByIdAndConvertId(id, convert_id, ICMCQUOTESLATEST_AUX);
     }
 
     @Override
-    public List<CMCQuotesLatestJpa> getHttpJsonByIdAndConvertId(String id, String convert_id, String aux) {
+    public List<CMCQuotesLatest> getHttpJsonByIdAndConvertId(String id, String convert_id, String aux) {
         String strJson = icmcQuotesLatestFeignClient.getHttpJsonByIdAndConvertId(id, convert_id, aux);
         return convertCmcQuotes(id, convert_id, strJson);
     }
 
     @Override
-    public List<CMCQuotesLatestJpa> getHttpJsonBySymbol(String symbol, String convert) {
+    public List<CMCQuotesLatest> getHttpJsonBySymbol(String symbol, String convert) {
         return getHttpJsonBySymbol(symbol, convert, ICMCQUOTESLATEST_AUX);
     }
 
     @Override
-    public List<CMCQuotesLatestJpa> getHttpJsonBySymbol(String symbol, String convert, String aux) {
+    public List<CMCQuotesLatest> getHttpJsonBySymbol(String symbol, String convert, String aux) {
         String strJson = icmcQuotesLatestFeignClient.getHttpJsonBySymbol(symbol, convert, aux);
         return convertCmcQuotes(symbol, convert, strJson);
     }
 
     @Override
     @Transactional
-    public boolean saveBatch(List<CMCQuotesLatestJpa> list) {
+    public boolean saveBatch(List<CMCQuotesLatest> list) {
         if (list == null || list.isEmpty()) {
             return false;
         }
@@ -250,22 +248,21 @@ public class CMCQuotesLatestJpaServiceImpl implements ICMCQuotesLatestJpaService
     @Override
     @Transactional
     public boolean saveBatch() {
-        List<CMCMapJpa> cmcMapList = icmcMapJpaService.list(1);
-        log.info("cmcMapList:{}", cmcMapList);
+        List<CMCMap> cmcMapList = icmcMapJpaService.list(1);
         if (cmcMapList == null || cmcMapList.isEmpty()) {
             return false;
         }
         StringBuilder ids = new StringBuilder();
-        for (CMCMapJpa cmcMap : cmcMapList) {
+        for (CMCMap cmcMap : cmcMapList) {
             ids.append(cmcMap.getTid()).append(",");
         }
         ids = new StringBuilder(ids.substring(0, ids.length() - 1));
-        List<CMCQuotesLatestJpa> list = getHttpJsonById(ids.toString(), "USD");
+        List<CMCQuotesLatest> list = getHttpJsonById(ids.toString(), "USD");
         return saveBatch(list);
     }
 
     @Override
-    public List<CMCQuotesLatestJpa> queryLatest() {
+    public List<CMCQuotesLatest> queryLatest() {
         return cmcQuotesLatestRepository.queryLatest();
     }
 

@@ -16,8 +16,8 @@ import java.io.Serializable;
 
 @Data
 @Entity
-@Table(name = "trade_info_jpa")
-public class TradeInfoJpa implements Serializable {
+@Table(name = "trade_info")
+public class TradeInfo implements Serializable {
     //自增id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

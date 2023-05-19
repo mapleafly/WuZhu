@@ -8,9 +8,9 @@ import org.lifxue.wuzhu.modules.selectcoin.vo.SelectDataVO;
 import org.lifxue.wuzhu.modules.statistics.vo.PATableVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
-import org.lifxue.wuzhu.pojo.CMCMapJpa;
-import org.lifxue.wuzhu.pojo.CMCQuotesLatestJpa;
-import org.lifxue.wuzhu.pojo.TradeInfoJpa;
+import org.lifxue.wuzhu.pojo.CMCMap;
+import org.lifxue.wuzhu.pojo.CMCQuotesLatest;
+import org.lifxue.wuzhu.pojo.TradeInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
@@ -58,12 +58,12 @@ public class CopyUtil {
         return list;
     }
 
-    public static CMCMapJpa copyjpa(CMCMapDto dto) {
+    public static CMCMap copyjpa(CMCMapDto dto) {
         if (dto == null) {
             return null;
         }
 
-        CMCMapJpa cmcMap = new CMCMapJpa();
+        CMCMap cmcMap = new CMCMap();
         cmcMap.setTid(dto.getId());
         cmcMap.setName(dto.getName());
         cmcMap.setSymbol(dto.getSymbol());
@@ -91,11 +91,11 @@ public class CopyUtil {
         return cmcMap;
     }
 
-    public static List<CMCMapJpa> copyListCMCMapjpa(List<CMCMapDto> dtoList) {
+    public static List<CMCMap> copyListCMCMapjpa(List<CMCMapDto> dtoList) {
         if (dtoList == null || dtoList.isEmpty()) {
             return null;
         }
-        List<CMCMapJpa> list = new ArrayList<>();
+        List<CMCMap> list = new ArrayList<>();
         for (CMCMapDto dto : dtoList) {
             if (dto != null) {
                 list.add(copyjpa(dto));
@@ -106,11 +106,11 @@ public class CopyUtil {
 
 
 
-    public static CMCQuotesLatestJpa copyjpa(CMCQuotesLatestDto dto) {
+    public static CMCQuotesLatest copyjpa(CMCQuotesLatestDto dto) {
         if (dto == null) {
             return null;
         }
-        CMCQuotesLatestJpa cmcQuotesLatestJpa = new CMCQuotesLatestJpa();
+        CMCQuotesLatest cmcQuotesLatestJpa = new CMCQuotesLatest();
         cmcQuotesLatestJpa.setTid(dto.getId());
         cmcQuotesLatestJpa.setName(dto.getName());
         cmcQuotesLatestJpa.setSymbol(dto.getSymbol());
@@ -158,11 +158,11 @@ public class CopyUtil {
         return cmcQuotesLatestJpa;
     }
 
-    public static List<CMCQuotesLatestJpa> copyListCMCQuotesJap(List<CMCQuotesLatestDto> dtoList) {
+    public static List<CMCQuotesLatest> copyListCMCQuotesJap(List<CMCQuotesLatestDto> dtoList) {
         if (dtoList == null || dtoList.isEmpty()) {
             return null;
         }
-        List<CMCQuotesLatestJpa> list = new ArrayList<>();
+        List<CMCQuotesLatest> list = new ArrayList<>();
         for (CMCQuotesLatestDto dto : dtoList) {
             if (dto != null) {
                 list.add(copyjpa(dto));
@@ -172,7 +172,7 @@ public class CopyUtil {
     }
 
 
-    public static SelectDataVO copy(CMCMapJpa cmcMap){
+    public static SelectDataVO copy(CMCMap cmcMap){
         if(cmcMap == null){
             return null;
         }
@@ -187,13 +187,13 @@ public class CopyUtil {
         return selectDataVO;
     }
 
-    public static List<SelectDataVO> copySelectDataListJpa(List<CMCMapJpa>  cmcMaps){
+    public static List<SelectDataVO> copySelectDataListJpa(List<CMCMap>  cmcMaps){
         if(cmcMaps == null || cmcMaps.isEmpty()){
             return null;
         }
 
         List<SelectDataVO> selectDataVOS = new ArrayList<>();
-        for (CMCMapJpa cmcMap : cmcMaps){
+        for (CMCMap cmcMap : cmcMaps){
             SelectDataVO selectDataVO = new SelectDataVO();
             if (cmcMap != null){
                 selectDataVOS.add(copy(cmcMap));
@@ -203,7 +203,7 @@ public class CopyUtil {
     }
 
 
-    public static TradeInfoVO copyjpa(TradeInfoJpa tradeInfo){
+    public static TradeInfoVO copyjpa(TradeInfo tradeInfo){
         if(tradeInfo == null){
             return null;
         }
@@ -220,13 +220,13 @@ public class CopyUtil {
         return tradeInfoVO;
     }
 
-    public static List<TradeInfoVO> copyTradeInfoVOListJpa(List<TradeInfoJpa>  tradeInfos){
+    public static List<TradeInfoVO> copyTradeInfoVOListJpa(List<TradeInfo>  tradeInfos){
         if(tradeInfos == null || tradeInfos.isEmpty()){
             return null;
         }
 
         List<TradeInfoVO> tradeInfoVOS = new ArrayList<>();
-        for (TradeInfoJpa tradeInfo : tradeInfos){
+        for (TradeInfo tradeInfo : tradeInfos){
             if (tradeInfo != null){
                 tradeInfoVOS.add(copyjpa(tradeInfo));
             }
@@ -234,7 +234,7 @@ public class CopyUtil {
         return tradeInfoVOS;
     }
 
-    public static TradeInfoVO copyforCash(TradeInfoJpa tradeInfo){
+    public static TradeInfoVO copyforCash(TradeInfo tradeInfo){
         if(tradeInfo == null){
             return null;
         }
@@ -251,13 +251,13 @@ public class CopyUtil {
         return tradeInfoVO;
     }
 
-    public static List<TradeInfoVO> copyTradeInfoVOListForCash(List<TradeInfoJpa>  tradeInfos){
+    public static List<TradeInfoVO> copyTradeInfoVOListForCash(List<TradeInfo>  tradeInfos){
         if(tradeInfos == null || tradeInfos.isEmpty()){
             return null;
         }
 
         List<TradeInfoVO> tradeInfoVOS = new ArrayList<>();
-        for (TradeInfoJpa tradeInfo : tradeInfos){
+        for (TradeInfo tradeInfo : tradeInfos){
             if (tradeInfo != null){
                 tradeInfoVOS.add(copyforCash(tradeInfo));
             }
@@ -266,11 +266,11 @@ public class CopyUtil {
     }
 
 
-    public static List<TradeInfoJpa> copyTradeInfoListJpa(List<String[]> list){
-        List<TradeInfoJpa> tradeInfoList = new ArrayList<>();
+    public static List<TradeInfo> copyTradeInfoListJpa(List<String[]> list){
+        List<TradeInfo> tradeInfoList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             String[] bean = list.get(i);
-            TradeInfoJpa tradeInfo = new TradeInfoJpa();
+            TradeInfo tradeInfo = new TradeInfo();
             tradeInfo.setBaseId(Integer.valueOf(bean[1]));
             tradeInfo.setBaseSymbol(bean[2]);
             tradeInfo.setQuoteId(Integer.valueOf(bean[3]));
@@ -288,7 +288,7 @@ public class CopyUtil {
     }
 
 
-    public static PATableVO copy(TradeInfoJpa tradeInfo){
+    public static PATableVO copy(TradeInfo tradeInfo){
         if(tradeInfo == null){
             return null;
         }
@@ -306,7 +306,7 @@ public class CopyUtil {
     }
 
 
-    public static CoinChoiceBoxVO copyCoinChoiceBoxVO(CMCMapJpa cmcMap){
+    public static CoinChoiceBoxVO copyCoinChoiceBoxVO(CMCMap cmcMap){
         if(cmcMap == null){
             return null;
         }
@@ -317,9 +317,9 @@ public class CopyUtil {
         return coinChoiceBoxVO;
     }
 
-    public static List<CoinChoiceBoxVO> copyCoinChoiceBoxVOListJpa(List<CMCMapJpa> list){
+    public static List<CoinChoiceBoxVO> copyCoinChoiceBoxVOListJpa(List<CMCMap> list){
         List<CoinChoiceBoxVO> coinChoiceBoxVOS = new ArrayList<>();
-        for (CMCMapJpa cmcMap : list) {
+        for (CMCMap cmcMap : list) {
             coinChoiceBoxVOS.add(copyCoinChoiceBoxVO(cmcMap));
         }
 

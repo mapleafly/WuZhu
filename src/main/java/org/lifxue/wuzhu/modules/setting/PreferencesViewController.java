@@ -24,9 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.lifxue.wuzhu.enums.BooleanEnum;
 import org.lifxue.wuzhu.enums.ThemeEnum;
-import org.lifxue.wuzhu.service.ICMCMapJpaService;
-import org.lifxue.wuzhu.service.ICMCQuotesLatestJpaService;
-import org.lifxue.wuzhu.service.ITradeInfoJpaService;
+import org.lifxue.wuzhu.service.ICMCMapService;
+import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
+import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.lifxue.wuzhu.util.PrefsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,11 +77,11 @@ public class PreferencesViewController implements Initializable {
     private Workbench workbench;
     private InterfaceTheme interfaceTheme;
 
-    private final ICMCMapJpaService icmcMapJpaService;
+    private final ICMCMapService icmcMapJpaService;
 
-    private final ITradeInfoJpaService iTradeInfoJpaService;
+    private final ITradeInfoService iTradeInfoJpaService;
 
-    private final ICMCQuotesLatestJpaService icmcQuotesLatestJpaService;
+    private final ICMCQuotesLatestService icmcQuotesLatestJpaService;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -90,9 +90,9 @@ public class PreferencesViewController implements Initializable {
     public PreferencesViewController(
         Workbench workbench,
         InterfaceTheme interfaceTheme,
-        ICMCMapJpaService icmcMapJpaService,
-        ITradeInfoJpaService iTradeInfoJpaService,
-        ICMCQuotesLatestJpaService icmcQuotesLatestJpaService
+        ICMCMapService icmcMapJpaService,
+        ITradeInfoService iTradeInfoJpaService,
+        ICMCQuotesLatestService icmcQuotesLatestJpaService
     ) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;

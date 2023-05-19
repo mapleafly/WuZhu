@@ -2,12 +2,12 @@ package org.lifxue.wuzhu.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.lifxue.wuzhu.modules.statistics.vo.PATableVO;
-import org.lifxue.wuzhu.pojo.CMCQuotesLatestJpa;
-import org.lifxue.wuzhu.pojo.TradeInfoJpa;
-import org.lifxue.wuzhu.service.ICMCMapJpaService;
-import org.lifxue.wuzhu.service.ICMCQuotesLatestJpaService;
-import org.lifxue.wuzhu.service.IPATableJpaService;
-import org.lifxue.wuzhu.service.ITradeInfoJpaService;
+import org.lifxue.wuzhu.pojo.CMCQuotesLatest;
+import org.lifxue.wuzhu.pojo.TradeInfo;
+import org.lifxue.wuzhu.service.ICMCMapService;
+import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
+import org.lifxue.wuzhu.service.IPATableService;
+import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.util.CopyUtil;
 import org.springframework.stereotype.Service;
 
@@ -25,15 +25,15 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class PATableJpaServiceImpl implements IPATableJpaService {
-    private ITradeInfoJpaService iTradeInfoJpaService;
-    private ICMCQuotesLatestJpaService icmcQuotesLatestJpaService;
-    private ICMCMapJpaService icmcMapJpaService;
+public class PATableServiceImpl implements IPATableService {
+    private ITradeInfoService iTradeInfoJpaService;
+    private ICMCQuotesLatestService icmcQuotesLatestJpaService;
+    private ICMCMapService icmcMapJpaService;
 
-    public PATableJpaServiceImpl(
-        ITradeInfoJpaService iTradeInfoJpaService,
-        ICMCQuotesLatestJpaService icmcQuotesLatestJpaService,
-        ICMCMapJpaService icmcMapJpaService) {
+    public PATableServiceImpl(
+        ITradeInfoService iTradeInfoJpaService,
+        ICMCQuotesLatestService icmcQuotesLatestJpaService,
+        ICMCMapService icmcMapJpaService) {
         this.iTradeInfoJpaService = iTradeInfoJpaService;
         this.icmcQuotesLatestJpaService = icmcQuotesLatestJpaService;
         this.icmcMapJpaService = icmcMapJpaService;
@@ -41,14 +41,14 @@ public class PATableJpaServiceImpl implements IPATableJpaService {
 
     @Override
     public List<PATableVO> queryAllVos() {
-        List<TradeInfoJpa> tradeInfoList = iTradeInfoJpaService.findOrderByTradeDate();
+        List<TradeInfo> tradeInfoList = iTradeInfoJpaService.findOrderByTradeDate();
 
-        List<CMCQuotesLatestJpa> cmcQuotesLatests = icmcQuotesLatestJpaService.queryLatest();
+        List<CMCQuotesLatest> cmcQuotesLatests = icmcQuotesLatestJpaService.queryLatest();
 
         List<PATableVO> paTableVOS = new ArrayList<PATableVO>();
-        for (TradeInfoJpa tradeInfo : tradeInfoList) {
+        for (TradeInfo tradeInfo : tradeInfoList) {
             PATableVO paTableVO = CopyUtil.copy(tradeInfo);
-            for (CMCQuotesLatestJpa cmcQuotesLatest : cmcQuotesLatests) {
+            for (CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests) {
                 if (paTableVO.getCoinId().equals(cmcQuotesLatest.getTid())) {
                     BigDecimal curPrice = new BigDecimal(cmcQuotesLatest.getPrice());
                     BigDecimal payPrice = new BigDecimal(paTableVO.getPrice());
@@ -71,7 +71,7 @@ public class PATableJpaServiceImpl implements IPATableJpaService {
 
     @Override
     public List<PATableVO> queryVOBy(String strCoinSymbol, String strStartDate, String strEndDate, String tradeType) {
-        List<TradeInfoJpa> tradeInfoList = iTradeInfoJpaService.findByTradeDateBetweenOrderByTradeDateDesc(strStartDate, strEndDate);
+        List<TradeInfo> tradeInfoList = iTradeInfoJpaService.findByTradeDateBetweenOrderByTradeDateDesc(strStartDate, strEndDate);
         if (strCoinSymbol != null && !strCoinSymbol.isBlank()) {
             tradeInfoList = tradeInfoList.stream().filter(tradeInfo -> tradeInfo.getBaseSymbol().equals(strCoinSymbol)).toList();
         }
@@ -80,11 +80,11 @@ public class PATableJpaServiceImpl implements IPATableJpaService {
         }
         //查询被选品种
         //List<CMCMap> cmcMaps = icmcMapService.queryAll(1);
-        List<CMCQuotesLatestJpa> cmcQuotesLatests = icmcQuotesLatestJpaService.queryLatest();
+        List<CMCQuotesLatest> cmcQuotesLatests = icmcQuotesLatestJpaService.queryLatest();
         List<PATableVO> paTableVOS = new ArrayList<PATableVO>();
-        for (TradeInfoJpa tradeInfo : tradeInfoList) {
+        for (TradeInfo tradeInfo : tradeInfoList) {
             PATableVO paTableVO = CopyUtil.copy(tradeInfo);
-            for (CMCQuotesLatestJpa cmcQuotesLatest : cmcQuotesLatests) {
+            for (CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests) {
                 if (paTableVO.getCoinId().equals(cmcQuotesLatest.getTid())) {
                     BigDecimal curPrice = new BigDecimal(cmcQuotesLatest.getPrice());
                     BigDecimal payPrice = new BigDecimal(paTableVO.getPrice());
@@ -109,10 +109,10 @@ public class PATableJpaServiceImpl implements IPATableJpaService {
     }
 
     @Override
-    public CMCQuotesLatestJpa queryBySymbol(String symbol) {
-        List<CMCQuotesLatestJpa> cmcQuotesLatests = icmcQuotesLatestJpaService.queryLatest();
-        CMCQuotesLatestJpa c1 = null;
-        for (CMCQuotesLatestJpa cmcQuotesLatest : cmcQuotesLatests) {
+    public CMCQuotesLatest queryBySymbol(String symbol) {
+        List<CMCQuotesLatest> cmcQuotesLatests = icmcQuotesLatestJpaService.queryLatest();
+        CMCQuotesLatest c1 = null;
+        for (CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests) {
             if (cmcQuotesLatest.getSymbol().equals(symbol)) {
                 c1 = cmcQuotesLatest;
                 break;

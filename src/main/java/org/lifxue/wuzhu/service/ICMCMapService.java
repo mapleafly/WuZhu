@@ -1,5 +1,5 @@
 package org.lifxue.wuzhu.service;
-import org.lifxue.wuzhu.pojo.CMCMapJpa;
+import org.lifxue.wuzhu.pojo.CMCMap;
 
 import java.util.List;
 
@@ -10,17 +10,17 @@ import java.util.List;
  * @Date 2023/5/7 11:07
  * @Version 1.0
  */
-public interface ICMCMapJpaService {
+public interface ICMCMapService {
 
-    List<CMCMapJpa> getJson(String listing_status, Integer start, Integer limit, String sort, String aux);
+    List<CMCMap> getJson(String listing_status, Integer start, Integer limit, String sort, String aux);
 
-    List<CMCMapJpa> getJson(Integer start, Integer limit, String sort, String aux);
+    List<CMCMap> getJson(Integer start, Integer limit, String sort, String aux);
 
-    List<CMCMapJpa> getJson(Integer start, Integer limit, String sort);
+    List<CMCMap> getJson(Integer start, Integer limit, String sort);
 
-    List<CMCMapJpa> getJson(Integer limit, String sort);
+    List<CMCMap> getJson(Integer limit, String sort);
 
-    List<CMCMapJpa> getJson(Integer limit);
+    List<CMCMap> getJson(Integer limit);
 
     boolean saveOrUpdateBatch(String sort);
 
@@ -36,10 +36,10 @@ public interface ICMCMapJpaService {
 
     List<String> queryCurSymbol();
     List<Integer> getSelectedIDs();
-    List<CMCMapJpa> getSelecteds();
-    CMCMapJpa queryCoinBySymbo(String symbo);
+    List<CMCMap> getSelecteds();
+    CMCMap queryCoinBySymbo(String symbo);
 
-    List<CMCMapJpa> findBySymbolLikeOrderByTid(String symbol);
+    List<CMCMap> findBySymbolLikeOrderByTid(String symbol);
 
     boolean updateSelectedBatch(List<Integer> selected);
 
@@ -50,13 +50,13 @@ public interface ICMCMapJpaService {
      * @param isSelect
      * @return java.util.List<org.lifxue.wuzhu.entity.CMCMap>
      **/
-    List<CMCMapJpa> list(Integer isSelect);
+    List<CMCMap> list(Integer isSelect);
 
-    List<CMCMapJpa> list();
+    List<CMCMap> list();
 
-    List<CMCMapJpa> getById(Integer tid);
+    List<CMCMap> getById(Integer tid);
 
-    boolean update(CMCMapJpa cmcMapJpa);
+    boolean update(CMCMap cmcMapJpa);
 
     boolean delete();
 }

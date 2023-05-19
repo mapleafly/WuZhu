@@ -3,11 +3,11 @@ package org.lifxue.wuzhu.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
-import org.lifxue.wuzhu.pojo.CMCMapJpa;
-import org.lifxue.wuzhu.pojo.TradeInfoJpa;
+import org.lifxue.wuzhu.pojo.CMCMap;
+import org.lifxue.wuzhu.pojo.TradeInfo;
 import org.lifxue.wuzhu.repository.TradeInfoRepository;
-import org.lifxue.wuzhu.service.ICMCMapJpaService;
-import org.lifxue.wuzhu.service.ITradeInfoJpaService;
+import org.lifxue.wuzhu.service.ICMCMapService;
+import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.util.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -25,13 +25,13 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class TradeInfoJpaServiceImpl implements ITradeInfoJpaService {
-    private ICMCMapJpaService icmcMapJpaService;
+public class TradeInfoServiceImpl implements ITradeInfoService {
+    private ICMCMapService icmcMapJpaService;
     private TradeInfoRepository tradeInfoRepository;
 
 
     @Autowired
-    public void setIcmcMapJpaService(ICMCMapJpaService icmcMapJpaService) {
+    public void setIcmcMapJpaService(ICMCMapService icmcMapJpaService) {
         this.icmcMapJpaService = icmcMapJpaService;
     }
     @Autowired
@@ -52,7 +52,7 @@ public class TradeInfoJpaServiceImpl implements ITradeInfoJpaService {
 
     @Override
     public List<CoinChoiceBoxVO> queryCurCoin() {
-        List<CMCMapJpa> cmcMaps = icmcMapJpaService.getSelecteds();
+        List<CMCMap> cmcMaps = icmcMapJpaService.getSelecteds();
         return CopyUtil.copyCoinChoiceBoxVOListJpa(cmcMaps);
     }
 
@@ -65,18 +65,18 @@ public class TradeInfoJpaServiceImpl implements ITradeInfoJpaService {
      **/
     @Override
     public List<TradeInfoVO> queryTradeInfoByBaseSymbol(String symbol) {
-        List<TradeInfoJpa> tradeInfoList = tradeInfoRepository.findByBaseSymbolOrderByIdDesc(symbol);
+        List<TradeInfo> tradeInfoList = tradeInfoRepository.findByBaseSymbolOrderByIdDesc(symbol);
         return CopyUtil.copyTradeInfoVOListJpa(tradeInfoList);
     }
 
     @Override
     public List<TradeInfoVO> queryTradeInfoByBaseCoinId(Integer coinId) {
-        List<TradeInfoJpa> tradeInfoList = tradeInfoRepository.findByBaseIdOrderByIdDesc(coinId);
+        List<TradeInfo> tradeInfoList = tradeInfoRepository.findByBaseIdOrderByIdDesc(coinId);
         return CopyUtil.copyTradeInfoVOListJpa(tradeInfoList);
     }
 
     @Override
-    public CMCMapJpa queryCoinBySymbol(String symbol) {
+    public CMCMap queryCoinBySymbol(String symbol) {
         return icmcMapJpaService.queryCoinBySymbo(symbol);
     }
 
@@ -88,28 +88,28 @@ public class TradeInfoJpaServiceImpl implements ITradeInfoJpaService {
     @Override
     @Transactional
     public boolean saveBatch(List<String[]> list) {
-        List<TradeInfoJpa> tradeInfoList = CopyUtil.copyTradeInfoListJpa(list);
+        List<TradeInfo> tradeInfoList = CopyUtil.copyTradeInfoListJpa(list);
         return tradeInfoRepository.saveAll(tradeInfoList) == null ? false : true;
     }
 
     @Override
-    public List<TradeInfoJpa> findOrderByTradeDate() {
+    public List<TradeInfo> findOrderByTradeDate() {
         Sort sort = Sort.by(Sort.Direction.DESC, "tradeDate");
         return tradeInfoRepository.findAll(sort);
     }
 
     @Override
-    public List<TradeInfoJpa> findByTradeDateBetweenOrderByTradeDateDesc(String startDate, String endDate) {
+    public List<TradeInfo> findByTradeDateBetweenOrderByTradeDateDesc(String startDate, String endDate) {
         return tradeInfoRepository.findByTradeDateBetweenOrderByTradeDateDesc(startDate, endDate);
     }
 
     @Override
-    public boolean save(TradeInfoJpa tradeInfoJpa) {
+    public boolean save(TradeInfo tradeInfoJpa) {
         return tradeInfoRepository.save(tradeInfoJpa) == null ? false : true;
     }
 
     @Override
-    public TradeInfoJpa findById(Integer id) {
+    public TradeInfo findById(Integer id) {
         return tradeInfoRepository.findById(id).orElse(null);
     }
 

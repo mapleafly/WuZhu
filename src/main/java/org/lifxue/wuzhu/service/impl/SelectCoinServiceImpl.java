@@ -3,13 +3,12 @@ package org.lifxue.wuzhu.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.lifxue.wuzhu.modules.selectcoin.vo.SelectDataVO;
-import org.lifxue.wuzhu.pojo.CMCMapJpa;
-import org.lifxue.wuzhu.service.ICMCMapJpaService;
-import org.lifxue.wuzhu.service.ISelectCoinJpaService;
+import org.lifxue.wuzhu.pojo.CMCMap;
+import org.lifxue.wuzhu.service.ICMCMapService;
+import org.lifxue.wuzhu.service.ISelectCoinService;
 import org.lifxue.wuzhu.util.CopyUtil;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,29 +20,29 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class SelectCoinJpaServiceImpl implements ISelectCoinJpaService {
-    private ICMCMapJpaService icmcMapJpaService;
+public class SelectCoinServiceImpl implements ISelectCoinService {
+    private ICMCMapService icmcMapJpaService;
 
-    public SelectCoinJpaServiceImpl(ICMCMapJpaService icmcMapJpaService) {
+    public SelectCoinServiceImpl(ICMCMapService icmcMapJpaService) {
         this.icmcMapJpaService = icmcMapJpaService;
     }
 
     @Override
     public List<SelectDataVO> queryVO() {
-        List<CMCMapJpa> list = icmcMapJpaService.list();
+        List<CMCMap> list = icmcMapJpaService.list();
         return CopyUtil.copySelectDataListJpa(list);
     }
 
     @Override
     public List<SelectDataVO> queryVOBySymbol(String symbol) {
-        List<CMCMapJpa> list = icmcMapJpaService.findBySymbolLikeOrderByTid(symbol);
+        List<CMCMap> list = icmcMapJpaService.findBySymbolLikeOrderByTid(symbol);
         return CopyUtil.copySelectDataListJpa(list);
     }
 
     @Override
     public Boolean updateCheckStatus(@NotNull SelectDataVO selectDataVO) {
-        List<CMCMapJpa> list = icmcMapJpaService.getById(selectDataVO.getId());
-        CMCMapJpa cmcMap = (list == null || list.size() == 0 ) ? null : list.get(0);
+        List<CMCMap> list = icmcMapJpaService.getById(selectDataVO.getId());
+        CMCMap cmcMap = (list == null || list.size() == 0 ) ? null : list.get(0);
         if (cmcMap != null) {
             cmcMap.setIsSelected(selectDataVO.getSelect() ? 1 : 0);
 

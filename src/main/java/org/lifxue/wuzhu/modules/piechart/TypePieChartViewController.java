@@ -26,10 +26,10 @@ import javafx.scene.text.Font;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.lifxue.wuzhu.enums.BooleanEnum;
-import org.lifxue.wuzhu.pojo.CMCQuotesLatestJpa;
-import org.lifxue.wuzhu.pojo.TradeInfoJpa;
-import org.lifxue.wuzhu.service.ICMCQuotesLatestJpaService;
-import org.lifxue.wuzhu.service.ITradeInfoJpaService;
+import org.lifxue.wuzhu.pojo.CMCQuotesLatest;
+import org.lifxue.wuzhu.pojo.TradeInfo;
+import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
+import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.util.PrefsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -55,17 +55,17 @@ public class TypePieChartViewController implements Initializable {
     @FXML
     private Label totalPrice;
 
-    private final ITradeInfoJpaService iTradeInfoJpaService;
+    private final ITradeInfoService iTradeInfoJpaService;
 
-    private final ICMCQuotesLatestJpaService icmcQuotesLatestJpaService;
+    private final ICMCQuotesLatestService icmcQuotesLatestJpaService;
 
     /**
      *
      */
     @Autowired
     public TypePieChartViewController(
-            ITradeInfoJpaService iTradeInfoJpaService,
-            ICMCQuotesLatestJpaService icmcQuotesLatestJpaService
+            ITradeInfoService iTradeInfoJpaService,
+            ICMCQuotesLatestService icmcQuotesLatestJpaService
     ) {
         this.iTradeInfoJpaService = iTradeInfoJpaService;
         this.icmcQuotesLatestJpaService = icmcQuotesLatestJpaService;
@@ -123,14 +123,12 @@ public class TypePieChartViewController implements Initializable {
     private List<PieChart.Data> getData() {
         List<PieChart.Data> list = new ArrayList<>();
 
-        List<TradeInfoJpa> tdList = iTradeInfoJpaService.findOrderByTradeDate();
-        List<CMCQuotesLatestJpa> typeList = icmcQuotesLatestJpaService.queryLatest();
-        log.info("typeList.size==", typeList.size());
-        log.info("typeList:{}", typeList);
+        List<TradeInfo> tdList = iTradeInfoJpaService.findOrderByTradeDate();
+        List<CMCQuotesLatest> typeList = icmcQuotesLatestJpaService.queryLatest();
         BigDecimal usdtNum = new BigDecimal("0");
         // 计算USDT之外的coin现价
         double otherAllPrice = 0;
-        for (CMCQuotesLatestJpa coinType : typeList) {
+        for (CMCQuotesLatest coinType : typeList) {
             Integer id = coinType.getTid();
             String symbol = coinType.getSymbol();
             BigDecimal price;
@@ -142,7 +140,7 @@ public class TypePieChartViewController implements Initializable {
 
             BigDecimal buyNum = new BigDecimal("0");
             BigDecimal saleNum = new BigDecimal("0");
-            for (TradeInfoJpa bean : tdList) {
+            for (TradeInfo bean : tdList) {
                 if (bean.getBaseId().intValue() == id.intValue()) {
                     if (coinType.getSymbol().equals("USDT")) {
                         if (bean.getSaleOrBuy().equals("买")) {

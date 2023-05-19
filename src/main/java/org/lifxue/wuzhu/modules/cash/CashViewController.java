@@ -29,9 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
-import org.lifxue.wuzhu.pojo.TradeInfoJpa;
+import org.lifxue.wuzhu.pojo.TradeInfo;
 import org.lifxue.wuzhu.service.ICashService;
-import org.lifxue.wuzhu.service.ITradeInfoJpaService;
+import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.util.CopyUtil;
 import org.lifxue.wuzhu.util.DateHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +92,7 @@ public class CashViewController implements Initializable {
 
     private Workbench workbench;
 
-    private final ITradeInfoJpaService iTradeInfoJpaService;
+    private final ITradeInfoService iTradeInfoJpaService;
 
     private final ICashService iCashService;
 
@@ -109,7 +109,7 @@ public class CashViewController implements Initializable {
     }
 
     @Autowired
-    public CashViewController(ITradeInfoJpaService iTradeInfoJpaService, ICashService iCashService) {
+    public CashViewController(ITradeInfoService iTradeInfoJpaService, ICashService iCashService) {
         this.iTradeInfoJpaService = iTradeInfoJpaService;
         this.iCashService = iCashService;
         tradeDataList = FXCollections.observableArrayList();
@@ -221,7 +221,7 @@ public class CashViewController implements Initializable {
     @FXML
     private void handleAddData(ActionEvent event) {
         if (isInputValid()) {
-            TradeInfoJpa tradeInfo = new TradeInfoJpa();
+            TradeInfo tradeInfo = new TradeInfo();
             setTradeInfo(tradeInfo);
             if (iTradeInfoJpaService.save(tradeInfo)) {
                 tradeDataList.add(0, CopyUtil.copyforCash(tradeInfo));
@@ -230,7 +230,7 @@ public class CashViewController implements Initializable {
               }
     }
 
-    private void setTradeInfo(TradeInfoJpa tradeInfo) {
+    private void setTradeInfo(TradeInfo tradeInfo) {
         tradeInfo.setBaseId(baseChoiceBox.getValue().getCoinId());
         tradeInfo.setBaseSymbol(baseChoiceBox.getValue().getSymbol());
         tradeInfo.setQuoteId(BASEID);
@@ -254,7 +254,7 @@ public class CashViewController implements Initializable {
             int selectedIndex = dataTable.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
                 TradeInfoVO tradeInfoVO = dataTable.getItems().get(selectedIndex);
-                TradeInfoJpa tradeInfo = iTradeInfoJpaService.findById(tradeInfoVO.getId());
+                TradeInfo tradeInfo = iTradeInfoJpaService.findById(tradeInfoVO.getId());
                 if(null == tradeInfo){
                     return;
                 }

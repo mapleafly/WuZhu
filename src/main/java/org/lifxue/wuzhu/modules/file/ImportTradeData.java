@@ -19,9 +19,9 @@ import com.dlsc.workbenchfx.Workbench;
 import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 import lombok.extern.slf4j.Slf4j;
-import org.lifxue.wuzhu.service.ICMCMapJpaService;
-import org.lifxue.wuzhu.service.ICMCQuotesLatestJpaService;
-import org.lifxue.wuzhu.service.ITradeInfoJpaService;
+import org.lifxue.wuzhu.service.ICMCMapService;
+import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
+import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.util.CSVHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -41,20 +41,20 @@ public class ImportTradeData {
 
     private final Workbench workbench;
 
-    private final ICMCMapJpaService icmcMapJpaService;
+    private final ICMCMapService icmcMapJpaService;
 
-    private final ITradeInfoJpaService iTradeInfoJpaService;
+    private final ITradeInfoService iTradeInfoJpaService;
 
-    private final ICMCQuotesLatestJpaService icmcQuotesLatestJpaService;
+    private final ICMCQuotesLatestService icmcQuotesLatestJpaService;
 
 
 
     @Autowired
     public ImportTradeData(
             Workbench workbench,
-            ICMCMapJpaService icmcMapJpaService,
-            ITradeInfoJpaService iTradeInfoJpaService,
-            ICMCQuotesLatestJpaService icmcQuotesLatestJpaService
+            ICMCMapService icmcMapJpaService,
+            ITradeInfoService iTradeInfoJpaService,
+            ICMCQuotesLatestService icmcQuotesLatestJpaService
     ) {
 
         this.workbench = workbench;

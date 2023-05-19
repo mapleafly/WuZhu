@@ -1,7 +1,7 @@
 package org.lifxue.wuzhu.service;
 
 import org.lifxue.wuzhu.modules.statistics.vo.PATableVO;
-import org.lifxue.wuzhu.pojo.CMCQuotesLatestJpa;
+import org.lifxue.wuzhu.pojo.CMCQuotesLatest;
 
 import java.util.List;
 
@@ -12,13 +12,13 @@ import java.util.List;
  * @Date 2023/5/7 17:07
  * @Version 1.0
  */
-public interface IPATableJpaService {
+public interface IPATableService {
     List<PATableVO> queryAllVos();
 
     List<PATableVO> queryVOBy(String strCoinSymbol, String strStartDate, String strEndDate, String tradeType);
 
     List<String> queryCurSymbol();
 
-    CMCQuotesLatestJpa queryBySymbol(String symbol);
+    CMCQuotesLatest queryBySymbol(String symbol);
 
 }

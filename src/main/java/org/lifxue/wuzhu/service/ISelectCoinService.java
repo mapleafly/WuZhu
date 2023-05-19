@@ -12,7 +12,7 @@ import java.util.List;
  * @Date 2023/5/7 19:33
  * @Version 1.0
  */
-public interface ISelectCoinJpaService {
+public interface ISelectCoinService {
     List<SelectDataVO> queryVO();
     List<SelectDataVO> queryVOBySymbol(String symbol);
 

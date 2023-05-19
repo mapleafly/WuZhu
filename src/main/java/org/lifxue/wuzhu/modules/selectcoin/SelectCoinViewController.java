@@ -29,7 +29,7 @@ import javafx.util.Callback;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.lifxue.wuzhu.modules.selectcoin.vo.SelectDataVO;
-import org.lifxue.wuzhu.service.ISelectCoinJpaService;
+import org.lifxue.wuzhu.service.ISelectCoinService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -66,10 +66,10 @@ public class SelectCoinViewController implements Initializable {
     private TextField searchField;
 
     private Workbench workbench;
-    private final ISelectCoinJpaService iSelectCoinJpaService;
+    private final ISelectCoinService iSelectCoinJpaService;
 
 
-    public SelectCoinViewController(ISelectCoinJpaService iSelectCoinJpaService) {
+    public SelectCoinViewController(ISelectCoinService iSelectCoinJpaService) {
         this.iSelectCoinJpaService = iSelectCoinJpaService;
         this.coinTypeData = FXCollections.observableArrayList();
     }

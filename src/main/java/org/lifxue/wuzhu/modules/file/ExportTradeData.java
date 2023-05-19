@@ -18,10 +18,10 @@ package org.lifxue.wuzhu.modules.file;
 import com.dlsc.workbenchfx.Workbench;
 import javafx.stage.FileChooser;
 import lombok.extern.slf4j.Slf4j;
-import org.lifxue.wuzhu.pojo.TradeInfoJpa;
-import org.lifxue.wuzhu.service.ICMCMapJpaService;
-import org.lifxue.wuzhu.service.ICMCQuotesLatestJpaService;
-import org.lifxue.wuzhu.service.ITradeInfoJpaService;
+import org.lifxue.wuzhu.pojo.TradeInfo;
+import org.lifxue.wuzhu.service.ICMCMapService;
+import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
+import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.util.CSVHelper;
 import org.springframework.stereotype.Component;
 
@@ -38,17 +38,17 @@ public class ExportTradeData {
 
     private final Workbench workbench;
 
-    private final ICMCMapJpaService icmcMapJpaService;
+    private final ICMCMapService icmcMapJpaService;
 
-    private final ITradeInfoJpaService iTradeInfoJpaService;
+    private final ITradeInfoService iTradeInfoJpaService;
 
-    private final ICMCQuotesLatestJpaService icmcQuotesLatestJpaService;
+    private final ICMCQuotesLatestService icmcQuotesLatestJpaService;
 
     public ExportTradeData(
             Workbench workbench,
-            ICMCMapJpaService icmcMapJpaService,
-            ITradeInfoJpaService iTradeInfoJpaService,
-            ICMCQuotesLatestJpaService icmcQuotesLatestJpaService
+            ICMCMapService icmcMapJpaService,
+            ITradeInfoService iTradeInfoJpaService,
+            ICMCQuotesLatestService icmcQuotesLatestJpaService
     ) {
 
         this.workbench = workbench;
@@ -58,7 +58,7 @@ public class ExportTradeData {
     }
 
     public void handleExportData() {
-        List<TradeInfoJpa> tradeInfoList = iTradeInfoJpaService.findOrderByTradeDate();
+        List<TradeInfo> tradeInfoList = iTradeInfoJpaService.findOrderByTradeDate();
         String[] headers = {
             "id",
             "base_id",

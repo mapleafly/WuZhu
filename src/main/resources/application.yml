@@ -13,8 +13,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create-drop # none, update, create, create-drop
-    show-sql: true
+      ddl-auto: update # none, update, create, create-drop
+    show-sql: false
     # database: h2
 #  sql:
 #    init:
