@@ -1,13 +1,13 @@
 
 plugins {
     java
-//    `maven-publish`
+    //`maven-publish`
     application
-    id("org.openjfx.javafxplugin") version "0.0.13"
+    id("org.openjfx.javafxplugin") version "0.0.14"
     id("org.springframework.boot") version "2.7.10"
     id("io.spring.dependency-management") version "1.0.15.RELEASE"
     //对于Windows，需要安装 https://wixtoolset.org
-    id("org.panteleyev.jpackageplugin") version "1.5.1"
+    //id("org.panteleyev.jpackageplugin") version "1.5.1"
 }
 
 configurations {
@@ -74,6 +74,7 @@ javafx {
     modules("javafx.controls", "javafx.fxml")
 }
 
+/*
 task("copyDependencies", Copy::class) {
     from(configurations.runtimeClasspath).into("$buildDir/jars")
 }
@@ -99,4 +100,4 @@ tasks.jpackage {
     windows {
         winConsole = true
     }
-}
+}*/
