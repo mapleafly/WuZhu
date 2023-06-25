@@ -44,7 +44,7 @@ dependencies {
     implementation("net.rgielen:javafx-weaver-spring-boot-starter:1.3.0")
     implementation("com.dlsc.workbenchfx:workbenchfx-core:11.3.1")
     implementation("org.fxmisc.richtext:richtextfx:0.11.0")
-    implementation("org.apache.commons:commons-csv:1.9.0")
+    implementation("org.apache.commons:commons-csv:1.10.0")
 
 }
 

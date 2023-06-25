@@ -41,11 +41,12 @@ public class CSVHelper {
      **/
     public static boolean writeCsv(String[] header, List<String[]> data, File filePath) {
         // 初始化csvformat
-        CSVFormat formator =
-            CSVFormat.DEFAULT
-                .withHeader(header)
-                .withRecordSeparator(NEW_LINE_SEPARATOR)
-                .withDelimiter(DELIMITER);
+//        CSVFormat formator =
+//            CSVFormat.DEFAULT
+//                .withHeader(header)
+//                .withRecordSeparator(NEW_LINE_SEPARATOR)
+//                .withDelimiter(DELIMITER);
+        CSVFormat formator = CSVFormat.Builder.create().setHeader(header).setRecordSeparator(NEW_LINE_SEPARATOR).setDelimiter(DELIMITER).build();
 
         try {
             // 创建FileWriter对象
@@ -77,11 +78,12 @@ public class CSVHelper {
      public static List<String[]> readCsv(String filePath) {
         List<String[]> data = new ArrayList<>();
         try (Reader reader = new FileReader(filePath, CHARSET)) {
-            Iterable<CSVRecord> records =
-                CSVFormat.DEFAULT
+            CSVFormat formator = CSVFormat.Builder.create().setHeader().setSkipHeaderRecord(true).build();
+            Iterable<CSVRecord> records = formator.parse(reader);
+               /* CSVFormat.DEFAULT
                     // 第一行作为header
                     .withFirstRecordAsHeader()
-                    .parse(reader);
+                    .parse(reader);*/
             for (CSVRecord csvRecord : records) {
                 String[] str = new String[csvRecord.size()];
                 for (int i = 0; i < csvRecord.size(); i++) {
