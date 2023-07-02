@@ -26,7 +26,14 @@ repositories {
     }
 }
 
+
+
 dependencies {
+
+    ext {
+        set("mapstructVersion", "1.5.5.Final")
+    }
+
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("com.h2database:h2:2.1.214")
@@ -45,6 +52,10 @@ dependencies {
     implementation("com.dlsc.workbenchfx:workbenchfx-core:11.3.1")
     implementation("org.fxmisc.richtext:richtextfx:0.11.0")
     implementation("org.apache.commons:commons-csv:1.10.0")
+
+    implementation("org.mapstruct:mapstruct:${ext["mapstructVersion"]}")
+    annotationProcessor("org.mapstruct:mapstruct-processor:${ext["mapstructVersion"]}")
+    testAnnotationProcessor( "org.mapstruct:mapstruct-processor:${ext["mapstructVersion"]}")
 
 }
 
