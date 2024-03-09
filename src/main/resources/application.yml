@@ -55,4 +55,3 @@ proxy:
   #host: 127.0.0.1
   #port: 53214
   domains: pro-api.coinmarketcap.com
-
