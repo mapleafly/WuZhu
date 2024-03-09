@@ -162,7 +162,7 @@ public class SelectCoinViewController implements Initializable {
     @FXML
     private void handleSearchFieldKeyReleased(KeyEvent event) {
         coinTypeData.clear();
-        List<SelectDataVO> list = iSelectCoinJpaService.queryVOBySymbol(searchField.getText().trim());
+        List<SelectDataVO> list = iSelectCoinJpaService.queryVOBySymbol(searchField.getText().trim().toUpperCase());
         if (list != null && !list.isEmpty()) {
             coinTypeData.addAll(list);
         }
