@@ -192,9 +192,6 @@ public class CMCMapServiceImpl implements ICMCMapService {
         }
         //数据库查询所得
         List<CMCMap> cmcMapList = cmcMapRepository.findAll();
-        //log.info("cmcMapList:{}", cmcMapList);
-        log.info("cmcMapList.size==={}", cmcMapList.size());
-
         if (cmcMapList.isEmpty()) {
             return cmcMapRepository.saveAll(listAll) == null ? false : true;
         }
