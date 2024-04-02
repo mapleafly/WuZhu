@@ -1,5 +1,6 @@
 package org.lifxue.wuzhu.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.lifxue.wuzhu.dto.CMCMapDto;
 import org.lifxue.wuzhu.dto.CMCQuotesLatestDto;
 import org.lifxue.wuzhu.dto.Platform;
@@ -20,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class CopyUtil {
 
     public static <T> T copy(Object source, Class<T> c) {
@@ -71,15 +73,19 @@ public class CopyUtil {
         cmcMap.setIsActive(dto.getIsActive());
         cmcMap.setRank(dto.getRank());
 
-        String firstDateTime = dto.getFirstHistoricalData().replace("Z", " UTC");
-        String lastDateTime = dto.getLastHistoricalData().replace("Z", " UTC");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS Z");
         SimpleDateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            cmcMap.setFirstHistoricalData(defaultFormat.format(format.parse(firstDateTime)));
-            cmcMap.setLastHistoricalData(defaultFormat.format(format.parse(lastDateTime)));
+            if(dto.getFirstHistoricalData() != null && !dto.getFirstHistoricalData().isEmpty()){
+                String firstDateTime = dto.getFirstHistoricalData().replace("Z", " UTC");
+                cmcMap.setFirstHistoricalData(defaultFormat.format(format.parse(firstDateTime)));
+            }
+            if(dto.getLastHistoricalData() != null && !dto.getLastHistoricalData().isEmpty()) {
+                String lastDateTime = dto.getLastHistoricalData().replace("Z", " UTC");
+                cmcMap.setLastHistoricalData(defaultFormat.format(format.parse(lastDateTime)));
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("CopyUtil- copyjpa(CMCMapDto dto)" + "格式错误");
         }
 
         Platform platform = dto.getPlatform();
@@ -87,7 +93,6 @@ public class CopyUtil {
             cmcMap.setPlatformId(platform.getId());
             cmcMap.setTokenAddress(platform.getToken_address());
         }
-
         return cmcMap;
     }
 
