@@ -244,6 +244,14 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
         return updatePriceItem;
     }
 
+    /**
+     * 创建更新MarketCap货币信息的菜单项
+     *
+     * 此方法构建一个菜单项，用于触发从外部数据源更新应用内的加密货币信息它使用Material Design图标作为视觉识别元素，并设置了一个事件处理器，
+     * 用于在用户选择菜单项时执行更新操作
+     *
+     * @return MenuItem 返回构建好的菜单项，用于在界面上触发加密货币数据的更新
+     */
     private MenuItem coinMapItem() {
         // 更新MarketCap货币信息菜单项
         MenuItem coinMapItem = new MenuItem("更新货币数据", new FontIcon(MaterialDesign.MDI_DOWNLOAD));

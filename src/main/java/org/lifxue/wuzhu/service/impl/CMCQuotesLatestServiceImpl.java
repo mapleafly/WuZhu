@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lifxue.wuzhu.dto.*;
@@ -29,6 +30,7 @@ import java.util.List;
  * @Date 2023/5/7 14:43
  * @Version 1.0
  */
+@Slf4j
 @Service
 public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
 
