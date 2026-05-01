@@ -308,7 +308,7 @@ public class CMCMapServiceImpl implements ICMCMapService {
      * @return java.util.List<org.lifxue.wuzhu.entity.CMCMap>
      **/
     public List<CMCMap> list(Integer isSelect) {
-        return cmcMapRepository.list(1);
+        return cmcMapRepository.list(isSelect);
     }
 
     @Override

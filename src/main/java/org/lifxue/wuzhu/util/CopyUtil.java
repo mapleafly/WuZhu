@@ -113,6 +113,7 @@ public class CopyUtil {
 
     public static CMCQuotesLatest copyjpa(CMCQuotesLatestDto dto) {
         if (dto == null) {
+            log.warn("[CopyUtil] DTO为null，跳过转换");
             return null;
         }
         CMCQuotesLatest cmcQuotesLatestJpa = new CMCQuotesLatest();
@@ -121,15 +122,20 @@ public class CopyUtil {
         cmcQuotesLatestJpa.setSymbol(dto.getSymbol());
         cmcQuotesLatestJpa.setSlug(dto.getSlug());
 
-        String lastUpdated = dto.getLast_updated().replace("Z", " UTC");
-        String dataAdded = dto.getDate_added().replace("Z", " UTC");
+        // 处理日期字段，添加null检查
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS Z");
         SimpleDateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            cmcQuotesLatestJpa.setLastUpdated(defaultFormat.format(format.parse(lastUpdated)));
-            cmcQuotesLatestJpa.setDateAdded(defaultFormat.format(format.parse(dataAdded)));
+            if (dto.getLast_updated() != null && !dto.getLast_updated().isEmpty()) {
+                String lastUpdated = dto.getLast_updated().replace("Z", " UTC");
+                cmcQuotesLatestJpa.setLastUpdated(defaultFormat.format(format.parse(lastUpdated)));
+            }
+            if (dto.getDate_added() != null && !dto.getDate_added().isEmpty()) {
+                String dataAdded = dto.getDate_added().replace("Z", " UTC");
+                cmcQuotesLatestJpa.setDateAdded(defaultFormat.format(format.parse(dataAdded)));
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("[CopyUtil] 日期格式转换失败 - coinId: {}, 错误: {}", dto.getId(), e.getMessage());
         }
 
         cmcQuotesLatestJpa.setNumMarketPairs(dto.getNum_market_pairs());
