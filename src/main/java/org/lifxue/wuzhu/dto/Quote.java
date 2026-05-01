@@ -1,5 +1,6 @@
 package org.lifxue.wuzhu.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -7,11 +8,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Quote {
     private String quote;
     private double price;
     private double volume_24h;
     private double volume_change_24h;
+    private double cex_volume_24h;
     private double percent_change_1h;
     private double percent_change_24h;
     private double percent_change_7d;
