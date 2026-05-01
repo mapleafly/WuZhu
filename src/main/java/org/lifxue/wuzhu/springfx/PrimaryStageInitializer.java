@@ -24,6 +24,12 @@ import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.springframework.beans.factory.annotation.Value;
+import org.lifxue.wuzhu.enums.BooleanEnum;
+import org.lifxue.wuzhu.util.PrefsHelper;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
@@ -141,6 +147,98 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
 
         // 设置主题
         interfaceTheme.initNightMode();
+
+        // 启动时自动更新任务
+        handleAutoUpdateTasks();
+    }
+
+    /**
+     * 处理启动时自动更新任务
+     * 根据首选项设置决定是否执行自动更新
+     */
+    private void handleAutoUpdateTasks() {
+        // 启动时自动更新最新价格
+        String autoUpdatePrice = PrefsHelper.getPreferencesValue(PrefsHelper.UPDATEPRICE, BooleanEnum.NO.toString());
+        if (BooleanEnum.YES.toString().equals(autoUpdatePrice)) {
+            log.info("启动时自动更新最新价格任务开始执行...");
+            CompletableFuture.runAsync(() -> {
+                try {
+                    boolean result = icmcQuotesLatestJpaService.saveBatch();
+                    if (result) {
+                        log.info("启动时自动更新最新价格任务执行成功");
+                    } else {
+                        log.warn("启动时自动更新最新价格任务执行失败，可能没有选中的币种");
+                    }
+                } catch (Exception e) {
+                    log.error("启动时自动更新最新价格任务执行异常", e);
+                }
+            });
+        }
+
+        // 每月自动更新货币信息
+        String autoUpdateCoinInfo = PrefsHelper.getPreferencesValue(PrefsHelper.COINIDMAP, BooleanEnum.NO.toString());
+        if (BooleanEnum.YES.toString().equals(autoUpdateCoinInfo)) {
+            if (shouldUpdateCoinInfoMonthly()) {
+                log.info("每月自动更新货币信息任务开始执行...");
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        boolean result = icmcMapJpaService.saveNewBatch("cmc_rank");
+                        if (result) {
+                            log.info("每月自动更新货币信息任务执行成功");
+                            // 记录本次更新日期
+                            recordCoinInfoUpdateDate();
+                        } else {
+                            log.warn("每月自动更新货币信息任务执行失败");
+                        }
+                    } catch (Exception e) {
+                        log.error("每月自动更新货币信息任务执行异常", e);
+                    }
+                });
+            } else {
+                log.info("货币信息更新频率为每月一次，本月已更新，跳过本次执行");
+            }
+        }
+    }
+
+    /**
+     * 检查是否应该执行每月货币信息更新
+     * 如果从未更新或距离上次更新已超过一个月，则返回true
+     */
+    private boolean shouldUpdateCoinInfoMonthly() {
+        String lastUpdateDateStr = PrefsHelper.getPreferencesValue(PrefsHelper.COINIDMAP_DATE, "");
+        
+        // 如果从未更新过，应该执行更新
+        if (lastUpdateDateStr == null || lastUpdateDateStr.isEmpty()) {
+            log.info("货币信息从未更新过，准备执行更新");
+            return true;
+        }
+        
+        try {
+            LocalDate lastUpdateDate = LocalDate.parse(lastUpdateDateStr, DateTimeFormatter.ISO_LOCAL_DATE);
+            LocalDate today = LocalDate.now();
+            
+            // 计算距离上次更新的月数
+            long monthsBetween = ChronoUnit.MONTHS.between(lastUpdateDate, today);
+            
+            log.info("上次货币信息更新日期: {}, 距离现在: {}个月", lastUpdateDateStr, monthsBetween);
+            
+            // 如果超过一个月，应该执行更新
+            return monthsBetween >= 1;
+        } catch (Exception e) {
+            log.error("解析上次更新日期失败: {}, 将执行更新", lastUpdateDateStr, e);
+            // 如果解析失败，为了安全起见，执行更新
+            return true;
+        }
+    }
+
+    /**
+     * 记录货币信息更新日期为今天
+     */
+    private void recordCoinInfoUpdateDate() {
+        String today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        PrefsHelper.updatePreferencesValue(PrefsHelper.COINIDMAP_DATE, today);
+        PrefsHelper.flushPreferences();
+        log.info("已记录货币信息更新日期: {}", today);
     }
 
     private MenuItem preferencesMenuItem() {
