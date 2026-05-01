@@ -62,7 +62,13 @@ public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
     private List<CMCQuotesLatest> convertCmcQuotes(String ids, String convert, String strJson) {
         List<CMCQuotesLatestDto> listCMCQuotesLatestDto = new ArrayList<>();
 
+        log.info("[convertCmcQuotes] 开始解析API响应数据 - ids: {}, convert: {}, json长度: {}",
+            ids != null ? ids.substring(0, Math.min(ids.length(), 100)) : "null",
+            convert,
+            strJson != null ? strJson.length() : 0);
+
         if (strJson == null || strJson.isEmpty()) {
+            log.error("[convertCmcQuotes] API返回空响应 - ids: {}, convert: {}", ids, convert);
             return null;
         }
 
@@ -71,22 +77,49 @@ public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
         try {
             rootNode = mapper.readTree(strJson);
         } catch (JsonProcessingException e) {
+            log.error("[convertCmcQuotes] 解析JSON失败 - ids: {}, 错误: {}", ids, e.getMessage(), e);
             throw new RuntimeException(e);
         }
 
         Status status = getStatus(rootNode);
-        if (status == null || status.getErrorCode() != 0) {
+        if (status == null) {
+            log.error("[convertCmcQuotes] API响应中没有status信息 - ids: {}", ids);
+            return null;
+        }
+
+        log.info("[convertCmcQuotes] API响应状态 - error_code: {}, error_message: {}",
+            status.getErrorCode(),
+            status.getErrorMessage() != null ? status.getErrorMessage() : "无错误信息");
+
+        if (status.getErrorCode() != 0) {
+            log.error("[convertCmcQuotes] API调用失败 - ids: {}, error_code: {}, error_message: {}",
+                ids, status.getErrorCode(), status.getErrorMessage());
             return null;
         }
 
         JsonNode data = rootNode.path("data");
         for (String key : ids.split(",")) {
             JsonNode coin = data.path(key);
+            if (coin.isMissingNode() || coin.isNull()) {
+                log.warn("[convertCmcQuotes] API响应中未找到币种数据 - key: {}", key);
+                continue;
+            }
             if (coin.isArray()) {
                 coin = coin.get(0);
             }
+            // 检查coin是否为空对象
+            if (coin == null || coin.isMissingNode() || coin.isNull()) {
+                log.warn("[convertCmcQuotes] 币种数据为空 - key: {}", key);
+                continue;
+            }
             CMCQuotesLatestDto cmcQuotesLatestDto = new CMCQuotesLatestDto();
-            cmcQuotesLatestDto.setId(coin.get("id").asInt());
+            // 检查id字段是否存在
+            if (coin.hasNonNull("id")) {
+                cmcQuotesLatestDto.setId(coin.get("id").asInt());
+            } else {
+                log.warn("[convertCmcQuotes] 币种数据缺少id字段 - key: {}", key);
+                continue;
+            }
             if (coin.hasNonNull("name")) {
                 cmcQuotesLatestDto.setName(coin.get("name").asText());
             }
@@ -150,7 +183,11 @@ public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
             listCMCQuotesLatestDto.add(cmcQuotesLatestDto);
         }
 
-        return CopyUtil.copyListCMCQuotesJap(listCMCQuotesLatestDto);
+        List<CMCQuotesLatest> result = CopyUtil.copyListCMCQuotesJap(listCMCQuotesLatestDto);
+        log.info("[convertCmcQuotes] 解析完成 - 原始币种数: {}, 解析后数据量: {}",
+            ids.split(",").length, result != null ? result.size() : 0);
+
+        return result;
     }
 
     private Status getStatus(@NotNull JsonNode rootNode) {
@@ -205,7 +242,17 @@ public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
 
     @Override
     public List<CMCQuotesLatest> getHttpJsonById(String id, String convert, String aux) {
+        log.info("[getHttpJsonById] 开始请求API - id: {}, convert: {}, aux: {}",
+            id != null ? id.substring(0, Math.min(id.length(), 100)) : "null",
+            convert,
+            aux != null ? aux.substring(0, Math.min(aux.length(), 50)) : "null");
+
         String strJson = icmcQuotesLatestFeignClient.getHttpJsonById(id, convert, aux);
+
+        log.info("[getHttpJsonById] API请求完成 - id: {}, 响应长度: {}",
+            id != null ? id.substring(0, Math.min(id.length(), 50)) : "null",
+            strJson != null ? strJson.length() : 0);
+
         return convertCmcQuotes(id, convert, strJson);
     }
 
@@ -250,17 +297,34 @@ public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
     @Override
     @Transactional
     public boolean saveBatch() {
+        log.info("[saveBatch] 开始批量更新价格数据");
+
         List<CMCMap> cmcMapList = icmcMapJpaService.list(1);
         if (cmcMapList == null || cmcMapList.isEmpty()) {
+            log.error("[saveBatch] 没有选中的币种，更新取消");
             return false;
         }
+
+        log.info("[saveBatch] 选中币种数量: {}", cmcMapList.size());
+
         StringBuilder ids = new StringBuilder();
         for (CMCMap cmcMap : cmcMapList) {
             ids.append(cmcMap.getTid()).append(",");
         }
         ids = new StringBuilder(ids.substring(0, ids.length() - 1));
-        List<CMCQuotesLatest> list = getHttpJsonById(ids.toString(), "USD");
-        return saveBatch(list);
+
+        String idString = ids.toString();
+        log.info("[saveBatch] 构建的ID字符串长度: {}, 前100字符: {}",
+            idString.length(),
+            idString.substring(0, Math.min(idString.length(), 100)));
+
+        List<CMCQuotesLatest> list = getHttpJsonById(idString, "USD");
+        log.info("[saveBatch] API调用完成，获取数据量: {}", list != null ? list.size() : 0);
+
+        boolean result = saveBatch(list);
+        log.info("[saveBatch] 保存结果: {}", result);
+
+        return result;
     }
 
     @Override
