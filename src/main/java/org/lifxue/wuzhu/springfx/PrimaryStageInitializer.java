@@ -213,25 +213,34 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
             workbench.showConfirmationDialog("更新当前价格", "你确定要更新当前价格数据吗？", buttonType -> {
                     if (buttonType == ButtonType.YES) {
                         CompletableFuture.runAsync(() -> {
-                            if (icmcQuotesLatestJpaService.saveBatch()) {
-                                Platform.runLater(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        workbench.showInformationDialog("价格更新信息", "价格信息更新成功！",
-                                            buttonType1 -> {
-                                            }
-                                        );
-                                    }
-                                });
-                            } else {
-                                Platform.runLater(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        workbench.showErrorDialog("价格更新失败", "请检查网络是否通畅，是否有关注的币种被选择！",
-                                            buttonType1 -> {
-                                            }
-                                        );
-                                    }
+                            try {
+                                if (icmcQuotesLatestJpaService.saveBatch()) {
+                                    Platform.runLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            workbench.showInformationDialog("价格更新信息", "价格信息更新成功！",
+                                                buttonType1 -> {
+                                                }
+                                            );
+                                        }
+                                    });
+                                } else {
+                                    Platform.runLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            workbench.showErrorDialog("价格更新失败", "请检查网络是否通畅，是否有关注的币种被选择！",
+                                                buttonType1 -> {
+                                                }
+                                            );
+                                        }
+                                    });
+                                }
+                            } catch (Exception e) {
+                                log.error("更新价格时发生异常", e);
+                                Platform.runLater(() -> {
+                                    workbench.showErrorDialog("价格更新异常",
+                                        "更新过程中发生错误: " + e.getMessage() + "\n请检查日志获取详细信息。",
+                                        buttonType1 -> {});
                                 });
                             }
                         });
