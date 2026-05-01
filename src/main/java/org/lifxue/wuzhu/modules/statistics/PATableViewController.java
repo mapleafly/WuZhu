@@ -152,8 +152,11 @@ public class PATableViewController implements Initializable {
         tradeChoiceBox.setValue("全部");
         tradeChoiceBox.setTooltip(new Tooltip("选择交易类型"));
 
+        // 添加"全部品种"选项到品种列表开头
+        coinSymbolList.add(0, "全部品种");
         typeChoiceBox.setItems(FXCollections.observableArrayList(coinSymbolList));
-        typeChoiceBox.setTooltip(new Tooltip("选择交易品种"));
+        typeChoiceBox.setValue("全部品种");
+        typeChoiceBox.setTooltip(new Tooltip("选择交易品种，默认为全部品种"));
 
         startDatePicker.setConverter(DateHelper.CONVERTER);
         startDatePicker.setTooltip(new Tooltip("选择初始时间"));
@@ -174,23 +177,46 @@ public class PATableViewController implements Initializable {
             String startDate = DateHelper.toString(this.startDatePicker.getValue());
             String endDate = DateHelper.toString(this.endDatePicker.getValue());
 
+            // 如果选择的是"全部品种"，则传递空字符串查询所有品种
+            if ("全部品种".equals(coinSymbol)) {
+                coinSymbol = "";
+            }
+
             List<PATableVO> list = ipaTableJpaService.queryVOBy(coinSymbol, startDate, endDate, tradeType);
 
             tradeDataList.clear();
             tradeDataList.addAll(list);
 
-            Map<String, String> mapTotal = getPAData(coinSymbol, list);
-            this.curCHGLabel.setText(mapTotal.get("curCHG"));
-            this.nowPriceTotalLabel.setText(mapTotal.get("nowPriceTotal"));
-            nowPriceTotalLabel.setTooltip(new Tooltip(mapTotal.get("nowPriceTotal")));
-            this.paLabel.setText(mapTotal.get("paPrice"));
-            paLabel.setTooltip(new Tooltip(mapTotal.get("paPrice")));
-            this.numTotalLabel.setText(mapTotal.get("numTotal"));
-            numTotalLabel.setTooltip(new Tooltip(mapTotal.get("numTotal")));
-            nowpaLabel.setText(mapTotal.get("nowPrice"));
-            nowpaLabel.setTooltip(new Tooltip(mapTotal.get("nowPrice")));
-            PriceTotalLabel.setText(mapTotal.get("paPriceTotal"));
-            PriceTotalLabel.setTooltip(new Tooltip(mapTotal.get("paPriceTotal")));
+            // 根据是否选择具体品种显示不同的统计信息
+            if (coinSymbol != null && !coinSymbol.isEmpty()) {
+                // 选择了具体品种，显示该品种的统计信息
+                Map<String, String> mapTotal = getPAData(coinSymbol, list);
+                this.curCHGLabel.setText(mapTotal.get("curCHG"));
+                this.nowPriceTotalLabel.setText(mapTotal.get("nowPriceTotal"));
+                nowPriceTotalLabel.setTooltip(new Tooltip(mapTotal.get("nowPriceTotal")));
+                this.paLabel.setText(mapTotal.get("paPrice"));
+                paLabel.setTooltip(new Tooltip(mapTotal.get("paPrice")));
+                this.numTotalLabel.setText(mapTotal.get("numTotal"));
+                numTotalLabel.setTooltip(new Tooltip(mapTotal.get("numTotal")));
+                nowpaLabel.setText(mapTotal.get("nowPrice"));
+                nowpaLabel.setTooltip(new Tooltip(mapTotal.get("nowPrice")));
+                PriceTotalLabel.setText(mapTotal.get("paPriceTotal"));
+                PriceTotalLabel.setTooltip(new Tooltip(mapTotal.get("paPriceTotal")));
+            } else {
+                // 查询全部品种，显示汇总统计信息
+                Map<String, String> mapTotal = getAllPAData(list);
+                this.curCHGLabel.setText(mapTotal.get("curCHG"));
+                this.nowPriceTotalLabel.setText(mapTotal.get("nowPriceTotal"));
+                nowPriceTotalLabel.setTooltip(new Tooltip(mapTotal.get("nowPriceTotal")));
+                this.paLabel.setText("-");
+                paLabel.setTooltip(new Tooltip("多品种平均成本"));
+                this.numTotalLabel.setText(mapTotal.get("numTotal"));
+                numTotalLabel.setTooltip(new Tooltip(mapTotal.get("numTotal")));
+                nowpaLabel.setText("-");
+                nowpaLabel.setTooltip(new Tooltip("各品种当前价格不同"));
+                PriceTotalLabel.setText(mapTotal.get("paPriceTotal"));
+                PriceTotalLabel.setTooltip(new Tooltip(mapTotal.get("paPriceTotal")));
+            }
         }
     }
 
@@ -246,34 +272,63 @@ public class PATableViewController implements Initializable {
         return map;
     }
 
-    /**
-     * @Description: Validates the user inpu.
-     * @return: boolean
-     * @author: mapleaf
-     * @date: 2020/6/23 18:58
-     */
+    private Map<String, String> getAllPAData(List<PATableVO> tradeDataList) {
+        Map<String, String> map = new HashMap<>();
+        BigDecimal totalBuy = new BigDecimal("0");
+        BigDecimal totalSale = new BigDecimal("0");
+        int transactionCount = 0;
+
+        if (tradeDataList != null) {
+            transactionCount = tradeDataList.size();
+            for (PATableVO td : tradeDataList) {
+                if (td.getSaleOrBuy().equals("买")) {
+                    totalBuy = totalBuy.add(new BigDecimal(td.getQuoteNum()));
+                } else if (td.getSaleOrBuy().equals("卖")) {
+                    totalSale = totalSale.add(new BigDecimal(td.getQuoteNum()));
+                }
+            }
+        }
+
+        BigDecimal totalInvestment = totalBuy.subtract(totalSale);
+
+        String chg = "0.00%";
+        if (totalBuy.compareTo(new BigDecimal("0")) > 0) {
+            BigDecimal profitPercent = totalInvestment
+                .divide(totalBuy, 5, RoundingMode.HALF_UP)
+                .multiply(new BigDecimal("100"))
+                .setScale(2, RoundingMode.HALF_UP);
+            chg = profitPercent.toPlainString() + "%";
+        }
+
+        map.put("numTotal", String.valueOf(transactionCount) + " 笔交易");
+        map.put("nowPriceTotal", totalInvestment.setScale(12, RoundingMode.HALF_UP).toPlainString());
+        map.put("paPriceTotal", totalBuy.setScale(12, RoundingMode.HALF_UP).toPlainString());
+        map.put("curCHG", chg);
+        map.put("paPrice", "-");
+        map.put("nowPrice", "-");
+
+        return map;
+    }
+
     private boolean isInputValid() {
         String errorMessage = "";
 
-      /*  if (tradeChoiceBox.getValue() == null || tradeChoiceBox.getValue().length() == 0) {
-            errorMessage += "无效的交易类型!\n";
-        }*/
-        if (typeChoiceBox.getValue() == null || typeChoiceBox.getValue().length() == 0) {
-            errorMessage += "无效的Coin类别!\n";
-        }
         if (!DateHelper.validDate(DateHelper.toString(startDatePicker.getValue()))
             || startDatePicker.getValue() == null) {
-            errorMessage += "无效的时间!\n";
+            errorMessage += "无效的起始时间!\n";
         }
         if (!DateHelper.validDate(DateHelper.toString(endDatePicker.getValue()))
             || endDatePicker.getValue() == null) {
-            errorMessage += "无效的时间!\n";
+            errorMessage += "无效的结束时间!\n";
+        }
+        if (startDatePicker.getValue() != null && endDatePicker.getValue() != null
+            && startDatePicker.getValue().isAfter(endDatePicker.getValue())) {
+            errorMessage += "起始时间不能晚于结束时间!\n";
         }
 
         if (errorMessage.length() == 0) {
             return true;
         } else {
-            // Show the error message.
             workbench.showErrorDialog("警告", "无效的字段！", errorMessage, buttonType -> {
             });
             return false;
