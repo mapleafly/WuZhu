@@ -151,6 +151,7 @@
 
     <build>
         <plugins>
+            <!-- Spring Boot 打包插件 -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -161,6 +162,34 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+
+            <!-- JavaFX Maven 插件 - 用于开发阶段运行 -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>org.lifxue.wuzhu.WuZhuApplication</mainClass>
+                </configuration>
+            </plugin>
+
+            <!-- JPackage Maven 插件 - 用于创建原生安装包 -->
+            <plugin>
+                <groupId>org.panteleyev</groupId>
+                <artifactId>jpackage-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <configuration>
+                    <name>WuZhu</name>
+                    <appVersion>1.0.0</appVersion>
+                    <vendor>lifxue</vendor>
+                    <destination>target/dist</destination>
+                    <module>org.lifxue.wuzhu/org.lifxue.wuzhu.WuZhuApplication</module>
+                    <runtimeImage>target/image</runtimeImage>
+                    <javaOptions>
+                        <option>-Dfile.encoding=UTF-8</option>
+                    </javaOptions>
                 </configuration>
             </plugin>
         </plugins>

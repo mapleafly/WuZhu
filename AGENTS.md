@@ -168,8 +168,26 @@ JavaFxApplication.start() → 发布 StageReadyEvent
 PrimaryStageInitializer → 初始化 WorkbenchFX + 加载所有模块
 ```
 
+## 开发和部署
+
+| 文档 | 说明 |
+|------|------|
+| [packaging/DEVELOPMENT.md](./packaging/DEVELOPMENT.md) | 开发环境搭建和运行指南 |
+| [packaging/PACKAGING_UBUNTU.md](./packaging/PACKAGING_UBUNTU.md) | Ubuntu 24.04 打包为 .deb |
+| [packaging/PACKAGING_WINDOWS.md](./packaging/PACKAGING_WINDOWS.md) | Windows 11 打包为 .msi/.exe |
+
+## 快速打包命令
+
+```bash
+# Ubuntu 24.04
+./packaging/package-ubuntu.sh
+
+# Windows 11 (PowerShell)
+.\packaging\package-windows.ps1
+```
+
 ## 相关文件
 
-- `pom.xml` - Maven 配置
+- `pom.xml` - Maven 配置（已添加 jpackage 插件）
 - `src/main/resources/application.yml` - 应用配置
 - `src/main/resources/org/lifxue/wuzhu/modules/*/*.fxml` - 界面定义
