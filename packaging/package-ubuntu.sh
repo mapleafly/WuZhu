@@ -25,11 +25,36 @@ if ! command -v jpackage &> /dev/null; then
     exit 1
 fi
 
-if ! command -v dpkg-deb &> /dev/null; then
-    echo -e "${YELLOW}安装 dpkg-deb...${NC}"
-    sudo apt update
-    sudo apt install -y dpkg-dev fakeroot
+# 检查 JavaFX 是否可用
+if ! java --list-modules 2>/dev/null | grep -q "javafx"; then
+    echo -e "${RED}错误: 当前 JDK 不包含 JavaFX 模块${NC}"
+    echo ""
+    echo "解决方案（二选一）："
+    echo ""
+    echo "1. 安装 BellSoft Liberica JDK 21 Full（推荐）:"
+    echo "   wget https://download.bell-sw.com/java/21.0.7+10/bellsoft-jdk21.0.7+10-linux-amd64-full.deb"
+    echo "   sudo dpkg -i bellsoft-jdk21.0.7+10-linux-amd64-full.deb"
+    echo "   sudo update-alternatives --config java"
+    echo ""
+    echo "2. 查看详细文档: cat packaging/PACKAGING_UBUNTU.md"
+    exit 1
 fi
+
+# 检查 --print-module-path 是否可用
+if ! java --print-module-path &>/dev/null; then
+    echo -e "${RED}错误: 当前 JDK 不支持 --print-module-path 选项${NC}"
+    echo "请安装 BellSoft Liberica JDK 21 Full（不是标准 OpenJDK）"
+    echo "参考文档: packaging/PACKAGING_UBUNTU.md"
+    exit 1
+fi
+
+if ! command -v fakeroot &> /dev/null; then
+    echo -e "${YELLOW}安装 fakeroot...${NC}"
+    sudo apt update
+    sudo apt install -y fakeroot
+fi
+
+# 注意：dpkg-deb 已包含在 Ubuntu 预装的 dpkg 包中，无需单独安装
 
 echo -e "${GREEN}✓ 环境检查通过${NC}"
 echo ""
@@ -69,7 +94,7 @@ jpackage \
   --vendor "lifxue" \
   --description "WuZhu - 加密货币交易记录和分析工具" \
   --copyright "Copyright 2023-2025 lifxue" \
-  --main-class org.springframework.boot.loader.launch.JarLauncher \
+  --main-class org.springframework.boot.loader.JarLauncher \
   --main-jar WuZhu-1.0.jar \
   --input target/dependency \
   --dest target/dist \

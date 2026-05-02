@@ -117,7 +117,7 @@ jpackage `
   --description "WuZhu - 加密货币交易记录和分析工具" `
   --copyright "Copyright 2023-2025 lifxue" `
   --main-jar WuZhu-1.0.jar `
-  --main-class org.springframework.boot.loader.launch.JarLauncher `
+  --main-class org.springframework.boot.loader.JarLauncher `
   --input target\dependency `
   --dest target\dist `
   --icon src\main\resources\org\lifxue\wuzhu\images\wuzhu-96.ico `
@@ -170,7 +170,7 @@ jpackage `
   --vendor "lifxue" `
   --description "WuZhu - 加密货币交易记录和分析工具" `
   --main-jar WuZhu-1.0.jar `
-  --main-class org.springframework.boot.loader.launch.JarLauncher `
+  --main-class org.springframework.boot.loader.JarLauncher `
   --input target\dependency `
   --dest target\dist `
   --icon src\main\resources\org\lifxue\wuzhu\images\wuzhu-96.ico `
@@ -288,7 +288,7 @@ jpackage `
   --description "WuZhu - 加密货币交易记录和分析工具" `
   --copyright "Copyright 2023-2025 lifxue" `
   --main-jar WuZhu-1.0.jar `
-  --main-class org.springframework.boot.loader.launch.JarLauncher `
+  --main-class org.springframework.boot.loader.JarLauncher `
   --input target\dependency `
   --dest target\dist `
   --icon src\main\resources\org\lifxue\wuzhu\images\wuzhu-96.ico `
@@ -376,7 +376,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
                                 <vendor>lifxue</vendor>
                                 <description>WuZhu - 加密货币交易记录和分析工具</description>
                                 <mainJar>WuZhu-1.0.jar</mainJar>
-                                <mainClass>org.springframework.boot.loader.launch.JarLauncher</mainClass>
+                                <mainClass>org.springframework.boot.loader.JarLauncher</mainClass>
                                 <input>${project.build.directory}/dependency</input>
                                 <destination>${project.build.directory}/dist</destination>
                                 <type>MSI</type>

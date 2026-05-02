@@ -21,12 +21,14 @@ sudo apt update
 # 安装 OpenJDK 21（如未安装）
 sudo apt install openjdk-21-jdk
 
-# 安装打包工具
-sudo apt install dpkg-deb fakeroot
+# 安装 fakeroot（dpkg-deb 已包含在系统预装的 dpkg 中）
+sudo apt install fakeroot
 
 # 验证 jpackage 可用
 jpackage --version
 ```
+
+> **注意**：`dpkg-deb` 命令已包含在 Ubuntu 预装的 `dpkg` 包中，无需单独安装。如果遇到问题，可运行 `sudo apt install --reinstall dpkg` 修复。
 
 ### 验证环境
 
@@ -54,13 +56,54 @@ cd WuZhu
 
 ### 步骤 2：创建自定义 JRE（使用 jlink）
 
+**重要前提**：标准 OpenJDK 不包含 JavaFX 模块。你有两个选择：
+
+#### 选项 A：安装 BellSoft Liberica JDK 21 Full（推荐，包含 JavaFX）
+
+```bash
+# 下载并安装 BellSoft Liberica JDK 21 Full（包含 JavaFX）
+wget https://download.bell-sw.com/java/21.0.7+10/bellsoft-jdk21.0.7+10-linux-amd64-full.deb
+sudo dpkg -i bellsoft-jdk21.0.7+10-linux-amd64-full.deb
+
+# 设置为默认 Java
+sudo update-alternatives --config java
+# 选择 liberica 版本
+
+# 验证 JavaFX 可用
+java --list-modules | grep javafx
+```
+
+然后使用 jlink：
+
 ```bash
 # 创建输出目录
 mkdir -p target/dist
 
 # 使用 jlink 创建精简 JRE（包含 JavaFX 模块）
+# 注意：--print-module-path 只在 BellSoft/Temurin JDK 中可用
 jlink \
   --module-path $(java --print-module-path) \
+  --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing \
+  --output target/custom-jre \
+  --strip-debug \
+  --no-man-pages \
+  --no-header-files \
+  --compress=2
+```
+
+#### 选项 B：使用标准 OpenJDK + 外部 JavaFX
+
+如果你坚持使用标准 OpenJDK：
+
+```bash
+# 1. 下载 JavaFX jmods
+wget https://download2.gluonhq.com/openjfx/21.0.2/openjfx-21.0.2_linux-x64_bin-jmods.zip
+unzip openjfx-21.0.2_linux-x64_bin-jmods.zip -d /tmp/javafx
+
+# 2. 使用 jlink（手动指定模块路径）
+JDK_PATH=/usr/lib/jvm/java-21-openjdk-amd64
+jlink \
+  --module-path "$JDK_PATH/jmods:/tmp/javafx/javafx-jmods-21.0.2" \
   --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing \
   --output target/custom-jre \
   --strip-debug \
@@ -79,7 +122,7 @@ jpackage \
   --vendor "lifxue" \
   --description "WuZhu - 加密货币交易记录和分析工具" \
   --copyright "Copyright 2023-2025 lifxue" \
-  --main-class org.springframework.boot.loader.launch.JarLauncher \
+  --main-class org.springframework.boot.loader.JarLauncher \
   --main-jar WuZhu-1.0.jar \
   --input target \
   --dest target/dist \
@@ -218,7 +261,7 @@ jpackage \
   --app-version 1.0.0 \
   --vendor "lifxue" \
   --description "WuZhu - 加密货币交易记录和分析工具" \
-  --main-class org.springframework.boot.loader.launch.JarLauncher \
+  --main-class org.springframework.boot.loader.JarLauncher \
   --main-jar WuZhu-1.0.jar \
   --input target \
   --dest target/dist \

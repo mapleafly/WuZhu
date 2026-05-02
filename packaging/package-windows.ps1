@@ -109,7 +109,7 @@ $jpackageArgs = @(
     "--description", "WuZhu - 加密货币交易记录和分析工具",
     "--copyright", "Copyright 2023-2025 lifxue",
     "--main-jar", "WuZhu-1.0.jar",
-    "--main-class", "org.springframework.boot.loader.launch.JarLauncher",
+    "--main-class", "org.springframework.boot.loader.JarLauncher",
     "--input", "target\dependency",
     "--dest", "target\dist",
     "--icon", "src\main\resources\org\lifxue\wuzhu\images\wuzhu-96.ico",
