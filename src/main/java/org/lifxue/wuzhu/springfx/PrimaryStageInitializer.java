@@ -166,11 +166,24 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
                     boolean result = icmcQuotesLatestJpaService.saveBatch();
                     if (result) {
                         log.info("启动时自动更新最新价格任务执行成功");
+                        Platform.runLater(() -> {
+                            workbench.showInformationDialog("价格更新信息", "启动时价格信息自动更新成功！",
+                                buttonType1 -> {});
+                        });
                     } else {
                         log.warn("启动时自动更新最新价格任务执行失败，可能没有选中的币种");
+                        Platform.runLater(() -> {
+                            workbench.showErrorDialog("价格更新失败", "请检查网络是否通畅，是否有关注的币种被选择！",
+                                buttonType1 -> {});
+                        });
                     }
                 } catch (Exception e) {
                     log.error("启动时自动更新最新价格任务执行异常", e);
+                    Platform.runLater(() -> {
+                        workbench.showErrorDialog("价格更新异常",
+                            "更新过程中发生错误: " + e.getMessage() + "\n请检查日志获取详细信息。",
+                            buttonType1 -> {});
+                    });
                 }
             });
         }
@@ -187,11 +200,24 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
                             log.info("每月自动更新货币信息任务执行成功");
                             // 记录本次更新日期
                             recordCoinInfoUpdateDate();
+                            Platform.runLater(() -> {
+                                workbench.showInformationDialog("货币数据更新信息", "加密货币信息自动更新成功！",
+                                    buttonType1 -> {});
+                            });
                         } else {
                             log.warn("每月自动更新货币信息任务执行失败");
+                            Platform.runLater(() -> {
+                                workbench.showErrorDialog("货币数据更新失败", "加密货币信息自动更新失败，请检查网络连接！",
+                                    buttonType1 -> {});
+                            });
                         }
                     } catch (Exception e) {
                         log.error("每月自动更新货币信息任务执行异常", e);
+                        Platform.runLater(() -> {
+                            workbench.showErrorDialog("货币数据更新异常",
+                                "更新过程中发生错误: " + e.getMessage() + "\n请检查日志获取详细信息。",
+                                buttonType1 -> {});
+                        });
                     }
                 });
             } else {
