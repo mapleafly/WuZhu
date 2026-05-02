@@ -177,8 +177,13 @@ sudo dpkg -r wuzhu
 ```bash
 ./mvnw clean package -DskipTests
 
+# 获取 JDK 路径（用于指定 module-path）
+JDK_HOME=$(dirname $(dirname $(readlink -f $(which java))))
+echo "JDK 路径: $JDK_HOME"
+
+# 使用 jlink 创建精简 JRE
 jlink \
-  --module-path $(java --print-module-path) \
+  --module-path "$JDK_HOME/jmods" \
   --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing \
   --output target/WuZhu-linux/runtime \
   --strip-debug \
@@ -186,6 +191,8 @@ jlink \
   --no-header-files \
   --compress=2
 ```
+
+> **注意**：`--print-module-path` 在标准 OpenJDK 和某些 JDK 发行版中不可用。使用上述方式手动指定 JDK 的 jmods 目录路径。
 
 ### 步骤 2：复制应用文件
 
