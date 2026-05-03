@@ -270,6 +270,16 @@ public class TradeInfoViewModel {
             errorMessage.append("无效的总价!\n");
         }
 
+        // 如果是买入操作，检查是否有足够的出入金余额
+        if ("买".equals(getTradeType())) {
+            BigDecimal cashBalance = getCashBalance();
+            if (cashBalance.compareTo(BigDecimal.ZERO) <= 0) {
+                errorMessage.append("出入金余额为0，请先进行入金操作!\n");
+            } else if (getQuoteNum() != null && getQuoteNum().compareTo(cashBalance) > 0) {
+                errorMessage.append("出入金余额不足，当前余额: ").append(cashBalance.toPlainString()).append(" USDT\n");
+            }
+        }
+
         if (errorMessage.length() > 0) {
             setErrorMessage(errorMessage.toString());
             return false;
@@ -277,6 +287,37 @@ public class TradeInfoViewModel {
 
         setErrorMessage(null);
         return true;
+    }
+
+    /**
+     * 获取当前出入金余额
+     *
+     * @return 余额
+     */
+    private BigDecimal getCashBalance() {
+        if (tradeInfoService == null) {
+            return BigDecimal.ZERO;
+        }
+        try {
+            // 查询所有USDT记录（入金/出金）
+            List<TradeInfoVO> usdtRecords = tradeInfoService.queryTradeInfoByBaseCoinId(CoinConstants.USDT_COIN_ID);
+            BigDecimal totalDeposit = BigDecimal.ZERO;
+            BigDecimal totalWithdrawal = BigDecimal.ZERO;
+            for (TradeInfoVO record : usdtRecords) {
+                String saleOrBuy = record.getSaleOrBuy();
+                // 入金存为"卖"，出金存为"买"
+                if ("卖".equals(saleOrBuy)) {
+                    // 入金
+                    totalDeposit = totalDeposit.add(new BigDecimal(record.getQuoteNum()));
+                } else if ("买".equals(saleOrBuy)) {
+                    // 出金
+                    totalWithdrawal = totalWithdrawal.add(new BigDecimal(record.getQuoteNum()));
+                }
+            }
+            return totalDeposit.subtract(totalWithdrawal);
+        } catch (Exception e) {
+            return BigDecimal.ZERO;
+        }
     }
 
     /**
