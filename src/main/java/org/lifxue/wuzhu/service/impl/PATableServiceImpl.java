@@ -12,6 +12,7 @@ import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.lifxue.wuzhu.constant.CoinConstants;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -77,6 +78,10 @@ public class PATableServiceImpl implements IPATableService {
     @Override
     public List<PATableVO> queryVOBy(String strCoinSymbol, String strStartDate, String strEndDate, String tradeType) {
         List<TradeInfo> tradeInfoList = iTradeInfoJpaService.findByTradeDateBetweenOrderByTradeDateDesc(strStartDate, strEndDate);
+        // 过滤掉USDT出入金记录（USDT的baseId为825）
+        tradeInfoList = tradeInfoList.stream()
+            .filter(tradeInfo -> !CoinConstants.USDT_COIN_ID.equals(tradeInfo.getBaseId()))
+            .toList();
         if (strCoinSymbol != null && !strCoinSymbol.isBlank()) {
             tradeInfoList = tradeInfoList.stream().filter(tradeInfo -> tradeInfo.getBaseSymbol().equals(strCoinSymbol)).toList();
         }
