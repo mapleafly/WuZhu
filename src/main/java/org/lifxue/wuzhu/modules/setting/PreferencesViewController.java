@@ -22,6 +22,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
+import org.lifxue.wuzhu.constant.AppConstants;
 import org.lifxue.wuzhu.enums.BooleanEnum;
 import org.lifxue.wuzhu.enums.ThemeEnum;
 import org.lifxue.wuzhu.service.ICMCMapService;
@@ -161,15 +162,15 @@ public class PreferencesViewController implements Initializable {
         if (proxyEnum.equals(BooleanEnum.YES)) {
             proxyCheck.setSelected(true);
             hostTextField.setDisable(false);
-            hostTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.HOST, "127.0.0.1"));
+            hostTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.HOST, AppConstants.DEFAULT_PROXY_HOST));
             portTextField.setDisable(false);
-            portTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.PORT, "56908"));
+            portTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.PORT, AppConstants.DEFAULT_PROXY_PORT));
         } else {
             proxyCheck.setSelected(false);
             hostTextField.setDisable(true);
-            hostTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.HOST, "127.0.0.1"));
+            hostTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.HOST, AppConstants.DEFAULT_PROXY_HOST));
             portTextField.setDisable(true);
-            portTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.PORT, "56908"));
+            portTextField.setText(PrefsHelper.getPreferencesValue(PrefsHelper.PORT, AppConstants.DEFAULT_PROXY_PORT));
         }
 
         //初始化coinmarketcap.com参数

@@ -2,6 +2,7 @@ package org.lifxue.wuzhu.config;
 
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
+import org.lifxue.wuzhu.constant.AppConstants;
 import org.lifxue.wuzhu.enums.BooleanEnum;
 import org.lifxue.wuzhu.util.PrefsHelper;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,8 +58,8 @@ public class FeignClientConfig {
 
         private BooleanEnum proxyEnum =
             BooleanEnum.valueOf(PrefsHelper.getPreferencesValue(PrefsHelper.PROXY, BooleanEnum.NO.toString()));
-        private String proxyHost = PrefsHelper.getPreferencesValue(PrefsHelper.HOST, "127.0.0.1");
-        private Integer proxyPort = Integer.valueOf(PrefsHelper.getPreferencesValue(PrefsHelper.PORT, "56908"));
+        private String proxyHost = PrefsHelper.getPreferencesValue(PrefsHelper.HOST, AppConstants.DEFAULT_PROXY_HOST);
+        private Integer proxyPort = Integer.valueOf(PrefsHelper.getPreferencesValue(PrefsHelper.PORT, AppConstants.DEFAULT_PROXY_PORT));
 
         public ProxyOkHttpClientFactory(OkHttpClient.Builder builder) {
             super(builder);
