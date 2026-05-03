@@ -116,19 +116,17 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.14.0</version>
         </dependency>
         <!--database-->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>2.2.220</version>
+            <version>2.2.224</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>8.5.13</version>
         </dependency>
       <!--  <dependency>
             <groupId>com.baomidou</groupId>
@@ -248,7 +246,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Maven Antrun 插件 - 替换MapStruct生成的javax为jakarta -->
+            <!-- Maven Antrun 插件 - 替换MapStruct生成的javax为jakarta并重新编译 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -262,12 +260,18 @@
                         </goals>
                         <configuration>
                             <target>
-                                <!-- 替换javax.annotation.processing.Generated为jakarta.annotation.Generated -->
+                                <!-- 1. 替换javax.annotation.processing.Generated为jakarta.annotation.Generated -->
                                 <replace dir="${project.build.directory}/generated-sources/annotations" token="javax.annotation.processing.Generated" value="jakarta.annotation.Generated">
                                     <include name="**/*.java"/>
                                 </replace>
-                                <!-- 重新编译修改后的文件 -->
-                                <javac srcdir="${project.build.directory}/generated-sources/annotations" destdir="${project.build.outputDirectory}" classpathref="maven.compile.classpath" includeantruntime="false"/>
+                                <!-- 2. 删除旧的类文件，强制重新编译 -->
+                                <delete>
+                                    <fileset dir="${project.build.outputDirectory}/org/lifxue/wuzhu/convert" includes="*Impl.class"/>
+                                </delete>
+                                <!-- 3. 重新编译修改后的文件 -->
+                                <javac srcdir="${project.build.directory}/generated-sources/annotations" destdir="${project.build.outputDirectory}" classpathref="maven.compile.classpath" includeantruntime="false">
+                                    <include name="org/lifxue/wuzhu/convert/**/*.java"/>
+                                </javac>
                             </target>
                         </configuration>
                     </execution>

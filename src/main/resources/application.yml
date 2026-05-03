@@ -13,10 +13,14 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update # 使用Hibernate自动创建表结构
+      ddl-auto: validate # 使用Flyway管理数据库结构，Hibernate仅验证
     show-sql: false
   flyway:
-    enabled: false # 临时禁用Flyway，使用Hibernate ddl-auto创建表
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+    clean-disabled: false # 允许clean操作（仅开发测试环境）
 #  sql:
 #    init:
 #      mode: always
