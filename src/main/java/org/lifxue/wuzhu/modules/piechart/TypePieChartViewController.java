@@ -37,12 +37,18 @@ public class TypePieChartViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // 先设置监听器，再加载数据
+        viewModel.totalValueProperty().addListener((obs, old, newVal) -> {
+            if (newVal != null) {
+                totalPrice.setText("当前总价值约:$" + Math.round(newVal.doubleValue()));
+            }
+        });
+        
+        // 设置初始值
+        totalPrice.setText("当前总价值约:$0");
+        
         viewModel.loadPortfolioData();
         pieChart.setData(viewModel.getPieData());
-
-        viewModel.totalValueProperty().addListener((obs, old, newVal) -> {
-            if (newVal != null) totalPrice.setText("当前总价值约:$" + Math.round(newVal.doubleValue()));
-        });
 
         setupTooltips();
     }
