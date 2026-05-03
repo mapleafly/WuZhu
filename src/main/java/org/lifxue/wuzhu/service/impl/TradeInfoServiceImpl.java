@@ -3,6 +3,7 @@ package org.lifxue.wuzhu.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
+import org.lifxue.wuzhu.convert.TradeInfoConvert;
 import org.lifxue.wuzhu.pojo.CMCMap;
 import org.lifxue.wuzhu.pojo.TradeInfo;
 import org.lifxue.wuzhu.repository.TradeInfoRepository;
@@ -26,18 +27,19 @@ import java.util.List;
 @Slf4j
 @Service
 public class TradeInfoServiceImpl implements ITradeInfoService {
-    private ICMCMapService icmcMapJpaService;
-    private TradeInfoRepository tradeInfoRepository;
-
+    private final ICMCMapService icmcMapJpaService;
+    private final TradeInfoRepository tradeInfoRepository;
+    private final TradeInfoConvert tradeInfoConvert;
 
     @Autowired
-    public void setIcmcMapJpaService(ICMCMapService icmcMapJpaService) {
+    public TradeInfoServiceImpl(ICMCMapService icmcMapJpaService,
+                                 TradeInfoRepository tradeInfoRepository,
+                                 TradeInfoConvert tradeInfoConvert) {
         this.icmcMapJpaService = icmcMapJpaService;
-    }
-    @Autowired
-    public void setTradeInfoRepository(TradeInfoRepository tradeInfoRepository) {
         this.tradeInfoRepository = tradeInfoRepository;
+        this.tradeInfoConvert = tradeInfoConvert;
     }
+
     /***
      * @description 查询可用coin的symbo集合
      * @author lifxue
@@ -66,13 +68,13 @@ public class TradeInfoServiceImpl implements ITradeInfoService {
     @Override
     public List<TradeInfoVO> queryTradeInfoByBaseSymbol(String symbol) {
         List<TradeInfo> tradeInfoList = tradeInfoRepository.findByBaseSymbolOrderByIdDesc(symbol);
-        return CopyUtil.copyTradeInfoVOListJpa(tradeInfoList);
+        return tradeInfoConvert.toVOList(tradeInfoList);
     }
 
     @Override
     public List<TradeInfoVO> queryTradeInfoByBaseCoinId(Integer coinId) {
         List<TradeInfo> tradeInfoList = tradeInfoRepository.findByBaseIdOrderByIdDesc(coinId);
-        return CopyUtil.copyTradeInfoVOListJpa(tradeInfoList);
+        return tradeInfoConvert.toVOList(tradeInfoList);
     }
 
     @Override

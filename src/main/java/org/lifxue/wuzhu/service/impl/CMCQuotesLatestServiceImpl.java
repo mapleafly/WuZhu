@@ -8,13 +8,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lifxue.wuzhu.dto.*;
+import org.lifxue.wuzhu.exception.ApiCallException;
 import org.lifxue.wuzhu.pojo.CMCMap;
 import org.lifxue.wuzhu.pojo.CMCQuotesLatest;
 import org.lifxue.wuzhu.repository.CMCQuotesLatestRepository;
 import org.lifxue.wuzhu.service.ICMCMapService;
+import org.lifxue.wuzhu.convert.CMCQuotesLatestConvert;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
 import org.lifxue.wuzhu.service.feignc.ICMCQuotesLatestFeignClient;
-import org.lifxue.wuzhu.util.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,25 +38,21 @@ public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
     private final String ICMCQUOTESLATEST_AUX = "num_market_pairs,cmc_rank,date_added,tags,platform," +
         "max_supply,circulating_supply,total_supply,is_active,is_fiat";
 
-    private ICMCQuotesLatestFeignClient icmcQuotesLatestFeignClient;
-    private ICMCMapService icmcMapJpaService;
-
-    private CMCQuotesLatestRepository cmcQuotesLatestRepository;
+    private final ICMCQuotesLatestFeignClient icmcQuotesLatestFeignClient;
+    private final ICMCMapService icmcMapJpaService;
+    private final CMCQuotesLatestRepository cmcQuotesLatestRepository;
+    private final CMCQuotesLatestConvert cmcQuotesLatestConvert;
 
     @Autowired
-    public void setCmcQuotesLatestRepository(CMCQuotesLatestRepository cmcQuotesLatestRepository) {
-        this.cmcQuotesLatestRepository = cmcQuotesLatestRepository;
-    }
-    @Autowired
-    public void setIcmcQuotesLatestFeignClient(ICMCQuotesLatestFeignClient icmcQuotesLatestFeignClient) {
+    public CMCQuotesLatestServiceImpl(ICMCQuotesLatestFeignClient icmcQuotesLatestFeignClient,
+                                       ICMCMapService icmcMapJpaService,
+                                       CMCQuotesLatestRepository cmcQuotesLatestRepository,
+                                       CMCQuotesLatestConvert cmcQuotesLatestConvert) {
         this.icmcQuotesLatestFeignClient = icmcQuotesLatestFeignClient;
-    }
-
-    @Autowired
-    public void setIcmcMapJpaService(ICMCMapService icmcMapJpaService) {
         this.icmcMapJpaService = icmcMapJpaService;
+        this.cmcQuotesLatestRepository = cmcQuotesLatestRepository;
+        this.cmcQuotesLatestConvert = cmcQuotesLatestConvert;
     }
-
 
 
     @Nullable
@@ -78,7 +75,7 @@ public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
             rootNode = mapper.readTree(strJson);
         } catch (JsonProcessingException e) {
             log.error("[convertCmcQuotes] 解析JSON失败 - ids: {}, 错误: {}", ids, e.getMessage(), e);
-            throw new RuntimeException(e);
+            throw new ApiCallException("Failed to parse CMC Quotes API response", e);
         }
 
         Status status = getStatus(rootNode);
@@ -183,7 +180,7 @@ public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
             listCMCQuotesLatestDto.add(cmcQuotesLatestDto);
         }
 
-        List<CMCQuotesLatest> result = CopyUtil.copyListCMCQuotesJap(listCMCQuotesLatestDto);
+        List<CMCQuotesLatest> result = cmcQuotesLatestConvert.convertList(listCMCQuotesLatestDto);
         log.info("[convertCmcQuotes] 解析完成 - 原始币种数: {}, 解析后数据量: {}",
             ids.split(",").length, result != null ? result.size() : 0);
 
@@ -198,7 +195,7 @@ public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
                 ObjectMapper mapper = new ObjectMapper();
                 status = mapper.readValue(jsonStatus.toString(), Status.class);
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                throw new ApiCallException("Failed to parse status from CMC API response", e);
             }
         }
         return status;
@@ -229,7 +226,7 @@ public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
                     new ObjectMapper().readValue(tags.traverse(), new TypeReference<ArrayList<Tag>>() {
                     });
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new ApiCallException("Failed to parse tags from CMC API response", e);
             }
         }
         return listTags;

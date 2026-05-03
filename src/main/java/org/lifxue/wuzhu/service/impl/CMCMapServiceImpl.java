@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.lifxue.wuzhu.dto.CMCMapDto;
 import org.lifxue.wuzhu.dto.Quote;
 import org.lifxue.wuzhu.dto.Status;
-
+import org.lifxue.wuzhu.exception.ApiCallException;
 import org.lifxue.wuzhu.pojo.CMCMap;
 import org.lifxue.wuzhu.repository.CMCMapRepository;
 import org.lifxue.wuzhu.service.ICMCMapService;
@@ -17,8 +17,6 @@ import org.lifxue.wuzhu.service.feignc.ICMCMapFeignClient;
 import org.lifxue.wuzhu.util.CopyUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,12 +36,11 @@ public class CMCMapServiceImpl implements ICMCMapService {
     private final Integer LIMIT = 5000;
     private final String CMCMAP_AUX = "platform,first_historical_data,last_historical_data,is_active";
     private final ICMCMapFeignClient icmcMapFeignClient;
+    private final CMCMapRepository cmcMapRepository;
 
-    @Resource
-    private CMCMapRepository cmcMapRepository;
-
-    public CMCMapServiceImpl(ICMCMapFeignClient icmcMapFeignClient) {
+    public CMCMapServiceImpl(ICMCMapFeignClient icmcMapFeignClient, CMCMapRepository cmcMapRepository) {
         this.icmcMapFeignClient = icmcMapFeignClient;
+        this.cmcMapRepository = cmcMapRepository;
     }
 
     @Override
@@ -93,7 +90,7 @@ public class CMCMapServiceImpl implements ICMCMapService {
             });
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ApiCallException("Failed to parse CMC Map API response", e);
         }
 
         return list;
@@ -107,7 +104,7 @@ public class CMCMapServiceImpl implements ICMCMapService {
                 ObjectMapper mapper = new ObjectMapper();
                 status = mapper.readValue(jsonStatus.toString(), Status.class);
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                throw new ApiCallException("Failed to parse status from CMC API response", e);
             }
         }
         return status;
@@ -138,7 +135,7 @@ public class CMCMapServiceImpl implements ICMCMapService {
                     new ObjectMapper().readValue(tags.traverse(), new TypeReference<ArrayList<String>>() {
                     });
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new ApiCallException("Failed to parse tags from CMC API response", e);
             }
         }
         return listTags;
@@ -169,7 +166,8 @@ public class CMCMapServiceImpl implements ICMCMapService {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Thread.currentThread().interrupt();
+                throw new ApiCallException("API request interrupted", e);
             }
         }
         return listAll;

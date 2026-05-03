@@ -20,10 +20,10 @@ import java.util.List;
 @Service
 public class CashServiceImpl implements ICashService {
 
-    private TradeInfoRepository tradeInfoRepository;
+    private final TradeInfoRepository tradeInfoRepository;
 
     @Autowired
-    public void setTradeInfoRepository(TradeInfoRepository tradeInfoRepository) {
+    public CashServiceImpl(TradeInfoRepository tradeInfoRepository) {
         this.tradeInfoRepository = tradeInfoRepository;
     }
 

@@ -13,8 +13,13 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update # none, update, create, create-drop
+      ddl-auto: validate # 使用Flyway管理迁移，将ddl-auto改为validate
     show-sql: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
     # database: h2
 #  sql:
 #    init:

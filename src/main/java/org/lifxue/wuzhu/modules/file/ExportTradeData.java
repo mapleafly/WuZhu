@@ -87,9 +87,9 @@ public class ExportTradeData {
                     str[3] = bean.getQuoteId().toString();
                     str[4] = bean.getQuoteSymbol();
                     str[5] = bean.getSaleOrBuy();
-                    str[6] = bean.getPrice();
-                    str[7] = bean.getBaseNum();
-                    str[8] = bean.getQuoteNum();
+                    str[6] = bean.getPrice() != null ? bean.getPrice().toPlainString() : "";
+                    str[7] = bean.getBaseNum() != null ? bean.getBaseNum().toPlainString() : "";
+                    str[8] = bean.getQuoteNum() != null ? bean.getQuoteNum().toPlainString() : "";
                     str[9] = bean.getTradeDate();
                     return str;
                 })
