@@ -28,6 +28,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.util.StringConverter;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
+import org.lifxue.wuzhu.constant.AppConstants;
+import org.lifxue.wuzhu.constant.CoinConstants;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
 import org.lifxue.wuzhu.pojo.TradeInfo;
@@ -208,7 +210,7 @@ public class TradeInfoViewController implements Initializable {
             }
         });
 
-        CoinChoiceBoxVO quoteChoiceBoxVO = new CoinChoiceBoxVO("USDT",825);
+        CoinChoiceBoxVO quoteChoiceBoxVO = new CoinChoiceBoxVO(CoinConstants.USDT_SYMBOL, CoinConstants.USDT_COIN_ID);
         quoteChoiceBox.setItems(FXCollections.observableArrayList(quoteChoiceBoxVO));
         quoteChoiceBox.setSelectionModel(new SingleSelectionModel<CoinChoiceBoxVO>(){
             @Override
@@ -348,7 +350,7 @@ public class TradeInfoViewController implements Initializable {
         }
         BigDecimal num = new BigDecimal(numTextField.getText());
         BigDecimal price = new BigDecimal(priceTextField.getText());
-        totalTextField.setText(num.multiply(price).setScale(12, RoundingMode.HALF_UP).toPlainString());
+        totalTextField.setText(num.multiply(price).setScale(AppConstants.DEFAULT_SCALE, AppConstants.DEFAULT_ROUNDING_MODE).toPlainString());
     }
 
     @FXML
@@ -358,7 +360,7 @@ public class TradeInfoViewController implements Initializable {
         }
         BigDecimal num = new BigDecimal(numTextField.getText());
         BigDecimal price = new BigDecimal(priceTextField.getText());
-        totalTextField.setText(num.multiply(price).setScale(12, RoundingMode.HALF_UP).toPlainString());
+        totalTextField.setText(num.multiply(price).setScale(AppConstants.DEFAULT_SCALE, AppConstants.DEFAULT_ROUNDING_MODE).toPlainString());
     }
 
     /**
@@ -379,7 +381,7 @@ public class TradeInfoViewController implements Initializable {
             String base = symbolPairs.substring(0, split);
             String quote = symbolPairs.substring(split + 1);
             baseChoiceBox.setValue(new CoinChoiceBoxVO(base,tradeData.getCoinId()));
-            quoteChoiceBox.setValue(new CoinChoiceBoxVO("USDT", 825));
+            quoteChoiceBox.setValue(new CoinChoiceBoxVO(CoinConstants.USDT_SYMBOL, CoinConstants.USDT_COIN_ID));
             salebuyChoiceBox.setValue(tradeData.getSaleOrBuy());
             priceTextField.setText(tradeData.getPrice());
             numTextField.setText(tradeData.getBaseNum());
