@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @version 1.0
@@ -39,13 +40,14 @@ public class TradeInfo implements Serializable {
     @Column(name = "sale_or_buy")
     private String saleOrBuy;
     //买入或卖出价格
-    private String price;
+    @Column(name = "price", precision = 25, scale = 12)
+    private BigDecimal price;
     //基准货币买入或卖出数量
-    @Column(name = "BASE_NUM")
-    private String baseNum;
+    @Column(name = "BASE_NUM", precision = 20, scale = 8)
+    private BigDecimal baseNum;
     //计价货币数量
-    @Column(name = "QUOTE_NUM")
-    private String quoteNum;
+    @Column(name = "QUOTE_NUM", precision = 20, scale = 8)
+    private BigDecimal quoteNum;
     //交易时间
     @Column(name = "TRADE_DATE")
     private String tradeDate;

@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @version 1.0
@@ -41,14 +42,14 @@ public class CMCQuotesLatest implements Serializable {
     @Column(name = "DATE_ADDED" )
     private String dateAdded;
     //最终的数量
-    @Column(name = "MAX_SUPPLY")
-    private String maxSupply;
+    @Column(name = "MAX_SUPPLY", precision = 30, scale = 8)
+    private BigDecimal maxSupply;
     //当前正在流通的硬币的大概数量
-    @Column(name = "CIRCULATING_SUPPLY" )
-    private String circulatingSupply;
+    @Column(name = "CIRCULATING_SUPPLY", precision = 30, scale = 8)
+    private BigDecimal circulatingSupply;
     //当前大约存在的硬币总数（减去已被可验证燃烧的所有硬币）
-    @Column(name = "TOTAL_SUPPLY" )
-    private String totalSupply;
+    @Column(name = "TOTAL_SUPPLY", precision = 30, scale = 8)
+    private BigDecimal totalSupply;
     //是否激活，1-yes  0=no
     @Column(name = "IS_ACTIVE" )
     private Integer isActive;
@@ -64,32 +65,33 @@ public class CMCQuotesLatest implements Serializable {
 
     //quote
     //整个市场的最新平均交易价格
-    private String price;
+    @Column(name = "price", precision = 25, scale = 12)
+    private BigDecimal price;
     //24小时交易量
-    @Column(name = "volume_24h")
-    private String volume24h;
-    @Column(name = "volume_change_24h")
-    private String volumeChange24h;
+    @Column(name = "volume_24h", precision = 30, scale = 2)
+    private BigDecimal volume24h;
+    @Column(name = "volume_change_24h", precision = 19, scale = 8)
+    private BigDecimal volumeChange24h;
     //每种货币1小时的交易价格百分比变化
-    @Column(name = "percent_change_1h")
-    private String percentChange1h;
+    @Column(name = "percent_change_1h", precision = 19, scale = 8)
+    private BigDecimal percentChange1h;
     //每种货币的24小时交易价格百分比变化
-    @Column(name = "percent_change_24h")
-    private String percentChange24h;
+    @Column(name = "percent_change_24h", precision = 19, scale = 8)
+    private BigDecimal percentChange24h;
     //每种货币7天交易价格的百分比变化
-    @Column(name = "percent_change_7d")
-    private String percentChange7d;
-    @Column(name = "percent_change_30d")
-    private String percentChange30d;
-    @Column(name = "percent_change_60d")
-    private String percentChange60d;
-    @Column(name = "percent_change_90d")
-    private String percentChange90d;
+    @Column(name = "percent_change_7d", precision = 19, scale = 8)
+    private BigDecimal percentChange7d;
+    @Column(name = "percent_change_30d", precision = 19, scale = 8)
+    private BigDecimal percentChange30d;
+    @Column(name = "percent_change_60d", precision = 19, scale = 8)
+    private BigDecimal percentChange60d;
+    @Column(name = "percent_change_90d", precision = 19, scale = 8)
+    private BigDecimal percentChange90d;
     //CoinMarketCap计算的市值
-    @Column(name = "market_cap")
-    private String marketCap;
+    @Column(name = "market_cap", precision = 30, scale = 2)
+    private BigDecimal marketCap;
     //市值占总市值百分比
-    @Column(name = "market_cap_dominance")
-    private String marketCapDominance;
+    @Column(name = "market_cap_dominance", precision = 19, scale = 8)
+    private BigDecimal marketCapDominance;
 
 }
