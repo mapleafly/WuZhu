@@ -20,7 +20,7 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
     baseline-version: 0
-    clean-disabled: false # 允许clean操作（仅开发测试环境）
+    clean-disabled: true # 禁止clean操作，防止误删数据（生产环境）
 #  sql:
 #    init:
 #      mode: always
