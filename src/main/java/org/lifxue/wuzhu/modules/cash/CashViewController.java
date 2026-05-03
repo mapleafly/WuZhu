@@ -27,6 +27,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.StringConverter;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
+import org.lifxue.wuzhu.constant.CoinConstants;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
 import org.lifxue.wuzhu.pojo.TradeInfo;
@@ -53,9 +54,6 @@ import java.util.ResourceBundle;
 @FxmlView("CashView.fxml")
 public class CashViewController implements Initializable {
 
-    // USDT
-    private static final String BASESYMBOL = "USDT";
-    private static final Integer BASEID = 825;
     /**
      * The data as an observable list of TradeData.
      */
@@ -125,7 +123,7 @@ public class CashViewController implements Initializable {
 
         //获取数据
         coinList = new ArrayList<>();
-        coinList.add(new CoinChoiceBoxVO(BASESYMBOL, BASEID));
+        coinList.add(new CoinChoiceBoxVO(CoinConstants.USDT_SYMBOL, CoinConstants.USDT_COIN_ID));
         if (coinList != null && !coinList.isEmpty()) {
             List<TradeInfoVO> tradeInfoList = iCashService.queryTradeInfoByBaseCoinId(coinList.get(0).getCoinId());
             if (tradeInfoList != null && !tradeInfoList.isEmpty()) {
@@ -233,8 +231,8 @@ public class CashViewController implements Initializable {
     private void setTradeInfo(TradeInfo tradeInfo) {
         tradeInfo.setBaseId(baseChoiceBox.getValue().getCoinId());
         tradeInfo.setBaseSymbol(baseChoiceBox.getValue().getSymbol());
-        tradeInfo.setQuoteId(BASEID);
-        tradeInfo.setQuoteSymbol(BASESYMBOL);
+        tradeInfo.setQuoteId(CoinConstants.USDT_COIN_ID);
+        tradeInfo.setQuoteSymbol(CoinConstants.USDT_SYMBOL);
         if (salebuyChoiceBox.getValue().equals("入金")) {
             tradeInfo.setSaleOrBuy("卖");
         } else {
@@ -313,7 +311,7 @@ public class CashViewController implements Initializable {
         if (tradeData != null) {
             //String symbolPairs = tradeData.getSymbolPairs();
             //baseChoiceBox.setValue(symbolPairs);
-            baseChoiceBox.setValue(new CoinChoiceBoxVO(BASESYMBOL,BASEID));
+            baseChoiceBox.setValue(new CoinChoiceBoxVO(CoinConstants.USDT_SYMBOL, CoinConstants.USDT_COIN_ID));
             salebuyChoiceBox.setValue(tradeData.getSaleOrBuy());
             numTextField.setText(tradeData.getBaseNum());
             dateDatePicker.setValue(DateHelper.fromString(tradeData.getDate()));
