@@ -47,8 +47,6 @@
                                 <CheckBox fx:id="autoPriceCheck" mnemonicParsing="false" text="启动时自动更新最新价格"/>
                                 <CheckBox fx:id="autoCoinInfoCheck" mnemonicParsing="false"
                                           text="每月自动更新MarketCap货币信息"/>
-                                <Button alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false"
-                                        onAction="#handleInitDB" text="!初始化数据库"/>
                             </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" layoutX="50.0" layoutY="140.0" spacing="20.0"

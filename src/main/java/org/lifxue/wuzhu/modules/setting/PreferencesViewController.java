@@ -27,9 +27,6 @@ import org.lifxue.wuzhu.constant.AppConstants;
 import org.lifxue.wuzhu.enums.BooleanEnum;
 import org.lifxue.wuzhu.enums.ThemeEnum;
 import org.lifxue.wuzhu.service.DatabaseBackupService;
-import org.lifxue.wuzhu.service.ICMCMapService;
-import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
-import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.lifxue.wuzhu.themes.InterfaceTheme;
 import org.lifxue.wuzhu.util.PrefsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,9 +80,6 @@ public class PreferencesViewController implements Initializable {
     private Workbench workbench;
     private InterfaceTheme interfaceTheme;
 
-    private final ICMCMapService icmcMapJpaService;
-    private final ITradeInfoService iTradeInfoJpaService;
-    private final ICMCQuotesLatestService icmcQuotesLatestJpaService;
     private final DatabaseBackupService databaseBackupService;
 
     @Autowired
@@ -95,16 +89,10 @@ public class PreferencesViewController implements Initializable {
     public PreferencesViewController(
         Workbench workbench,
         InterfaceTheme interfaceTheme,
-        ICMCMapService icmcMapJpaService,
-        ITradeInfoService iTradeInfoJpaService,
-        ICMCQuotesLatestService icmcQuotesLatestJpaService,
         DatabaseBackupService databaseBackupService
     ) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
-        this.icmcMapJpaService = icmcMapJpaService;
-        this.iTradeInfoJpaService = iTradeInfoJpaService;
-        this.icmcQuotesLatestJpaService = icmcQuotesLatestJpaService;
         this.databaseBackupService = databaseBackupService;
     }
 
@@ -235,42 +223,6 @@ public class PreferencesViewController implements Initializable {
 
         workbench.showInformationDialog("消息", "设置信息保存成功, 请重启软件使设置生效！", buttonType -> {
         });
-    }
-
-    /**
-     * @param event
-     * @description 初始化数据库按钮操作
-     * @author lifxue
-     * @date 2023/1/6 14:32
-     **/
-    @FXML
-    private void handleInitDB(ActionEvent event) {
-        if (iTradeInfoJpaService.delete()) {
-            workbench.showInformationDialog("消息", "初始化数据库交易信息成功！", buttonType -> {
-            });
-        } else {
-            workbench.showErrorDialog("消息", "初始化数据库交易信息失败！", buttonType -> {
-            });
-            return;
-        }
-
-        if (icmcQuotesLatestJpaService.delete()) {
-            workbench.showInformationDialog("消息", "初始化数据库最新价格成功！", buttonType -> {
-            });
-        } else {
-            workbench.showErrorDialog("消息", "初始化数据库最新价格失败！", buttonType -> {
-            });
-            return;
-        }
-
-        if (icmcMapJpaService.delete()) {
-            workbench.showInformationDialog("消息", "初始化数据库币种信息成功！", buttonType -> {
-            });
-        } else {
-            workbench.showErrorDialog("消息", "初始化数据库币种信息失败！", buttonType -> {
-            });
-            return;
-        }
     }
 
     /**
