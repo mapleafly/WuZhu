@@ -23,8 +23,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.lifxue.wuzhu.constant.CoinConstants;
 import org.lifxue.wuzhu.modules.statistics.vo.PATableVO;
+import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
+import org.lifxue.wuzhu.service.CashCalculationService;
 import org.lifxue.wuzhu.service.IPATableService;
+import org.lifxue.wuzhu.service.ITradeInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +42,8 @@ import java.util.Map;
 public class PATableViewModel {
 
     private IPATableService paTableService;
+    private CashCalculationService cashCalculationService;
+    private ITradeInfoService tradeInfoService;
 
     private final ObservableList<PATableVO> paDataList = FXCollections.observableArrayList();
     private final ObservableList<String> availableSymbols = FXCollections.observableArrayList();
@@ -61,6 +67,16 @@ public class PATableViewModel {
     @Autowired
     public void setPATableService(IPATableService paTableService) {
         this.paTableService = paTableService;
+    }
+
+    @Autowired
+    public void setCashCalculationService(CashCalculationService cashCalculationService) {
+        this.cashCalculationService = cashCalculationService;
+    }
+
+    @Autowired
+    public void setTradeInfoService(ITradeInfoService tradeInfoService) {
+        this.tradeInfoService = tradeInfoService;
     }
 
     public ObservableList<PATableVO> getPaDataList() {
@@ -290,25 +306,58 @@ public class PATableViewModel {
             }
         }
 
+        // 计算出入金余额
+        BigDecimal cashBalance = getCashBalance();
+
+        // 总成本 = 买入总额 - 卖出总额
         BigDecimal totalInvestment = totalBuy.subtract(totalSale);
+        // 当前总价值 = 交易盈亏 + 出入金余额
+        BigDecimal nowTotalValue = totalInvestment.add(cashBalance);
 
         String chg = "0.00%";
-        if (totalBuy.compareTo(BigDecimal.ZERO) > 0) {
-            BigDecimal profitPercent = totalInvestment
-                .divide(totalBuy, 5, BigDecimal.ROUND_HALF_UP)
-                .multiply(new BigDecimal("100"))
-                .setScale(2, BigDecimal.ROUND_HALF_UP);
-            chg = profitPercent.toPlainString() + "%";
-        }
+        // 以总成本为基数计算收益率
+        BigDecimal totalCost = totalBuy.compareTo(BigDecimal.ZERO) > 0 ? totalBuy : BigDecimal.ONE;
+        BigDecimal profitPercent = nowTotalValue
+            .divide(totalCost, 5, BigDecimal.ROUND_HALF_UP)
+            .multiply(new BigDecimal("100"))
+            .setScale(2, BigDecimal.ROUND_HALF_UP);
+        chg = profitPercent.toPlainString() + "%";
 
         map.put("numTotal", transactionCount + " 笔交易");
-        map.put("nowPriceTotal", totalInvestment.setScale(8, BigDecimal.ROUND_HALF_UP).toPlainString());
+        map.put("nowPriceTotal", nowTotalValue.setScale(8, BigDecimal.ROUND_HALF_UP).toPlainString());
         map.put("paPriceTotal", totalBuy.setScale(8, BigDecimal.ROUND_HALF_UP).toPlainString());
         map.put("curCHG", chg);
-        map.put("paPrice", "-");
-        map.put("nowPrice", "-");
+        map.put("paPrice", cashBalance.setScale(8, BigDecimal.ROUND_HALF_UP).toPlainString() + " (USDT余额)");
 
         return map;
+    }
+
+    /**
+     * 获取当前出入金余额
+     *
+     * @return 余额
+     */
+    private BigDecimal getCashBalance() {
+        if (cashCalculationService == null || tradeInfoService == null) {
+            return BigDecimal.ZERO;
+        }
+        try {
+            // 使用queryTradeInfoByBaseCoinId查询USDT记录
+            List<TradeInfoVO> usdtRecords = tradeInfoService.queryTradeInfoByBaseCoinId(CoinConstants.USDT_COIN_ID);
+            // 将TradeInfoVO转换为TradeInfo以兼容CashCalculationService
+            BigDecimal totalDeposit = BigDecimal.ZERO;
+            BigDecimal totalWithdrawal = BigDecimal.ZERO;
+            for (TradeInfoVO record : usdtRecords) {
+                if ("入金".equals(record.getSaleOrBuy())) {
+                    totalDeposit = totalDeposit.add(new BigDecimal(record.getQuoteNum()));
+                } else if ("出金".equals(record.getSaleOrBuy())) {
+                    totalWithdrawal = totalWithdrawal.add(new BigDecimal(record.getQuoteNum()));
+                }
+            }
+            return totalDeposit.subtract(totalWithdrawal);
+        } catch (Exception e) {
+            return BigDecimal.ZERO;
+        }
     }
 
     private boolean validateInput() {
