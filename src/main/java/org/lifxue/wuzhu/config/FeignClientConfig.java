@@ -1,13 +1,12 @@
 package org.lifxue.wuzhu.config;
 
+import feign.okhttp.OkHttpClient;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.OkHttpClient;
+import okhttp3.OkHttpClient.Builder;
 import org.lifxue.wuzhu.constant.AppConstants;
 import org.lifxue.wuzhu.enums.BooleanEnum;
 import org.lifxue.wuzhu.util.PrefsHelper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.commons.httpclient.DefaultOkHttpClientFactory;
-import org.springframework.cloud.commons.httpclient.OkHttpClientFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @version 1.0
@@ -43,26 +43,24 @@ public class FeignClientConfig {
     }
 
     /**
-     * @param builder
-     * @return org.springframework.cloud.commons.httpclient.OkHttpClientFactory
-     * @description Feign代理设置
+     * @return feign.okhttp.OkHttpClient
+     * @description Feign代理设置 - Spring Cloud 2023兼容配置
      * @author lifxue
      * @date 2023/1/6 22:56
      **/
-    @Bean(name="okHttpClientFactory")
-    public OkHttpClientFactory okHttpClientFactory(OkHttpClient.Builder builder) {
-        return new ProxyOkHttpClientFactory(builder);
-    }
+    @Bean
+    public OkHttpClient feignClient() {
+        Builder builder = new Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS);
 
-    public class ProxyOkHttpClientFactory extends DefaultOkHttpClientFactory {
-
-        private BooleanEnum proxyEnum =
+        BooleanEnum proxyEnum =
             BooleanEnum.valueOf(PrefsHelper.getPreferencesValue(PrefsHelper.PROXY, BooleanEnum.NO.toString()));
-        private String proxyHost = PrefsHelper.getPreferencesValue(PrefsHelper.HOST, AppConstants.DEFAULT_PROXY_HOST);
-        private Integer proxyPort = Integer.valueOf(PrefsHelper.getPreferencesValue(PrefsHelper.PORT, AppConstants.DEFAULT_PROXY_PORT));
+        String proxyHost = PrefsHelper.getPreferencesValue(PrefsHelper.HOST, AppConstants.DEFAULT_PROXY_HOST);
+        Integer proxyPort = Integer.valueOf(PrefsHelper.getPreferencesValue(PrefsHelper.PORT, AppConstants.DEFAULT_PROXY_PORT));
 
-        public ProxyOkHttpClientFactory(OkHttpClient.Builder builder) {
-            super(builder);
+        if (proxyEnum.equals(BooleanEnum.YES) && domainList != null && !domainList.isEmpty()) {
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
             List<Proxy> proxyList = new ArrayList<>(1);
             proxyList.add(proxy);
@@ -74,7 +72,6 @@ public class FeignClientConfig {
                         return Collections.singletonList(Proxy.NO_PROXY);
                     }
                     if (uri == null || !domainList.contains(uri.getHost())) {
-                        //if (uri == null) {
                         return Collections.singletonList(Proxy.NO_PROXY);
                     }
                     return proxyList;
@@ -82,8 +79,11 @@ public class FeignClientConfig {
 
                 @Override
                 public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+                    log.warn("Proxy connection failed for {}: {}", uri, ioe.getMessage());
                 }
             });
         }
+
+        return new OkHttpClient(builder.build());
     }
 }
