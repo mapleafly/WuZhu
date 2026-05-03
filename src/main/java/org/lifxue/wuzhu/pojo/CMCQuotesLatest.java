@@ -2,7 +2,7 @@ package org.lifxue.wuzhu.pojo;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
