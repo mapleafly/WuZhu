@@ -287,9 +287,9 @@ public class TradeInfoViewController implements Initializable {
         tradeInfo.setQuoteId(quoteChoiceBox.getValue().getCoinId());
         tradeInfo.setQuoteSymbol(quoteChoiceBox.getValue().getSymbol());
         tradeInfo.setSaleOrBuy(salebuyChoiceBox.getValue());
-        tradeInfo.setPrice(priceTextField.getText());
-        tradeInfo.setBaseNum(numTextField.getText());
-        tradeInfo.setQuoteNum(totalTextField.getText());
+        tradeInfo.setPrice(new BigDecimal(priceTextField.getText()));
+        tradeInfo.setBaseNum(new BigDecimal(numTextField.getText()));
+        tradeInfo.setQuoteNum(new BigDecimal(totalTextField.getText()));
         tradeInfo.setTradeDate(DateHelper.toString(this.dateDatePicker.getValue()));
 
     }

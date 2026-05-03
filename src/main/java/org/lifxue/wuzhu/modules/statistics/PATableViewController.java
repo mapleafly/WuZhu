@@ -238,15 +238,13 @@ public class PATableViewController implements Initializable {
             }
         }
 
-        String strPrice;
+        BigDecimal curPrice;
         CMCQuotesLatest cmcQuotesLatestJpa = ipaTableJpaService.queryBySymbol(strCoinSymbol);
         if(cmcQuotesLatestJpa == null){
-            strPrice = "0";
+            curPrice = BigDecimal.ZERO;
         }else {
-            strPrice = cmcQuotesLatestJpa.getPrice();
+            curPrice = cmcQuotesLatestJpa.getPrice() == null ? BigDecimal.ZERO : cmcQuotesLatestJpa.getPrice();
         }
-
-        BigDecimal curPrice = new BigDecimal(strPrice);
         BigDecimal paPrice = new BigDecimal("0");
         BigDecimal paPriceTotal = buy.subtract(sale);
         if (numTotal.compareTo(new BigDecimal("0")) > 0) {

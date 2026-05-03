@@ -29,6 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.lifxue.wuzhu.constant.CoinConstants;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
+
+import java.math.BigDecimal;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
 import org.lifxue.wuzhu.pojo.TradeInfo;
 import org.lifxue.wuzhu.service.ICashService;
@@ -238,9 +240,9 @@ public class CashViewController implements Initializable {
         } else {
             tradeInfo.setSaleOrBuy("买");
         }
-        tradeInfo.setPrice("1");
-        tradeInfo.setBaseNum(numTextField.getText());
-        tradeInfo.setQuoteNum(numTextField.getText());
+        tradeInfo.setPrice(new BigDecimal("1"));
+        tradeInfo.setBaseNum(new BigDecimal(numTextField.getText()));
+        tradeInfo.setQuoteNum(new BigDecimal(numTextField.getText()));
         tradeInfo.setTradeDate(DateHelper.toString(this.dateDatePicker.getValue()));
 
     }

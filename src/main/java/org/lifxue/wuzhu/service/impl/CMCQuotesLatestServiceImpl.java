@@ -13,9 +13,9 @@ import org.lifxue.wuzhu.pojo.CMCMap;
 import org.lifxue.wuzhu.pojo.CMCQuotesLatest;
 import org.lifxue.wuzhu.repository.CMCQuotesLatestRepository;
 import org.lifxue.wuzhu.service.ICMCMapService;
+import org.lifxue.wuzhu.convert.CMCQuotesLatestConvert;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
 import org.lifxue.wuzhu.service.feignc.ICMCQuotesLatestFeignClient;
-import org.lifxue.wuzhu.util.CopyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,11 +42,18 @@ public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
     private ICMCMapService icmcMapJpaService;
 
     private CMCQuotesLatestRepository cmcQuotesLatestRepository;
+    private CMCQuotesLatestConvert cmcQuotesLatestConvert;
 
     @Autowired
     public void setCmcQuotesLatestRepository(CMCQuotesLatestRepository cmcQuotesLatestRepository) {
         this.cmcQuotesLatestRepository = cmcQuotesLatestRepository;
     }
+
+    @Autowired
+    public void setCmcQuotesLatestConvert(CMCQuotesLatestConvert cmcQuotesLatestConvert) {
+        this.cmcQuotesLatestConvert = cmcQuotesLatestConvert;
+    }
+
     @Autowired
     public void setIcmcQuotesLatestFeignClient(ICMCQuotesLatestFeignClient icmcQuotesLatestFeignClient) {
         this.icmcQuotesLatestFeignClient = icmcQuotesLatestFeignClient;
@@ -184,7 +191,7 @@ public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
             listCMCQuotesLatestDto.add(cmcQuotesLatestDto);
         }
 
-        List<CMCQuotesLatest> result = CopyUtil.copyListCMCQuotesJap(listCMCQuotesLatestDto);
+        List<CMCQuotesLatest> result = cmcQuotesLatestConvert.convertList(listCMCQuotesLatestDto);
         log.info("[convertCmcQuotes] 解析完成 - 原始币种数: {}, 解析后数据量: {}",
             ids.split(",").length, result != null ? result.size() : 0);
 

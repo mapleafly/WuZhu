@@ -18,12 +18,48 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 public class CopyUtil {
+
+    /**
+     * 将String转换为BigDecimal，处理null和空字符串
+     * @param value 字符串值
+     * @return BigDecimal值，如果输入为null或空则返回BigDecimal.ZERO
+     */
+    public static BigDecimal toBigDecimal(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        try {
+            return new BigDecimal(value);
+        } catch (NumberFormatException e) {
+            log.warn("[CopyUtil] 无法将字符串转换为BigDecimal: {}", value);
+            return BigDecimal.ZERO;
+        }
+    }
+
+    /**
+     * 将BigDecimal转换为String，保留完整精度
+     * @param value BigDecimal值
+     * @return 字符串表示，如果输入为null则返回null
+     */
+    public static String toString(BigDecimal value) {
+        return value == null ? null : value.toPlainString();
+    }
+
+    /**
+     * 将double转换为BigDecimal，避免精度问题
+     * @param value double值
+     * @return BigDecimal值
+     */
+    public static BigDecimal toBigDecimal(double value) {
+        return BigDecimal.valueOf(value);
+    }
 
     public static <T> T copy(Object source, Class<T> c) {
         if (source == null) {
@@ -140,9 +176,9 @@ public class CopyUtil {
         }
 
         cmcQuotesLatestJpa.setNumMarketPairs(dto.getNum_market_pairs());
-        cmcQuotesLatestJpa.setMaxSupply(dto.getMax_supply());
-        cmcQuotesLatestJpa.setCirculatingSupply(dto.getCirculating_supply());
-        cmcQuotesLatestJpa.setTotalSupply(dto.getTotal_supply());
+        cmcQuotesLatestJpa.setMaxSupply(toBigDecimal(dto.getMax_supply()));
+        cmcQuotesLatestJpa.setCirculatingSupply(toBigDecimal(dto.getCirculating_supply()));
+        cmcQuotesLatestJpa.setTotalSupply(toBigDecimal(dto.getTotal_supply()));
         cmcQuotesLatestJpa.setIsActive(dto.getIs_active());
         cmcQuotesLatestJpa.setCmcRank(dto.getCmc_rank());
 
@@ -154,17 +190,17 @@ public class CopyUtil {
 
         Quote quote = dto.getQuote();
         if (quote != null) {
-            cmcQuotesLatestJpa.setPrice(String.valueOf(quote.getPrice()));
-            cmcQuotesLatestJpa.setVolume24h(String.valueOf(quote.getVolume_24h()));
-            cmcQuotesLatestJpa.setVolumeChange24h(String.valueOf(quote.getVolume_change_24h()));
-            cmcQuotesLatestJpa.setPercentChange1h(String.valueOf(quote.getPercent_change_1h()));
-            cmcQuotesLatestJpa.setPercentChange24h(String.valueOf(quote.getPercent_change_24h()));
-            cmcQuotesLatestJpa.setPercentChange7d(String.valueOf(quote.getPercent_change_7d()));
-            cmcQuotesLatestJpa.setPercentChange30d(String.valueOf(quote.getPercent_change_30d()));
-            cmcQuotesLatestJpa.setPercentChange60d(String.valueOf(quote.getPercent_change_60d()));
-            cmcQuotesLatestJpa.setPercentChange90d(String.valueOf(quote.getPercent_change_90d()));
-            cmcQuotesLatestJpa.setMarketCap(String.valueOf(quote.getMarket_cap()));
-            cmcQuotesLatestJpa.setMarketCapDominance(String.valueOf(quote.getMarket_cap_dominance()));
+            cmcQuotesLatestJpa.setPrice(toBigDecimal(quote.getPrice()));
+            cmcQuotesLatestJpa.setVolume24h(toBigDecimal(quote.getVolume_24h()));
+            cmcQuotesLatestJpa.setVolumeChange24h(toBigDecimal(quote.getVolume_change_24h()));
+            cmcQuotesLatestJpa.setPercentChange1h(toBigDecimal(quote.getPercent_change_1h()));
+            cmcQuotesLatestJpa.setPercentChange24h(toBigDecimal(quote.getPercent_change_24h()));
+            cmcQuotesLatestJpa.setPercentChange7d(toBigDecimal(quote.getPercent_change_7d()));
+            cmcQuotesLatestJpa.setPercentChange30d(toBigDecimal(quote.getPercent_change_30d()));
+            cmcQuotesLatestJpa.setPercentChange60d(toBigDecimal(quote.getPercent_change_60d()));
+            cmcQuotesLatestJpa.setPercentChange90d(toBigDecimal(quote.getPercent_change_90d()));
+            cmcQuotesLatestJpa.setMarketCap(toBigDecimal(quote.getMarket_cap()));
+            cmcQuotesLatestJpa.setMarketCapDominance(toBigDecimal(quote.getMarket_cap_dominance()));
         }
 
         return cmcQuotesLatestJpa;
@@ -222,12 +258,12 @@ public class CopyUtil {
         TradeInfoVO tradeInfoVO = new TradeInfoVO();
         tradeInfoVO.setId(tradeInfo.getId());
         tradeInfoVO.setDate(tradeInfo.getTradeDate());
-        tradeInfoVO.setPrice(tradeInfo.getPrice());
+        tradeInfoVO.setPrice(toString(tradeInfo.getPrice()));
         tradeInfoVO.setCoinId(tradeInfo.getBaseId());
         tradeInfoVO.setSaleOrBuy(tradeInfo.getSaleOrBuy());
         tradeInfoVO.setSymbolPairs(tradeInfo.getBaseSymbol() + "/" + tradeInfo.getQuoteSymbol());
-        tradeInfoVO.setBaseNum(tradeInfo.getBaseNum());
-        tradeInfoVO.setQuoteNum(tradeInfo.getQuoteNum());
+        tradeInfoVO.setBaseNum(toString(tradeInfo.getBaseNum()));
+        tradeInfoVO.setQuoteNum(toString(tradeInfo.getQuoteNum()));
 
         return tradeInfoVO;
     }
@@ -253,12 +289,12 @@ public class CopyUtil {
         TradeInfoVO tradeInfoVO = new TradeInfoVO();
         tradeInfoVO.setId(tradeInfo.getId());
         tradeInfoVO.setDate(tradeInfo.getTradeDate());
-        tradeInfoVO.setPrice(tradeInfo.getPrice());
+        tradeInfoVO.setPrice(toString(tradeInfo.getPrice()));
         tradeInfoVO.setCoinId(tradeInfo.getBaseId());
         tradeInfoVO.setSaleOrBuy(tradeInfo.getSaleOrBuy().equals("卖") ? "入金" : "出金");
         tradeInfoVO.setSymbolPairs(tradeInfo.getBaseSymbol() + "/" + tradeInfo.getQuoteSymbol());
-        tradeInfoVO.setBaseNum(tradeInfo.getBaseNum());
-        tradeInfoVO.setQuoteNum(tradeInfo.getQuoteNum());
+        tradeInfoVO.setBaseNum(toString(tradeInfo.getBaseNum()));
+        tradeInfoVO.setQuoteNum(toString(tradeInfo.getQuoteNum()));
 
         return tradeInfoVO;
     }
@@ -288,9 +324,10 @@ public class CopyUtil {
             tradeInfo.setQuoteId(Integer.valueOf(bean[3]));
             tradeInfo.setQuoteSymbol(bean[4]);
             tradeInfo.setSaleOrBuy(bean[5]);
-            tradeInfo.setPrice(bean[6]);
-            tradeInfo.setBaseNum(bean[7]);
-            tradeInfo.setQuoteNum(bean[8]);
+            // 从CSV导入的字符串转换为BigDecimal
+            tradeInfo.setPrice(toBigDecimal(bean[6]));
+            tradeInfo.setBaseNum(toBigDecimal(bean[7]));
+            tradeInfo.setQuoteNum(toBigDecimal(bean[8]));
             tradeInfo.setTradeDate(bean[9]);
 
             tradeInfoList.add(tradeInfo);
@@ -308,9 +345,9 @@ public class CopyUtil {
         paTableVO.setId(tradeInfo.getId());
         paTableVO.setCoinId(tradeInfo.getBaseId());
         paTableVO.setSaleOrBuy(tradeInfo.getSaleOrBuy());
-        paTableVO.setPrice(tradeInfo.getPrice());
-        paTableVO.setBaseNum(tradeInfo.getBaseNum());
-        paTableVO.setQuoteNum(tradeInfo.getQuoteNum());
+        paTableVO.setPrice(toString(tradeInfo.getPrice()));
+        paTableVO.setBaseNum(toString(tradeInfo.getBaseNum()));
+        paTableVO.setQuoteNum(toString(tradeInfo.getQuoteNum()));
         paTableVO.setDate(tradeInfo.getTradeDate());
         paTableVO.setSymbolPairs(tradeInfo.getBaseSymbol() + "/" + tradeInfo.getQuoteSymbol());
 

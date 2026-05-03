@@ -1,6 +1,7 @@
 package org.lifxue.wuzhu.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.lifxue.wuzhu.convert.TradeInfoConvert;
 import org.lifxue.wuzhu.modules.statistics.vo.PATableVO;
 import org.lifxue.wuzhu.pojo.CMCQuotesLatest;
 import org.lifxue.wuzhu.pojo.TradeInfo;
@@ -8,7 +9,7 @@ import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
 import org.lifxue.wuzhu.service.IPATableService;
 import org.lifxue.wuzhu.service.ITradeInfoService;
-import org.lifxue.wuzhu.util.CopyUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -29,14 +30,18 @@ public class PATableServiceImpl implements IPATableService {
     private ITradeInfoService iTradeInfoJpaService;
     private ICMCQuotesLatestService icmcQuotesLatestJpaService;
     private ICMCMapService icmcMapJpaService;
+    private TradeInfoConvert tradeInfoConvert;
 
+    @Autowired
     public PATableServiceImpl(
         ITradeInfoService iTradeInfoJpaService,
         ICMCQuotesLatestService icmcQuotesLatestJpaService,
-        ICMCMapService icmcMapJpaService) {
+        ICMCMapService icmcMapJpaService,
+        TradeInfoConvert tradeInfoConvert) {
         this.iTradeInfoJpaService = iTradeInfoJpaService;
         this.icmcQuotesLatestJpaService = icmcQuotesLatestJpaService;
         this.icmcMapJpaService = icmcMapJpaService;
+        this.tradeInfoConvert = tradeInfoConvert;
     }
 
     @Override
@@ -47,10 +52,10 @@ public class PATableServiceImpl implements IPATableService {
 
         List<PATableVO> paTableVOS = new ArrayList<PATableVO>();
         for (TradeInfo tradeInfo : tradeInfoList) {
-            PATableVO paTableVO = CopyUtil.copy(tradeInfo);
+            PATableVO paTableVO = tradeInfoConvert.toPAVO(tradeInfo);
             for (CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests) {
                 if (paTableVO.getCoinId().equals(cmcQuotesLatest.getTid())) {
-                    BigDecimal curPrice = new BigDecimal(cmcQuotesLatest.getPrice());
+                    BigDecimal curPrice = cmcQuotesLatest.getPrice();
                     BigDecimal payPrice = new BigDecimal(paTableVO.getPrice());
 
                     String chg = curPrice.subtract(payPrice)
@@ -83,10 +88,10 @@ public class PATableServiceImpl implements IPATableService {
         List<CMCQuotesLatest> cmcQuotesLatests = icmcQuotesLatestJpaService.queryLatest();
         List<PATableVO> paTableVOS = new ArrayList<PATableVO>();
         for (TradeInfo tradeInfo : tradeInfoList) {
-            PATableVO paTableVO = CopyUtil.copy(tradeInfo);
+            PATableVO paTableVO = tradeInfoConvert.toPAVO(tradeInfo);
             for (CMCQuotesLatest cmcQuotesLatest : cmcQuotesLatests) {
                 if (paTableVO.getCoinId().equals(cmcQuotesLatest.getTid())) {
-                    BigDecimal curPrice = new BigDecimal(cmcQuotesLatest.getPrice());
+                    BigDecimal curPrice = cmcQuotesLatest.getPrice();
                     BigDecimal payPrice = new BigDecimal(paTableVO.getPrice());
                     String chg = curPrice.subtract(payPrice)
                         .divide(payPrice, 5, RoundingMode.HALF_UP)

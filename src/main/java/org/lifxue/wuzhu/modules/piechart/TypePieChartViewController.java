@@ -132,12 +132,7 @@ public class TypePieChartViewController implements Initializable {
         for (CMCQuotesLatest coinType : typeList) {
             Integer id = coinType.getTid();
             String symbol = coinType.getSymbol();
-            BigDecimal price;
-            if (coinType.getPrice() == null || coinType.getPrice().isEmpty()) {
-                price = new BigDecimal("0");
-            } else {
-                price = new BigDecimal(coinType.getPrice());
-            }
+            BigDecimal price = coinType.getPrice() == null ? BigDecimal.ZERO : coinType.getPrice();
 
             BigDecimal buyNum = new BigDecimal("0");
             BigDecimal saleNum = new BigDecimal("0");
@@ -145,17 +140,17 @@ public class TypePieChartViewController implements Initializable {
                 if (bean.getBaseId().intValue() == id.intValue()) {
                     if (coinType.getSymbol().equals("USDT")) {
                         if (bean.getSaleOrBuy().equals("买")) {
-                            usdtNum = usdtNum.subtract(new BigDecimal(bean.getQuoteNum()));
+                            usdtNum = usdtNum.subtract(bean.getQuoteNum());
                         } else if (bean.getSaleOrBuy().equals("卖")) {
-                            usdtNum = usdtNum.add(new BigDecimal(bean.getQuoteNum()));
+                            usdtNum = usdtNum.add(bean.getQuoteNum());
                         }
                     } else {
                         if (bean.getSaleOrBuy().equals("买")) {
-                            buyNum = buyNum.add(new BigDecimal(bean.getBaseNum()));
-                            usdtNum = usdtNum.subtract(new BigDecimal(bean.getQuoteNum()));
+                            buyNum = buyNum.add(bean.getBaseNum());
+                            usdtNum = usdtNum.subtract(bean.getQuoteNum());
                         } else if (bean.getSaleOrBuy().equals("卖")) {
-                            saleNum = saleNum.add(new BigDecimal(bean.getBaseNum()));
-                            usdtNum = usdtNum.add(new BigDecimal(bean.getQuoteNum()));
+                            saleNum = saleNum.add(bean.getBaseNum());
+                            usdtNum = usdtNum.add(bean.getQuoteNum());
                         }
                     }
                 }
