@@ -65,6 +65,10 @@ public class PATableViewController implements Initializable {
         initControls();
         initBindings();
         viewModel.loadAvailableSymbols();
+        // 数据加载完成后再设置默认值，确保"全部品种"在列表中
+        typeChoiceBox.setValue("全部品种");
+        // 初始加载全部交易数据，按交易时间倒序排列
+        viewModel.loadPAData();
         viewModel.errorMessageProperty().addListener((obs, old, newVal) -> {
             if (newVal != null && !newVal.isEmpty()) workbench.showErrorDialog("警告", "无效的字段！", newVal, bt -> {});
         });
