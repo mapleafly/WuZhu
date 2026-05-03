@@ -28,6 +28,10 @@ import org.reactfx.SuspendableNo;
 import org.reactfx.util.Either;
 import org.reactfx.util.Tuple2;
 
+import org.lifxue.wuzhu.exception.FileIOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +42,7 @@ import static org.fxmisc.richtext.model.TwoDimensional.Bias.Backward;
 import static org.fxmisc.richtext.model.TwoDimensional.Bias.Forward;
 
 public class RichTextView extends AnchorPane {
+    private static final Logger log = LoggerFactory.getLogger(RichTextView.class);
     private static final String RTFX_DIR = createDir();
     private static final String RTFX_FILE_EXTENSION = ".rtfx";
     private final Workbench workbench;
@@ -341,7 +346,8 @@ public class RichTextView extends AnchorPane {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("Failed to create file: {}", file.getAbsolutePath(), e);
+                throw new FileIOException("Failed to create file: " + file.getAbsolutePath(), e);
             }
         }
         area.clear();
@@ -367,7 +373,7 @@ public class RichTextView extends AnchorPane {
                     area.replaceSelection(doc);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("Failed to load file: {}", file.getAbsolutePath(), e);
             }
         }
     }
@@ -380,7 +386,6 @@ public class RichTextView extends AnchorPane {
     private void save(File file) {
         StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle> doc = area.getDocument();
 
-        // Use the Codec to save the document in a binary format
         area.getStyleCodecs().ifPresent(codecs -> {
             Codec<StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle>> codec =
                 ReadOnlyStyledDocument.codec(codecs._1, codecs._2, area.getSegOps());
@@ -389,8 +394,8 @@ public class RichTextView extends AnchorPane {
                 DataOutputStream dos = new DataOutputStream(fos);
                 codec.encode(dos, doc);
                 fos.close();
-            } catch (IOException fnfe) {
-                fnfe.printStackTrace();
+            } catch (IOException e) {
+                log.error("Failed to save file: {}", file.getAbsolutePath(), e);
             }
         });
     }

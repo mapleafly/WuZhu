@@ -5,6 +5,7 @@ import org.lifxue.wuzhu.dto.CMCMapDto;
 import org.lifxue.wuzhu.dto.CMCQuotesLatestDto;
 import org.lifxue.wuzhu.dto.Platform;
 import org.lifxue.wuzhu.dto.Quote;
+import org.lifxue.wuzhu.exception.DataAccessException;
 import org.lifxue.wuzhu.modules.selectcoin.vo.SelectDataVO;
 import org.lifxue.wuzhu.modules.statistics.vo.PATableVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.CoinChoiceBoxVO;
@@ -45,7 +46,7 @@ public class CopyUtil {
             return instance;
         } catch (InvocationTargetException | InstantiationException | NoSuchMethodException |
                  IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("Failed to copy object of type: " + c.getSimpleName(), e);
         }
     }
 
