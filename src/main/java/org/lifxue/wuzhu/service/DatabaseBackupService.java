@@ -95,8 +95,8 @@ public class DatabaseBackupService {
                 throw new RuntimeException("备份文件不存在: " + sqlFilePath);
             }
 
-            // 先删除所有现有表（排除Flyway系统表），然后导入
-            jdbcTemplate.execute("DROP ALL OBJECTS DELETE FILES");
+            // 先删除所有现有表和数据，然后导入（不带DELETE FILES，保留数据库文件）
+            jdbcTemplate.execute("DROP ALL OBJECTS");
             
             // 使用H2的RUNSCRIPT命令导入
             jdbcTemplate.execute("RUNSCRIPT FROM '" + sqlFile.getAbsolutePath().replace("\\", "/") + "'");
