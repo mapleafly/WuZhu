@@ -25,6 +25,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
 import org.lifxue.wuzhu.constant.AppConstants;
+import org.lifxue.wuzhu.constant.CoinConstants;
 import org.lifxue.wuzhu.enums.BooleanEnum;
 import org.lifxue.wuzhu.pojo.CMCQuotesLatest;
 import org.lifxue.wuzhu.pojo.TradeInfo;
@@ -36,9 +37,10 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class TypePieChartViewModel {
@@ -116,6 +118,7 @@ public class TypePieChartViewModel {
             List<PieChart.Data> dataList = buildPieData(tradeInfos, quotes);
             pieData.addAll(dataList);
 
+            // 计算账户总额（所有币种当前价值的总和）
             BigDecimal total = dataList.stream()
                 .map(d -> BigDecimal.valueOf(d.getPieValue()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -130,62 +133,124 @@ public class TypePieChartViewModel {
 
     private List<PieChart.Data> buildPieData(List<TradeInfo> tradeInfos, List<CMCQuotesLatest> quotes) {
         List<PieChart.Data> result = new ArrayList<>();
-        BigDecimal usdtNum = BigDecimal.ZERO;
-        double otherAllPrice = 0;
-
-        boolean notSmallCoin = shouldHideSmallCoins();
+        
+        // 步骤1: 计算各币种持仓数量和USDT余额
+        Map<Integer, BigDecimal> holdings = new HashMap<>();
+        BigDecimal usdtBalance = BigDecimal.ZERO;
+        
+        for (TradeInfo trade : tradeInfos) {
+            if (CoinConstants.USDT_COIN_ID.equals(trade.getBaseId())) {
+                // USDT记录：入金/出金
+                if ("卖".equals(trade.getSaleOrBuy())) {
+                    // 入金：增加USDT余额
+                    usdtBalance = usdtBalance.add(trade.getBaseNum());
+                } else if ("买".equals(trade.getSaleOrBuy())) {
+                    // 出金：减少USDT余额
+                    usdtBalance = usdtBalance.subtract(trade.getBaseNum());
+                }
+            } else {
+                // 非USDT交易：买入/卖出其他币种
+                Integer coinId = trade.getBaseId();
+                BigDecimal currentHolding = holdings.getOrDefault(coinId, BigDecimal.ZERO);
+                
+                if ("买".equals(trade.getSaleOrBuy())) {
+                    // 买入：增加持仓，减少USDT余额
+                    currentHolding = currentHolding.add(trade.getBaseNum());
+                    usdtBalance = usdtBalance.subtract(trade.getQuoteNum());
+                } else if ("卖".equals(trade.getSaleOrBuy())) {
+                    // 卖出：减少持仓，增加USDT余额
+                    currentHolding = currentHolding.subtract(trade.getBaseNum());
+                    usdtBalance = usdtBalance.add(trade.getQuoteNum());
+                }
+                
+                holdings.put(coinId, currentHolding);
+            }
+        }
+        
+        // 步骤2: 计算各币种（包括USDT）当前价值和总额
+        BigDecimal totalValue = BigDecimal.ZERO;
+        Map<Integer, BigDecimal> coinValues = new HashMap<>();
+        
+        // 计算非USDT币种价值
+        for (CMCQuotesLatest quote : quotes) {
+            Integer coinId = quote.getTid();
+            // 跳过USDT
+            if (CoinConstants.USDT_COIN_ID.equals(coinId)) {
+                continue;
+            }
+            
+            BigDecimal holding = holdings.getOrDefault(coinId, BigDecimal.ZERO);
+            if (holding.compareTo(BigDecimal.ZERO) > 0) {
+                BigDecimal price = quote.getPrice() == null ? BigDecimal.ZERO : quote.getPrice();
+                BigDecimal value = holding.multiply(price);
+                coinValues.put(coinId, value);
+                totalValue = totalValue.add(value);
+            }
+        }
+        
+        // USDT价值（余额×1）
+        if (usdtBalance.compareTo(BigDecimal.ZERO) > 0) {
+            coinValues.put(CoinConstants.USDT_COIN_ID, usdtBalance);
+            totalValue = totalValue.add(usdtBalance);
+        }
+        
+        // 步骤3: 构建饼图数据
+        boolean hideSmall = shouldHideSmallCoins();
         BigDecimal threshold = getMinValueThreshold();
-
-        for (CMCQuotesLatest coin : quotes) {
-            Integer id = coin.getTid();
-            String symbol = coin.getSymbol();
-            BigDecimal price = coin.getPrice() == null ? BigDecimal.ZERO : coin.getPrice();
-
-            BigDecimal buyNum = BigDecimal.ZERO;
-            BigDecimal saleNum = BigDecimal.ZERO;
-
-            for (TradeInfo trade : tradeInfos) {
-                if (trade.getBaseId().intValue() == id.intValue()) {
-                    if ("USDT".equals(symbol)) {
-                        if ("买".equals(trade.getSaleOrBuy())) {
-                            usdtNum = usdtNum.subtract(trade.getQuoteNum());
-                        } else if ("卖".equals(trade.getSaleOrBuy())) {
-                            usdtNum = usdtNum.add(trade.getQuoteNum());
-                        }
-                    } else {
-                        if ("买".equals(trade.getSaleOrBuy())) {
-                            buyNum = buyNum.add(trade.getBaseNum());
-                            usdtNum = usdtNum.subtract(trade.getQuoteNum());
-                        } else if ("卖".equals(trade.getSaleOrBuy())) {
-                            saleNum = saleNum.add(trade.getBaseNum());
-                            usdtNum = usdtNum.add(trade.getQuoteNum());
-                        }
-                    }
+        BigDecimal otherValue = BigDecimal.ZERO;
+        
+        // 先处理非USDT币种
+        for (CMCQuotesLatest quote : quotes) {
+            Integer coinId = quote.getTid();
+            // 跳过USDT
+            if (CoinConstants.USDT_COIN_ID.equals(coinId)) {
+                continue;
+            }
+            
+            BigDecimal value = coinValues.getOrDefault(coinId, BigDecimal.ZERO);
+            if (value.compareTo(BigDecimal.ZERO) > 0) {
+                if (hideSmall && value.compareTo(threshold) < 0) {
+                    otherValue = otherValue.add(value);
+                } else {
+                    String symbol = quote.getSymbol();
+                    double percentage = value.divide(totalValue, 4, BigDecimal.ROUND_HALF_UP)
+                        .multiply(new BigDecimal("100"))
+                        .doubleValue();
+                    PieChart.Data data = new PieChart.Data(
+                        String.format("%s (%.2f%%)", symbol, percentage), 
+                        value.doubleValue()
+                    );
+                    result.add(data);
                 }
             }
-
-            BigDecimal holding = buyNum.subtract(saleNum);
-            double value = holding.multiply(price)
-                .setScale(AppConstants.DEFAULT_SCALE, AppConstants.DEFAULT_ROUNDING_MODE)
+        }
+        
+        // 添加USDT到饼图
+        if (usdtBalance.compareTo(BigDecimal.ZERO) > 0) {
+            double usdtPercentage = usdtBalance.divide(totalValue, 4, BigDecimal.ROUND_HALF_UP)
+                .multiply(new BigDecimal("100"))
                 .doubleValue();
-
-            if (notSmallCoin && value <= threshold.doubleValue()) {
-                otherAllPrice += value;
-            } else {
-                result.add(new PieChart.Data(symbol, value));
-            }
+            PieChart.Data usdtData = new PieChart.Data(
+                String.format("USDT (%.2f%%)", usdtPercentage), 
+                usdtBalance.doubleValue()
+            );
+            result.add(usdtData);
         }
-
-        if (otherAllPrice > 0) {
-            result.add(new PieChart.Data("其他", otherAllPrice));
+        
+        // 添加"其他"分类
+        if (otherValue.compareTo(BigDecimal.ZERO) > 0) {
+            double otherPercentage = otherValue.divide(totalValue, 4, BigDecimal.ROUND_HALF_UP)
+                .multiply(new BigDecimal("100"))
+                .doubleValue();
+            result.add(new PieChart.Data(
+                String.format("其他 (%.2f%%)", otherPercentage), 
+                otherValue.doubleValue()
+            ));
         }
-
-        if (usdtNum.compareTo(BigDecimal.ZERO) != 0) {
-            result.add(new PieChart.Data("USDT", usdtNum.doubleValue()));
-        }
-
+        
+        // 按价值降序排序
         result.sort(Comparator.comparingDouble(PieChart.Data::getPieValue).reversed());
-
+        
         return result;
     }
 
