@@ -27,25 +27,19 @@ import java.util.List;
 @Slf4j
 @Service
 public class TradeInfoServiceImpl implements ITradeInfoService {
-    private ICMCMapService icmcMapJpaService;
-    private TradeInfoRepository tradeInfoRepository;
-    private TradeInfoConvert tradeInfoConvert;
-
+    private final ICMCMapService icmcMapJpaService;
+    private final TradeInfoRepository tradeInfoRepository;
+    private final TradeInfoConvert tradeInfoConvert;
 
     @Autowired
-    public void setIcmcMapJpaService(ICMCMapService icmcMapJpaService) {
+    public TradeInfoServiceImpl(ICMCMapService icmcMapJpaService,
+                                 TradeInfoRepository tradeInfoRepository,
+                                 TradeInfoConvert tradeInfoConvert) {
         this.icmcMapJpaService = icmcMapJpaService;
-    }
-
-    @Autowired
-    public void setTradeInfoRepository(TradeInfoRepository tradeInfoRepository) {
         this.tradeInfoRepository = tradeInfoRepository;
-    }
-
-    @Autowired
-    public void setTradeInfoConvert(TradeInfoConvert tradeInfoConvert) {
         this.tradeInfoConvert = tradeInfoConvert;
     }
+
     /***
      * @description 查询可用coin的symbo集合
      * @author lifxue

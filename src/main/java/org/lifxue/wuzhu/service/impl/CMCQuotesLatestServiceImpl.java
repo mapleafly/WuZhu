@@ -38,32 +38,21 @@ public class CMCQuotesLatestServiceImpl implements ICMCQuotesLatestService {
     private final String ICMCQUOTESLATEST_AUX = "num_market_pairs,cmc_rank,date_added,tags,platform," +
         "max_supply,circulating_supply,total_supply,is_active,is_fiat";
 
-    private ICMCQuotesLatestFeignClient icmcQuotesLatestFeignClient;
-    private ICMCMapService icmcMapJpaService;
-
-    private CMCQuotesLatestRepository cmcQuotesLatestRepository;
-    private CMCQuotesLatestConvert cmcQuotesLatestConvert;
+    private final ICMCQuotesLatestFeignClient icmcQuotesLatestFeignClient;
+    private final ICMCMapService icmcMapJpaService;
+    private final CMCQuotesLatestRepository cmcQuotesLatestRepository;
+    private final CMCQuotesLatestConvert cmcQuotesLatestConvert;
 
     @Autowired
-    public void setCmcQuotesLatestRepository(CMCQuotesLatestRepository cmcQuotesLatestRepository) {
+    public CMCQuotesLatestServiceImpl(ICMCQuotesLatestFeignClient icmcQuotesLatestFeignClient,
+                                       ICMCMapService icmcMapJpaService,
+                                       CMCQuotesLatestRepository cmcQuotesLatestRepository,
+                                       CMCQuotesLatestConvert cmcQuotesLatestConvert) {
+        this.icmcQuotesLatestFeignClient = icmcQuotesLatestFeignClient;
+        this.icmcMapJpaService = icmcMapJpaService;
         this.cmcQuotesLatestRepository = cmcQuotesLatestRepository;
-    }
-
-    @Autowired
-    public void setCmcQuotesLatestConvert(CMCQuotesLatestConvert cmcQuotesLatestConvert) {
         this.cmcQuotesLatestConvert = cmcQuotesLatestConvert;
     }
-
-    @Autowired
-    public void setIcmcQuotesLatestFeignClient(ICMCQuotesLatestFeignClient icmcQuotesLatestFeignClient) {
-        this.icmcQuotesLatestFeignClient = icmcQuotesLatestFeignClient;
-    }
-
-    @Autowired
-    public void setIcmcMapJpaService(ICMCMapService icmcMapJpaService) {
-        this.icmcMapJpaService = icmcMapJpaService;
-    }
-
 
 
     @Nullable

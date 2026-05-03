@@ -17,8 +17,6 @@ import org.lifxue.wuzhu.service.feignc.ICMCMapFeignClient;
 import org.lifxue.wuzhu.util.CopyUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,12 +36,11 @@ public class CMCMapServiceImpl implements ICMCMapService {
     private final Integer LIMIT = 5000;
     private final String CMCMAP_AUX = "platform,first_historical_data,last_historical_data,is_active";
     private final ICMCMapFeignClient icmcMapFeignClient;
+    private final CMCMapRepository cmcMapRepository;
 
-    @Resource
-    private CMCMapRepository cmcMapRepository;
-
-    public CMCMapServiceImpl(ICMCMapFeignClient icmcMapFeignClient) {
+    public CMCMapServiceImpl(ICMCMapFeignClient icmcMapFeignClient, CMCMapRepository cmcMapRepository) {
         this.icmcMapFeignClient = icmcMapFeignClient;
+        this.cmcMapRepository = cmcMapRepository;
     }
 
     @Override
