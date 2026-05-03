@@ -24,6 +24,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import net.rgielen.fxweaver.core.FxmlView;
+import org.lifxue.wuzhu.constant.AppConstants;
 import org.lifxue.wuzhu.modules.statistics.vo.PATableVO;
 import org.lifxue.wuzhu.pojo.CMCQuotesLatest;
 import org.lifxue.wuzhu.service.IPATableService;
@@ -249,13 +250,13 @@ public class PATableViewController implements Initializable {
         BigDecimal paPrice = new BigDecimal("0");
         BigDecimal paPriceTotal = buy.subtract(sale);
         if (numTotal.compareTo(new BigDecimal("0")) > 0) {
-            paPrice = paPriceTotal.divide(numTotal, 12, RoundingMode.HALF_UP);
+            paPrice = paPriceTotal.divide(numTotal, AppConstants.DEFAULT_SCALE, AppConstants.DEFAULT_ROUNDING_MODE);
         }
-        map.put("numTotal", numTotal.setScale(12, RoundingMode.HALF_UP).toPlainString());
+        map.put("numTotal", numTotal.setScale(AppConstants.DEFAULT_SCALE, AppConstants.DEFAULT_ROUNDING_MODE).toPlainString());
         map.put(
-            "nowPriceTotal", numTotal.multiply(curPrice).setScale(12, RoundingMode.HALF_UP).toPlainString());
-        map.put("nowPrice", curPrice.setScale(12, RoundingMode.HALF_UP).toPlainString());
-        map.put("paPriceTotal", paPriceTotal.setScale(12, RoundingMode.HALF_UP).toPlainString());
+            "nowPriceTotal", numTotal.multiply(curPrice).setScale(AppConstants.DEFAULT_SCALE, AppConstants.DEFAULT_ROUNDING_MODE).toPlainString());
+        map.put("nowPrice", curPrice.setScale(AppConstants.DEFAULT_SCALE, AppConstants.DEFAULT_ROUNDING_MODE).toPlainString());
+        map.put("paPriceTotal", paPriceTotal.setScale(AppConstants.DEFAULT_SCALE, AppConstants.DEFAULT_ROUNDING_MODE).toPlainString());
         map.put("paPrice", paPrice.toPlainString());
         //计算涨跌幅
         String chg = "∞";
@@ -301,8 +302,8 @@ public class PATableViewController implements Initializable {
         }
 
         map.put("numTotal", String.valueOf(transactionCount) + " 笔交易");
-        map.put("nowPriceTotal", totalInvestment.setScale(12, RoundingMode.HALF_UP).toPlainString());
-        map.put("paPriceTotal", totalBuy.setScale(12, RoundingMode.HALF_UP).toPlainString());
+        map.put("nowPriceTotal", totalInvestment.setScale(AppConstants.DEFAULT_SCALE, AppConstants.DEFAULT_ROUNDING_MODE).toPlainString());
+        map.put("paPriceTotal", totalBuy.setScale(AppConstants.DEFAULT_SCALE, AppConstants.DEFAULT_ROUNDING_MODE).toPlainString());
         map.put("curCHG", chg);
         map.put("paPrice", "-");
         map.put("nowPrice", "-");

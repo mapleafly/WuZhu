@@ -25,6 +25,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.text.Font;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
+import org.lifxue.wuzhu.constant.AppConstants;
 import org.lifxue.wuzhu.enums.BooleanEnum;
 import org.lifxue.wuzhu.pojo.CMCQuotesLatest;
 import org.lifxue.wuzhu.pojo.TradeInfo;
@@ -160,7 +161,7 @@ public class TypePieChartViewController implements Initializable {
                 }
             }
             double allPrice =
-                buyNum.subtract(saleNum).multiply(price).setScale(12, RoundingMode.HALF_UP).doubleValue();
+                buyNum.subtract(saleNum).multiply(price).setScale(AppConstants.DEFAULT_SCALE, AppConstants.DEFAULT_ROUNDING_MODE).doubleValue();
             // 忽略总价小的coin
             String notSmallCoinValue =
                 PrefsHelper.getPreferencesValue(PrefsHelper.NOTSMALLCOIN, BooleanEnum.NO.toString());
