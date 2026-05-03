@@ -51,6 +51,21 @@
                                         onAction="#handleInitDB" text="!初始化数据库"/>
                             </children>
                         </HBox>
+                        <HBox alignment="CENTER_LEFT" layoutX="50.0" layoutY="140.0" spacing="20.0"
+                              AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+                            <children>
+                                <Label text="数据备份：">
+                                    <font>
+                                        <Font name="System Bold" size="14.0"/>
+                                    </font>
+                                </Label>
+                                <Button mnemonicParsing="false" onAction="#handleBackup" text="备份数据"/>
+                                <Button mnemonicParsing="false" onAction="#handleRestore" text="恢复数据"/>
+                                <Label fx:id="backupStatusLabel" text=""/>
+                            </children>
+                        </HBox>
+                        <Label layoutX="140.0" layoutY="175.0" text="数据存储位置：~/.wuzhu/h2/，建议定期备份"
+                               AnchorPane.leftAnchor="140.0" textFill="GRAY"/>
                         <HBox alignment="CENTER_LEFT" layoutX="44.0" layoutY="174.0" spacing="20.0"
                               AnchorPane.leftAnchor="40.0">
                             <children>

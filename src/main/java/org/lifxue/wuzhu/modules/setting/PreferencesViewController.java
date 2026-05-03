@@ -20,11 +20,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.stage.FileChooser;
 import lombok.extern.slf4j.Slf4j;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.lifxue.wuzhu.constant.AppConstants;
 import org.lifxue.wuzhu.enums.BooleanEnum;
 import org.lifxue.wuzhu.enums.ThemeEnum;
+import org.lifxue.wuzhu.service.DatabaseBackupService;
 import org.lifxue.wuzhu.service.ICMCMapService;
 import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
 import org.lifxue.wuzhu.service.ITradeInfoService;
@@ -34,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -74,15 +77,16 @@ public class PreferencesViewController implements Initializable {
     private CheckBox proxyCheck;
     @FXML
     private TextField apikeyTextField;
+    @FXML
+    private Label backupStatusLabel;
 
     private Workbench workbench;
     private InterfaceTheme interfaceTheme;
 
     private final ICMCMapService icmcMapJpaService;
-
     private final ITradeInfoService iTradeInfoJpaService;
-
     private final ICMCQuotesLatestService icmcQuotesLatestJpaService;
+    private final DatabaseBackupService databaseBackupService;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -93,14 +97,15 @@ public class PreferencesViewController implements Initializable {
         InterfaceTheme interfaceTheme,
         ICMCMapService icmcMapJpaService,
         ITradeInfoService iTradeInfoJpaService,
-        ICMCQuotesLatestService icmcQuotesLatestJpaService
+        ICMCQuotesLatestService icmcQuotesLatestJpaService,
+        DatabaseBackupService databaseBackupService
     ) {
         this.workbench = workbench;
         this.interfaceTheme = interfaceTheme;
         this.icmcMapJpaService = icmcMapJpaService;
         this.iTradeInfoJpaService = iTradeInfoJpaService;
         this.icmcQuotesLatestJpaService = icmcQuotesLatestJpaService;
-
+        this.databaseBackupService = databaseBackupService;
     }
 
     /**
@@ -291,5 +296,68 @@ public class PreferencesViewController implements Initializable {
     public void proxyCheckOnAction(ActionEvent actionEvent) {
         hostTextField.setDisable(!proxyCheck.isSelected());
         portTextField.setDisable(!proxyCheck.isSelected());
+    }
+
+    @FXML
+    private void handleBackup(ActionEvent event) {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("选择备份文件保存位置");
+            fileChooser.setInitialFileName("wuzhu_backup_" + System.currentTimeMillis() + ".sql");
+            fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("SQL文件", "*.sql"),
+                new FileChooser.ExtensionFilter("ZIP文件", "*.zip")
+            );
+
+            File file = fileChooser.showSaveDialog(null);
+            if (file != null) {
+                String backupPath;
+                if (file.getName().endsWith(".zip")) {
+                    backupPath = databaseBackupService.backupToZip(file.getParent());
+                } else {
+                    backupPath = databaseBackupService.exportToSql(file.getParent());
+                }
+                backupStatusLabel.setText("备份成功: " + new File(backupPath).getName());
+                workbench.showInformationDialog("成功", "数据备份成功！\n文件: " + backupPath, buttonType -> {});
+            }
+        } catch (Exception e) {
+            log.error("数据备份失败", e);
+            backupStatusLabel.setText("备份失败");
+            workbench.showErrorDialog("错误", "数据备份失败: " + e.getMessage(), buttonType -> {});
+        }
+    }
+
+    @FXML
+    private void handleRestore(ActionEvent event) {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("选择备份文件进行恢复");
+            fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("SQL文件", "*.sql"),
+                new FileChooser.ExtensionFilter("所有文件", "*.*")
+            );
+
+            File file = fileChooser.showOpenDialog(null);
+            if (file != null) {
+                workbench.showConfirmationDialog("确认", 
+                    "恢复数据将覆盖当前所有数据，是否继续？", 
+                    buttonType -> {
+                        if (buttonType.getButtonData().isDefaultButton()) {
+                            try {
+                                databaseBackupService.importFromSql(file.getAbsolutePath());
+                                backupStatusLabel.setText("恢复成功");
+                                workbench.showInformationDialog("成功", "数据恢复成功！请重启软件。", bt -> {});
+                            } catch (Exception ex) {
+                                log.error("数据恢复失败", ex);
+                                backupStatusLabel.setText("恢复失败");
+                                workbench.showErrorDialog("错误", "数据恢复失败: " + ex.getMessage(), bt -> {});
+                            }
+                        }
+                    });
+            }
+        } catch (Exception e) {
+            log.error("选择恢复文件失败", e);
+            workbench.showErrorDialog("错误", "选择文件失败: " + e.getMessage(), buttonType -> {});
+        }
     }
 }
