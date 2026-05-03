@@ -47,8 +47,11 @@ public class DatabaseBackupService {
             // 确保备份目录存在
             Files.createDirectories(backupPath.getParent());
 
-            // 使用H2的SCRIPT命令导出，排除Flyway系统表
-            jdbcTemplate.execute("SCRIPT EXCLUDES TABLES flyway_schema_history TO '" + backupPath.toAbsolutePath().toString().replace("\\", "/") + "'");
+            // 使用H2的SCRIPT命令导出
+            jdbcTemplate.execute("SCRIPT TO '" + backupPath.toAbsolutePath().toString().replace("\\", "/") + "'");
+
+            // 过滤掉Flyway系统表相关的SQL语句
+            filterFlywayStatements(backupPath);
 
             log.info("数据库备份成功: {}", backupPath);
             return backupPath.toString();
@@ -56,6 +59,28 @@ public class DatabaseBackupService {
             log.error("数据库备份失败", e);
             throw new RuntimeException("备份失败: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * 过滤SQL文件中的Flyway系统表相关语句
+     *
+     * @param sqlFilePath SQL文件路径
+     */
+    private void filterFlywayStatements(Path sqlFilePath) throws IOException {
+        String content = Files.readString(sqlFilePath);
+
+        // 移除所有包含FLYWAY_SCHEMA_HISTORY的行（不区分大小写）
+        String[] lines = content.split("\n");
+        StringBuilder filtered = new StringBuilder();
+
+        for (String line : lines) {
+            // 跳过包含flyway_schema_history的行
+            if (!line.toUpperCase().contains("FLYWAY_SCHEMA_HISTORY")) {
+                filtered.append(line).append("\n");
+            }
+        }
+
+        Files.writeString(sqlFilePath, filtered.toString());
     }
 
     /**
