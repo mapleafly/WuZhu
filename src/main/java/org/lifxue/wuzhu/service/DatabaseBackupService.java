@@ -47,8 +47,8 @@ public class DatabaseBackupService {
             // 确保备份目录存在
             Files.createDirectories(backupPath.getParent());
 
-            // 使用H2的SCRIPT命令导出
-            jdbcTemplate.execute("SCRIPT TO '" + backupPath.toAbsolutePath().toString().replace("\\", "/") + "'");
+            // 使用H2的SCRIPT命令导出，排除Flyway系统表
+            jdbcTemplate.execute("SCRIPT EXCLUDES TABLES flyway_schema_history TO '" + backupPath.toAbsolutePath().toString().replace("\\", "/") + "'");
 
             log.info("数据库备份成功: {}", backupPath);
             return backupPath.toString();
@@ -70,6 +70,9 @@ public class DatabaseBackupService {
                 throw new RuntimeException("备份文件不存在: " + sqlFilePath);
             }
 
+            // 先删除所有现有表（排除Flyway系统表），然后导入
+            jdbcTemplate.execute("DROP ALL OBJECTS DELETE FILES");
+            
             // 使用H2的RUNSCRIPT命令导入
             jdbcTemplate.execute("RUNSCRIPT FROM '" + sqlFile.getAbsolutePath().replace("\\", "/") + "'");
 
