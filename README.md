@@ -61,25 +61,43 @@
 
 ## 📸 Screenshots
 
-> Screenshots are stored in `docs/screenshots/` directory.
-
 ### Main Window
-<!-- ![Main Window](docs/screenshots/main-window.png) -->
-*Main application window showing the dashboard*
+![Main Window](docs/screenshots/main-window.png)
+*Main application dashboard with all modules*
 
 ### Trading Module
-<!-- ![Trading](docs/screenshots/trading-module.png) -->
-*Trading info module for recording transactions*
+![Trading](docs/screenshots/trading-module.png)
+*Record and manage buy/sell transactions*
 
 ### Portfolio Analysis
-<!-- ![Statistics](docs/screenshots/statistics.png) -->
-*Statistics and profit/loss analysis view*
+![Statistics](docs/screenshots/statistics.png)
+*Statistics and profit/loss analysis with detailed transaction history*
 
 ### Portfolio Chart
-<!-- ![Pie Chart](docs/screenshots/pie-chart.png) -->
-*Portfolio allocation pie chart*
+![Pie Chart](docs/screenshots/pie-chart.png)
+*Visual portfolio allocation by current market value*
 
-> 💡 **To add screenshots**: Place image files in `docs/screenshots/` and uncomment the markdown lines above.
+### Settings
+![Settings](docs/screenshots/settings.png)
+*Preferences including theme, API key, and database backup*
+
+### Dark Theme
+![Dark Theme](docs/screenshots/dark-theme.png)
+*Dark mode interface for comfortable viewing*
+
+### Cash Management
+![Cash](docs/screenshots/cash-module.png)
+*Track deposits and withdrawals*
+
+### Coin Selection
+![Select Coin](docs/screenshots/select-coin.png)
+*Choose which cryptocurrencies to track*
+
+### Note Module
+![Note](docs/screenshots/note.png)
+*Rich text editor for trading strategies and memos*
+
+> 💡 More screenshots available in [`docs/screenshots/`](docs/screenshots/) directory.
 
 ---
 

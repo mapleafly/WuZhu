@@ -61,25 +61,43 @@
 
 ## 📸 截图展示
 
-> 截图文件存放在 `docs/screenshots/` 目录中。
-
 ### 主界面
-<!-- ![主界面](docs/screenshots/main-window.png) -->
-*主应用窗口，显示工作台仪表板*
+![主界面](docs/screenshots/main-window.png)
+*主应用工作台，展示所有功能模块*
 
 ### 交易模块
-<!-- ![交易模块](docs/screenshots/trading-module.png) -->
-*交易信息模块，用于记录买卖交易*
+![交易模块](docs/screenshots/trading-module.png)
+*记录和管理加密货币买卖交易*
 
-### 投资组合分析
-<!-- ![统计分析](docs/screenshots/statistics.png) -->
-*统计分析和盈亏分析视图*
+### 统计分析
+![统计分析](docs/screenshots/statistics.png)
+*投资组合盈亏分析，支持详细交易历史查询*
 
-### 投资组合图表
-<!-- ![饼图](docs/screenshots/pie-chart.png) -->
-*投资组合分配饼图*
+### 投资组合饼图
+![饼图](docs/screenshots/pie-chart.png)
+*按当前市值展示投资组合分配比例*
 
-> 💡 **添加截图方法**：将图片文件放入 `docs/screenshots/` 目录，然后取消上方 markdown 代码的注释。
+### 偏好设置
+![设置](docs/screenshots/settings.png)
+*主题切换、API密钥配置、数据库备份等设置*
+
+### 深色主题
+![深色主题](docs/screenshots/dark-theme.png)
+*深色模式界面，夜间使用更舒适*
+
+### 现金管理
+![现金](docs/screenshots/cash-module.png)
+*跟踪交易所充值和提现记录*
+
+### 币种选择
+![币种选择](docs/screenshots/select-coin.png)
+*选择要跟踪和显示的加密货币*
+
+### 笔记模块
+![笔记](docs/screenshots/note.png)
+*富文本编辑器，记录交易策略和备忘*
+
+> 💡 更多截图请查看 [`docs/screenshots/`](docs/screenshots/) 目录。
 
 ---
 

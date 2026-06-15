@@ -46,12 +46,18 @@ git push origin master
 
 ## Current Status / 当前状态
 
-- [ ] Main Window / 主界面
-- [ ] Trading Module / 交易模块
-- [ ] Statistics View / 统计视图
-- [ ] Pie Chart / 饼图
-- [ ] Settings / 设置
-- [ ] Dark Theme / 深色主题
+| Status | Filename | Description | 说明 |
+|--------|----------|-------------|------|
+| ✅ | main-window.png | Main Window | 主界面工作台 |
+| ✅ | trading-module.png | Trading Module | 交易操作模块 |
+| ✅ | statistics.png | Statistics View | 统计分析视图 |
+| ✅ | pie-chart.png | Pie Chart | 投资组合饼图 |
+| ✅ | settings.png | Settings | 偏好设置界面 |
+| ✅ | dark-theme.png | Dark Theme | 深色主题视图 |
+| ✅ | cash-module.png | Cash Management | 现金管理模块 |
+| ✅ | select-coin.png | Coin Selection | 币种选择界面 |
+| ✅ | note.png | Note Module | 笔记模块 |
+| ✅ | Navigation-Bar.png | Navigation Bar | 导航栏 |
 
-> 📸 **Contributors**: Feel free to add screenshots by submitting a Pull Request!  
-> 📸 **贡献者**：欢迎提交 Pull Request 添加截图！
+> 📸 **Contributors**: Feel free to add more screenshots by submitting a Pull Request!  
+> 📸 **贡献者**：欢迎提交 Pull Request 添加更多截图！
