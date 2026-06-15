@@ -1,5 +1,11 @@
 # WuZhu 🪙
 
+<div align="right">
+
+[English](README.md) | **简体中文**
+
+</div>
+
 [![Java](https://img.shields.io/badge/Java-21-orange)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7.10-brightgreen)](https://spring.io/projects/spring-boot)
 [![JavaFX](https://img.shields.io/badge/JavaFX-21-blue)](https://openjfx.io/)
@@ -262,7 +268,7 @@ java -jar target/WuZhu-1.0.jar
 | Java | 21 | 编程语言 |
 | Spring Boot | 2.7.10 | 应用框架 |
 | JavaFX | 21.0.2 | 桌面 UI 框架 |
-| WorkbenchFX | 11.3.1 | 工作台风格 UI 框架 |
+| [WorkbenchFX](https://github.com/dlsc-software-consulting-gmbh/WorkbenchFX) | 11.3.1 | 工作台风格 UI 框架 |
 | H2 Database | 2.2.220 | 嵌入式数据库 |
 | OpenFeign | 2021.0.3 | API HTTP 客户端 |
 | Lombok | 1.18.30 | 代码生成 |

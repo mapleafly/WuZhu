@@ -1,5 +1,11 @@
 # WuZhu 🪙
 
+<div align="right">
+
+**English** | [简体中文](README_CN.md)
+
+</div>
+
 [![Java](https://img.shields.io/badge/Java-21-orange)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7.10-brightgreen)](https://spring.io/projects/spring-boot)
 [![JavaFX](https://img.shields.io/badge/JavaFX-21-blue)](https://openjfx.io/)
@@ -262,7 +268,7 @@ Import and export trading data.
 | Java | 21 | Programming Language |
 | Spring Boot | 2.7.10 | Application Framework |
 | JavaFX | 21.0.2 | Desktop UI Framework |
-| WorkbenchFX | 11.3.1 | Workbench-style UI Framework |
+| [WorkbenchFX](https://github.com/dlsc-software-consulting-gmbh/WorkbenchFX) | 11.3.1 | Workbench-style UI Framework |
 | H2 Database | 2.2.220 | Embedded Database |
 | OpenFeign | 2021.0.3 | HTTP Client for API |
 | Lombok | 1.18.30 | Code Generation |
