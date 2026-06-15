@@ -5,9 +5,10 @@
 -- ============================================================================
 
 -- Step 1: Add new DECIMAL columns
+-- NOTE: Using DECIMAL(30, 8) to handle large values (up to 22 integer digits)
 ALTER TABLE trade_info ADD COLUMN IF NOT EXISTS price_num DECIMAL(25, 12);
-ALTER TABLE trade_info ADD COLUMN IF NOT EXISTS base_num_dec DECIMAL(20, 8);
-ALTER TABLE trade_info ADD COLUMN IF NOT EXISTS quote_num_dec DECIMAL(20, 8);
+ALTER TABLE trade_info ADD COLUMN IF NOT EXISTS base_num_dec DECIMAL(30, 8);
+ALTER TABLE trade_info ADD COLUMN IF NOT EXISTS quote_num_dec DECIMAL(30, 8);
 
 -- Step 2: Migrate data from String columns to DECIMAL columns
 -- Handle empty strings and null values appropriately
@@ -18,11 +19,11 @@ UPDATE trade_info SET
     END,
     base_num_dec = CASE
         WHEN base_num IS NULL OR TRIM(base_num) = '' THEN NULL
-        ELSE CAST(base_num AS DECIMAL(20, 8))
+        ELSE CAST(base_num AS DECIMAL(30, 8))
     END,
     quote_num_dec = CASE
         WHEN quote_num IS NULL OR TRIM(quote_num) = '' THEN NULL
-        ELSE CAST(quote_num AS DECIMAL(20, 8))
+        ELSE CAST(quote_num AS DECIMAL(30, 8))
     END;
 
 -- Step 3: Verify data integrity - check for any failed conversions

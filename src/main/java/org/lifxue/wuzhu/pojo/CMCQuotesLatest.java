@@ -70,22 +70,22 @@ public class CMCQuotesLatest implements Serializable {
     //24小时交易量
     @Column(name = "volume_24h", precision = 30, scale = 2)
     private BigDecimal volume24h;
-    @Column(name = "volume_change_24h", precision = 19, scale = 8)
+    @Column(name = "volume_change_24h", precision = 30, scale = 8)
     private BigDecimal volumeChange24h;
     //每种货币1小时的交易价格百分比变化
-    @Column(name = "percent_change_1h", precision = 19, scale = 8)
+    @Column(name = "percent_change_1h", precision = 25, scale = 8)
     private BigDecimal percentChange1h;
     //每种货币的24小时交易价格百分比变化
-    @Column(name = "percent_change_24h", precision = 19, scale = 8)
+    @Column(name = "percent_change_24h", precision = 25, scale = 8)
     private BigDecimal percentChange24h;
     //每种货币7天交易价格的百分比变化
-    @Column(name = "percent_change_7d", precision = 19, scale = 8)
+    @Column(name = "percent_change_7d", precision = 25, scale = 8)
     private BigDecimal percentChange7d;
-    @Column(name = "percent_change_30d", precision = 19, scale = 8)
+    @Column(name = "percent_change_30d", precision = 25, scale = 8)
     private BigDecimal percentChange30d;
-    @Column(name = "percent_change_60d", precision = 19, scale = 8)
+    @Column(name = "percent_change_60d", precision = 25, scale = 8)
     private BigDecimal percentChange60d;
-    @Column(name = "percent_change_90d", precision = 19, scale = 8)
+    @Column(name = "percent_change_90d", precision = 25, scale = 8)
     private BigDecimal percentChange90d;
     //CoinMarketCap计算的市值
     @Column(name = "market_cap", precision = 30, scale = 2)

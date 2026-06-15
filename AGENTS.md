@@ -1,28 +1,66 @@
 # WuZhu 项目知识库
 
-**生成时间:** 2025-05-01  
-**提交:** `6fe8ce3`  
+**生成时间:** 2025-06-03  
+**提交:** `f44661f`  
 **分支:** master
 
 ## 项目概述
 
 **WuZhu** 是一款加密货币工具，用于记录交易信息和分析加密货币数据。
 
-这是一个 **Spring Boot + JavaFX** 混合架构的桌面应用程序，使用 H2 嵌入式数据库存储数据，通过 CoinMarketCap API 获取加密货币市场数据。
+这是一个 **Spring Boot 3.2 + JavaFX 21** 混合架构的桌面应用程序，使用 H2 嵌入式数据库存储数据，通过 CoinMarketCap API 获取加密货币市场数据。
 
 ## 技术栈
 
-| 组件 | 版本 | 用途 |
-|------|------|------|
-| Java | 21 | 编程语言 |
-| Spring Boot | 2.7.10 | 应用框架 |
-| JavaFX | 21.0.2 | UI 框架 |
-| WorkbenchFX | 11.3.1 | 工作台框架 |
-| H2 Database | 2.2.220 | 嵌入式数据库 |
-| OpenFeign | 2021.0.3 | HTTP 客户端 |
-| Lombok | 1.18.30 | 代码生成 |
-| MapStruct | 1.5.5 | 对象映射 |
-| RichTextFX | 0.11.0 | 富文本编辑 |
+| 组件          | 版本       | 用途       |
+| ----------- | -------- | -------- |
+| Java        | 21       | 编程语言     |
+| Spring Boot | 3.2.0    | 应用框架     |
+| JavaFX      | 21.0.2   | UI 框架    |
+| WorkbenchFX | 11.3.1   | 工作台框架    |
+| H2 Database | 2.2.224  | 嵌入式数据库   |
+| OpenFeign   | 2023.0.0 | HTTP 客户端 |
+| MapStruct   | 1.6.2    | 对象映射     |
+| Flyway      | 10.x     | 数据库迁移    |
+
+## 项目结构
+
+```
+WuZhu/
+├── src/main/java/org/lifxue/wuzhu/
+│   ├── config/           # Feign、代理等配置
+│   ├── constant/         # 常量定义
+│   ├── convert/          # MapStruct 转换器
+│   ├── dto/              # API 数据传输对象
+│   ├── enums/            # 枚举类
+│   ├── exception/        # 异常处理
+│   ├── modules/          # ⭐ 8个业务模块
+│   ├── pojo/             # JPA 实体类
+│   ├── repository/       # 数据访问层
+│   ├── service/          # 服务层（含 Feign 客户端）
+│   ├── springfx/         # Spring-JavaFX 集成
+│   ├── themes/           # 主题配置
+│   ├── util/             # 工具类
+│   └── viewmodel/        # MVVM 视图模型
+├── src/main/resources/
+│   ├── db/migration/     # Flyway 迁移脚本
+│   └── org/lifxue/wuzhu/ # FXML、CSS、图片资源
+└── packaging/            # 打包脚本和文档
+```
+
+## 技术栈
+
+| 组件          | 版本       | 用途       |
+| ----------- | -------- | -------- |
+| Java        | 21       | 编程语言     |
+| Spring Boot | 2.7.10   | 应用框架     |
+| JavaFX      | 21.0.2   | UI 框架    |
+| WorkbenchFX | 11.3.1   | 工作台框架    |
+| H2 Database | 2.2.220  | 嵌入式数据库   |
+| OpenFeign   | 2021.0.3 | HTTP 客户端 |
+| Lombok      | 1.18.30  | 代码生成     |
+| MapStruct   | 1.5.5    | 对象映射     |
+| RichTextFX  | 0.11.0   | 富文本编辑    |
 
 ## 项目结构
 
@@ -55,17 +93,18 @@ WuZhu/
 
 ## 快速导航
 
-| 任务 | 位置 | 说明 |
-|------|------|------|
-| 启动入口 | `WuZhuApplication.java` | Spring Boot + JavaFX 启动类 |
-| JavaFX 集成 | `springfx/` | Stage 初始化和事件处理 |
-| 数据库实体 | `pojo/` | JPA 实体定义 |
-| API 客户端 | `service/feignc/` | CoinMarketCap API 调用 |
-| 界面控制器 | `modules/*/ViewController.java` | FXML 控制器 |
+| 任务        | 位置                              | 说明                       |
+| --------- | ------------------------------- | ------------------------ |
+| 启动入口      | `WuZhuApplication.java`         | Spring Boot + JavaFX 启动类 |
+| JavaFX 集成 | `springfx/`                     | Stage 初始化和事件处理           |
+| 数据库实体     | `pojo/`                         | JPA 实体定义                 |
+| API 客户端   | `service/feignc/`               | CoinMarketCap API 调用     |
+| 界面控制器     | `modules/*/ViewController.java` | FXML 控制器                 |
 
 ## 开发约定
 
 ### 1. 依赖顺序（重要）
+
 ```xml
 <!-- lombok要放在mapstruct前面 -->
 <dependency>
@@ -79,7 +118,9 @@ WuZhu/
 ```
 
 ### 2. 依赖注入
+
 使用 **Setter 注入**（而非构造器注入）：
+
 ```java
 @Autowired
 public void setRepository(Repository repo) {
@@ -88,7 +129,9 @@ public void setRepository(Repository repo) {
 ```
 
 ### 3. VO 类模式
+
 视图对象使用 JavaFX Property 支持 UI 绑定：
+
 ```java
 public class XxxVO {
     private final SimpleStringProperty name;
@@ -97,7 +140,9 @@ public class XxxVO {
 ```
 
 ### 4. 模块结构
+
 每个模块必须包含：
+
 - `XxxViewController.java` - FXML 控制器 (`@FxmlView`)
 - `XxxViewModule.java` - 模块定义
 - `vo/` - 视图对象
@@ -127,19 +172,24 @@ java -jar target/WuZhu-1.0.jar
 ## 配置说明
 
 ### 数据库
+
 - **类型**: H2 嵌入式
 - **文件位置**: `~/.wuzhu/h2/wuzhudbjpa`
 - **模式**: `ddl-auto: update`
 
 ### API 配置
+
 需要在 `application.yml` 中配置 CoinMarketCap API Key：
+
 ```yaml
 coin-market-cap:
   customHeader: X-CMC_PRO_API_KEY
 ```
 
 ### 代理设置
+
 支持 HTTP 代理连接 CoinMarketCap：
+
 ```yaml
 proxy:
   host: 127.0.0.1
@@ -170,10 +220,10 @@ PrimaryStageInitializer → 初始化 WorkbenchFX + 加载所有模块
 
 ## 开发和部署
 
-| 文档 | 说明 |
-|------|------|
-| [packaging/DEVELOPMENT.md](./packaging/DEVELOPMENT.md) | 开发环境搭建和运行指南 |
-| [packaging/PACKAGING_UBUNTU.md](./packaging/PACKAGING_UBUNTU.md) | Ubuntu 24.04 打包为 .deb |
+| 文档                                                                 | 说明                       |
+| ------------------------------------------------------------------ | ------------------------ |
+| [packaging/DEVELOPMENT.md](./packaging/DEVELOPMENT.md)             | 开发环境搭建和运行指南              |
+| [packaging/PACKAGING_UBUNTU.md](./packaging/PACKAGING_UBUNTU.md)   | Ubuntu 24.04 打包为 .deb    |
 | [packaging/PACKAGING_WINDOWS.md](./packaging/PACKAGING_WINDOWS.md) | Windows 11 打包为 .msi/.exe |
 
 ## 快速打包命令

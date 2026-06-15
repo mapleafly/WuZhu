@@ -260,18 +260,10 @@
                         </goals>
                         <configuration>
                             <target>
-                                <!-- 1. 替换javax.annotation.processing.Generated为jakarta.annotation.Generated -->
+                                <!-- 替换javax.annotation.processing.Generated为jakarta.annotation.Generated -->
                                 <replace dir="${project.build.directory}/generated-sources/annotations" token="javax.annotation.processing.Generated" value="jakarta.annotation.Generated">
                                     <include name="**/*.java"/>
                                 </replace>
-                                <!-- 2. 删除旧的类文件，强制重新编译 -->
-                                <delete>
-                                    <fileset dir="${project.build.outputDirectory}/org/lifxue/wuzhu/convert" includes="*Impl.class"/>
-                                </delete>
-                                <!-- 3. 重新编译修改后的文件 -->
-                                <javac srcdir="${project.build.directory}/generated-sources/annotations" destdir="${project.build.outputDirectory}" classpathref="maven.compile.classpath" includeantruntime="false">
-                                    <include name="org/lifxue/wuzhu/convert/**/*.java"/>
-                                </javac>
                             </target>
                         </configuration>
                     </execution>

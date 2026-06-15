@@ -5,6 +5,7 @@ import javafx.application.Application;
 import lombok.extern.slf4j.Slf4j;
 import org.lifxue.wuzhu.springfx.JavaFxApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Bean;
 public class WuZhuApplication {
 
     @Bean
+    @ConditionalOnProperty(name = "wuzhu.javafx.enabled", matchIfMissing = true)
     public Workbench workbench() {
         return Workbench.builder().build();
     }

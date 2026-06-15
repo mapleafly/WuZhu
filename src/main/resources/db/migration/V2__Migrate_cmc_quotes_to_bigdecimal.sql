@@ -10,15 +10,16 @@ ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS circulating_supply_num DE
 ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS total_supply_num DECIMAL(30, 8);
 
 -- Step 2: Add new DECIMAL columns for quote-related fields
+-- NOTE: Using DECIMAL(30, 8) for fields that may contain large values
 ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS price_num DECIMAL(25, 12);
 ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS volume_24h_num DECIMAL(30, 2);
-ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS volume_change_24h_num DECIMAL(20, 8);
-ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS percent_change_1h_num DECIMAL(20, 8);
-ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS percent_change_24h_num DECIMAL(20, 8);
-ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS percent_change_7d_num DECIMAL(20, 8);
-ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS percent_change_30d_num DECIMAL(20, 8);
-ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS percent_change_60d_num DECIMAL(20, 8);
-ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS percent_change_90d_num DECIMAL(20, 8);
+ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS volume_change_24h_num DECIMAL(30, 8);
+ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS percent_change_1h_num DECIMAL(25, 8);
+ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS percent_change_24h_num DECIMAL(25, 8);
+ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS percent_change_7d_num DECIMAL(25, 8);
+ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS percent_change_30d_num DECIMAL(25, 8);
+ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS percent_change_60d_num DECIMAL(25, 8);
+ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS percent_change_90d_num DECIMAL(25, 8);
 ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS market_cap_num DECIMAL(30, 2);
 ALTER TABLE cmc_quotes_latest ADD COLUMN IF NOT EXISTS market_cap_dominance_num DECIMAL(10, 8);
 
@@ -29,13 +30,13 @@ UPDATE cmc_quotes_latest SET
     total_supply_num = CASE WHEN total_supply IS NULL OR TRIM(total_supply) = '' THEN NULL ELSE CAST(total_supply AS DECIMAL(30, 8)) END,
     price_num = CASE WHEN price IS NULL OR TRIM(price) = '' THEN NULL ELSE CAST(price AS DECIMAL(25, 12)) END,
     volume_24h_num = CASE WHEN volume_24h IS NULL OR TRIM(volume_24h) = '' THEN NULL ELSE CAST(volume_24h AS DECIMAL(30, 2)) END,
-    volume_change_24h_num = CASE WHEN volume_change_24h IS NULL OR TRIM(volume_change_24h) = '' THEN NULL ELSE CAST(volume_change_24h AS DECIMAL(20, 8)) END,
-    percent_change_1h_num = CASE WHEN percent_change_1h IS NULL OR TRIM(percent_change_1h) = '' THEN NULL ELSE CAST(percent_change_1h AS DECIMAL(20, 8)) END,
-    percent_change_24h_num = CASE WHEN percent_change_24h IS NULL OR TRIM(percent_change_24h) = '' THEN NULL ELSE CAST(percent_change_24h AS DECIMAL(20, 8)) END,
-    percent_change_7d_num = CASE WHEN percent_change_7d IS NULL OR TRIM(percent_change_7d) = '' THEN NULL ELSE CAST(percent_change_7d AS DECIMAL(20, 8)) END,
-    percent_change_30d_num = CASE WHEN percent_change_30d IS NULL OR TRIM(percent_change_30d) = '' THEN NULL ELSE CAST(percent_change_30d AS DECIMAL(20, 8)) END,
-    percent_change_60d_num = CASE WHEN percent_change_60d IS NULL OR TRIM(percent_change_60d) = '' THEN NULL ELSE CAST(percent_change_60d AS DECIMAL(20, 8)) END,
-    percent_change_90d_num = CASE WHEN percent_change_90d IS NULL OR TRIM(percent_change_90d) = '' THEN NULL ELSE CAST(percent_change_90d AS DECIMAL(20, 8)) END,
+    volume_change_24h_num = CASE WHEN volume_change_24h IS NULL OR TRIM(volume_change_24h) = '' THEN NULL ELSE CAST(volume_change_24h AS DECIMAL(30, 8)) END,
+    percent_change_1h_num = CASE WHEN percent_change_1h IS NULL OR TRIM(percent_change_1h) = '' THEN NULL ELSE CAST(percent_change_1h AS DECIMAL(25, 8)) END,
+    percent_change_24h_num = CASE WHEN percent_change_24h IS NULL OR TRIM(percent_change_24h) = '' THEN NULL ELSE CAST(percent_change_24h AS DECIMAL(25, 8)) END,
+    percent_change_7d_num = CASE WHEN percent_change_7d IS NULL OR TRIM(percent_change_7d) = '' THEN NULL ELSE CAST(percent_change_7d AS DECIMAL(25, 8)) END,
+    percent_change_30d_num = CASE WHEN percent_change_30d IS NULL OR TRIM(percent_change_30d) = '' THEN NULL ELSE CAST(percent_change_30d AS DECIMAL(25, 8)) END,
+    percent_change_60d_num = CASE WHEN percent_change_60d IS NULL OR TRIM(percent_change_60d) = '' THEN NULL ELSE CAST(percent_change_60d AS DECIMAL(25, 8)) END,
+    percent_change_90d_num = CASE WHEN percent_change_90d IS NULL OR TRIM(percent_change_90d) = '' THEN NULL ELSE CAST(percent_change_90d AS DECIMAL(25, 8)) END,
     market_cap_num = CASE WHEN market_cap IS NULL OR TRIM(market_cap) = '' THEN NULL ELSE CAST(market_cap AS DECIMAL(30, 2)) END,
     market_cap_dominance_num = CASE WHEN market_cap_dominance IS NULL OR TRIM(market_cap_dominance) = '' THEN NULL ELSE CAST(market_cap_dominance AS DECIMAL(10, 8)) END;
 
