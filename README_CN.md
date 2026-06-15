@@ -61,7 +61,25 @@
 
 ## 📸 截图展示
 
-*截图将在此处添加*
+> 截图文件存放在 `docs/screenshots/` 目录中。
+
+### 主界面
+<!-- ![主界面](docs/screenshots/main-window.png) -->
+*主应用窗口，显示工作台仪表板*
+
+### 交易模块
+<!-- ![交易模块](docs/screenshots/trading-module.png) -->
+*交易信息模块，用于记录买卖交易*
+
+### 投资组合分析
+<!-- ![统计分析](docs/screenshots/statistics.png) -->
+*统计分析和盈亏分析视图*
+
+### 投资组合图表
+<!-- ![饼图](docs/screenshots/pie-chart.png) -->
+*投资组合分配饼图*
+
+> 💡 **添加截图方法**：将图片文件放入 `docs/screenshots/` 目录，然后取消上方 markdown 代码的注释。
 
 ---
 

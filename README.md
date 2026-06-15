@@ -61,7 +61,25 @@
 
 ## 📸 Screenshots
 
-*Screenshots will be added here*
+> Screenshots are stored in `docs/screenshots/` directory.
+
+### Main Window
+<!-- ![Main Window](docs/screenshots/main-window.png) -->
+*Main application window showing the dashboard*
+
+### Trading Module
+<!-- ![Trading](docs/screenshots/trading-module.png) -->
+*Trading info module for recording transactions*
+
+### Portfolio Analysis
+<!-- ![Statistics](docs/screenshots/statistics.png) -->
+*Statistics and profit/loss analysis view*
+
+### Portfolio Chart
+<!-- ![Pie Chart](docs/screenshots/pie-chart.png) -->
+*Portfolio allocation pie chart*
+
+> 💡 **To add screenshots**: Place image files in `docs/screenshots/` and uncomment the markdown lines above.
 
 ---
 
