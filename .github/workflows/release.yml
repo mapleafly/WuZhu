@@ -1,0 +1,90 @@
+name: Release
+
+# 方案 A：GitHub Actions 全自动发布（见 docs/plans/RELEASE_AUTOMATION.md）
+# 推送 v* tag（如 v1.0.1）时自动触发：
+#   - ubuntu-24.04 runner 构建 .deb
+#   - windows-latest runner 构建 .msi（见 docs/plans/WINDOWS_PACKAGING_WSL2.md）
+#   - 自动创建 GitHub Release 并附带两种安装包
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.0.1)'
+        required: true
+        default: 'v1.0.1'
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: liberica
+          java-version: '21'
+          java-package: jdk+fx   # Liberica Full（含 JavaFX 模块）
+          cache: maven
+      - name: Build .deb
+        run: ./packaging/package-ubuntu.sh
+        env:
+          APP_VERSION: ${{ github.ref_name }}
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-installer
+          path: target/dist/*.deb
+        if: always()
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: liberica
+          java-version: '21'
+          java-package: jdk+fx
+          cache: maven
+      - name: Install WiX Toolset
+        run: choco install wixtoolset -y
+      - name: Build .msi
+        run: .\packaging\package-windows.ps1
+        env:
+          APP_VERSION: ${{ github.ref_name }}
+      - name: Upload .msi artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: target/dist/*.msi
+        if: always()
+
+  release:
+    needs: [build-ubuntu, build-windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # 必须，否则无法创建 Release
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: WuZhu ${{ github.ref_name }}
+          body: |
+            ## 发布说明
+
+            WuZhu ${{ github.ref_name }} 安装包（由 [WuZhu 发布流程](docs/plans/RELEASE_AUTOMATION.md) 自动生成）。
+
+            - **Ubuntu 24.04**: `.deb` 安装包
+            - **Windows 11**: `.msi` 安装包
+          files: |
+            artifacts/ubuntu-installer/*.deb
+            artifacts/windows-installer/*.msi
+          generate_release_notes: true   # GitHub 根据之前 tag 间的 commits 自动生成 release notes

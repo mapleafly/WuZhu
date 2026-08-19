@@ -1,0 +1,4 @@
+[tools]
+# BellSoft Liberica JDK 21 Full（内置 JavaFX 模块），用于运行/构建/打包本项目
+# 详见 docs/plans/DEV_ENV_MISE.md
+java = "liberica-javafx-21.0.12+10"
