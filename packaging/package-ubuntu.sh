@@ -10,12 +10,28 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+# 版本号（tag 驱动）：命令行参数 > 环境变量 APP_VERSION > 最近 git tag > 默认 1.0.0
+# 用法示例: ./package-ubuntu.sh 1.0.1  或  APP_VERSION=1.0.1 ./package-ubuntu.sh
+APP_VERSION="${1:-${APP_VERSION:-}}"
+if [ -z "$APP_VERSION" ]; then
+    APP_VERSION="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+fi
+# 去掉前缀 v/V（如 v1.0.1 -> 1.0.1）
+APP_VERSION="${APP_VERSION#v}"
+APP_VERSION="${APP_VERSION#V}"
+case "$APP_VERSION" in
+    [0-9]*\.[0-9]*\.[0-9]*) ;;  # 形如 1.0.1
+    *) APP_VERSION="1.0.0" ;;
+esac
+echo -e "${GREEN}版本号: $APP_VERSION${NC}"
+echo ""
+
 # 检查环境
 echo -e "${YELLOW}检查环境...${NC}"
 
 if ! command -v java &> /dev/null; then
     echo -e "${RED}错误: Java 未安装${NC}"
-    echo "请安装 OpenJDK 21: sudo apt install openjdk-21-jdk"
+    echo "请安装 BellSoft Liberica JDK 21 Full（含 JavaFX），详见 docs/plans/DEV_ENV_MISE.md"
     exit 1
 fi
 
@@ -29,21 +45,24 @@ fi
 if ! java --list-modules 2>/dev/null | grep -q "javafx"; then
     echo -e "${RED}错误: 当前 JDK 不包含 JavaFX 模块${NC}"
     echo ""
-    echo "解决方案（二选一）："
-    echo ""
-    echo "1. 安装 BellSoft Liberica JDK 21 Full（推荐）:"
-    echo "   wget https://download.bell-sw.com/java/21.0.7+10/bellsoft-jdk21.0.7+10-linux-amd64-full.deb"
-    echo "   sudo dpkg -i bellsoft-jdk21.0.7+10-linux-amd64-full.deb"
-    echo "   sudo update-alternatives --config java"
+    echo "解决方案（推荐）:"
+    echo "  使用 mise 安装 BellSoft Liberica JDK 21 Full:"
+    echo "    mise use -g java@liberica-javafx-21"
+    echo "  或从 https://bell-sw.com/pages/downloads 下载最新版 Full JDK 并安装"
     echo ""
     echo "2. 查看详细文档: cat packaging/PACKAGING_UBUNTU.md"
     exit 1
 fi
 
-# 检查 --print-module-path 是否可用
-if ! java --print-module-path &>/dev/null; then
-    echo -e "${RED}错误: 当前 JDK 不支持 --print-module-path 选项${NC}"
-    echo "请安装 BellSoft Liberica JDK 21 Full（不是标准 OpenJDK）"
+# 解析 JAVA_HOME（若未设置则从 java 可执行文件推导）
+if [ -z "${JAVA_HOME:-}" ]; then
+    JAVA_HOME="$(dirname "$(dirname "$(readlink -f "$(command -v java)")")")"
+fi
+
+# 检查 jmods 目录（jlink 所需，含 JavaFX 模块）
+if [ ! -d "$JAVA_HOME/jmods" ]; then
+    echo -e "${RED}错误: 未找到 JDK 的 jmods 目录（$JAVA_HOME/jmods）${NC}"
+    echo "请确保 JAVA_HOME 指向完整的 JDK（含 JavaFX 模块），例如 mise 安装的 Liberica Full"
     echo "参考文档: packaging/PACKAGING_UBUNTU.md"
     exit 1
 fi
@@ -76,7 +95,7 @@ cp target/WuZhu-1.0.jar target/dependency/
 echo -e "${YELLOW}创建自定义 JRE...${NC}"
 if [ ! -d "target/custom-jre" ]; then
     jlink \
-      --module-path $(java --print-module-path) \
+      --module-path "$JAVA_HOME/jmods" \
       --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml,javafx.web,jdk.localedata \
       --output target/custom-jre \
       --strip-debug \
@@ -90,11 +109,11 @@ echo -e "${YELLOW}创建 .deb 安装包...${NC}"
 jpackage \
   --type deb \
   --name WuZhu \
-  --app-version 1.0.0 \
+  --app-version "$APP_VERSION" \
   --vendor "lifxue" \
   --description "WuZhu - 加密货币交易记录和分析工具" \
   --copyright "Copyright 2023-2025 lifxue" \
-  --main-class org.springframework.boot.loader.JarLauncher \
+  --main-class org.springframework.boot.loader.launch.JarLauncher \
   --main-jar WuZhu-1.0.jar \
   --input target/dependency \
   --dest target/dist \
@@ -111,14 +130,15 @@ echo -e "${GREEN}=== 打包完成 ===${NC}"
 echo ""
 
 # 显示结果
-if [ -f "target/dist/wuzhu_1.0.0_amd64.deb" ]; then
-    FILE_SIZE=$(du -h target/dist/wuzhu_1.0.0_amd64.deb | cut -f1)
+DEB_FILE="target/dist/wuzhu_${APP_VERSION}_amd64.deb"
+if [ -f "$DEB_FILE" ]; then
+    FILE_SIZE=$(du -h "$DEB_FILE" | cut -f1)
     echo -e "${GREEN}✓ 安装包已生成${NC}"
-    echo "  位置: target/dist/wuzhu_1.0.0_amd64.deb"
+    echo "  位置: $DEB_FILE"
     echo "  大小: $FILE_SIZE"
     echo ""
     echo "安装命令:"
-    echo "  sudo dpkg -i target/dist/wuzhu_1.0.0_amd64.deb"
+    echo "  sudo dpkg -i $DEB_FILE"
 else
     echo -e "${RED}✗ 打包失败${NC}"
     exit 1

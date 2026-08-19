@@ -99,7 +99,7 @@ Spring Boot DevTools 已集成，支持代码修改后自动重启：
 
 ```bash
 # 启用调试（默认端口 5005）
-./mvnw spring-boot:run -Dspring-boot.run.jvmArguments="-agentlib:jdlib=transport=dt_socket,server=y,suspend=n,address=*:5005"
+./mvnw spring-boot:run -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 ```
 
 然后在 IDE 中配置 Remote Debug 连接到 localhost:5005

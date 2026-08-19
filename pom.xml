@@ -293,25 +293,185 @@
                     <mainClass>org.lifxue.wuzhu.WuZhuApplication</mainClass>
                 </configuration>
             </plugin>
-
-            <!-- JPackage Maven 插件 - 用于创建原生安装包 -->
-            <plugin>
-                <groupId>org.panteleyev</groupId>
-                <artifactId>jpackage-maven-plugin</artifactId>
-                <version>1.4.0</version>
-                <configuration>
-                    <name>WuZhu</name>
-                    <appVersion>1.0.0</appVersion>
-                    <vendor>lifxue</vendor>
-                    <destination>target/dist</destination>
-                    <module>org.lifxue.wuzhu/org.lifxue.wuzhu.WuZhuApplication</module>
-                    <runtimeImage>target/image</runtimeImage>
-                    <javaOptions>
-                        <option>-Dfile.encoding=UTF-8</option>
-                    </javaOptions>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!--
+            原生安装包打包（改造，见 docs/plans/DOC_ACCURACY_AUDIT.md §三 / WINDOWS_PACKAGING_WSL2.md §六）：
+            原 jpackage-maven-plugin 采用 module 方式（要求 JPMS 模块化）且未绑定执行阶段，与本项目 fat jar
+            结构不符、实际不会执行。现改为 <mainJar> + <mainClass>（Spring Boot 3.2 的 JarLauncher 路径）方式。
+
+            使用方式（显式激活，避免与发布流水线冲突）：
+              Linux:   ./mvnw clean package -Ppackage-deb   → target/dist/WuZhu-1.0.0.deb
+              Windows: .\mvnw.cmd clean package -Ppackage-msi → target\dist\WuZhu-1.0.0.msi
+
+            注意：.github/workflows/release.yml 的发布流程使用 packaging/package-ubuntu.sh 与
+            package-windows.ps1 脚本打包（脚本内部会调用 ./mvnw package），因此这里不做按 OS 自动激活，
+            否则脚本内的 mvnw package 会重复执行打包。
+        -->
+        <profile>
+            <id>package-deb</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.6.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-dependencies-deb</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <includeScope>compile</includeScope>
+                                    <excludeGroupIds>org.openjfx</excludeGroupIds>
+                                    <outputDirectory>${project.build.directory}/dependency</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- 在 verify 阶段复制 fat jar 到 input 目录并在其后执行 jpackage -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-fat-jar-deb</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy file="${project.build.directory}/${project.build.finalName}.jar"
+                                              todir="${project.build.directory}/dependency"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.panteleyev</groupId>
+                        <artifactId>jpackage-maven-plugin</artifactId>
+                        <version>1.7.4</version>
+                        <executions>
+                            <execution>
+                                <id>jpackage-deb</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>jpackage</goal>
+                                </goals>
+                                <configuration>
+                                    <name>WuZhu</name>
+                                    <appVersion>${project.version}</appVersion>
+                                    <vendor>lifxue</vendor>
+                                    <description>WuZhu - 加密货币交易记录和分析工具</description>
+                                    <mainJar>${project.build.finalName}.jar</mainJar>
+                                    <mainClass>org.springframework.boot.loader.launch.JarLauncher</mainClass>
+                                    <input>${project.build.directory}/dependency</input>
+                                    <destination>${project.build.directory}/dist</destination>
+                                    <type>DEB</type>
+                                    <icon>${project.basedir}/src/main/resources/org/lifxue/wuzhu/images/logo.png</icon>
+                                    <linuxPackageName>wuzhu</linuxPackageName>
+                                    <linuxAppCategory>Office</linuxAppCategory>
+                                    <linuxMenuGroup>Office</linuxMenuGroup>
+                                    <linuxShortcut>true</linuxShortcut>
+                                    <javaOptions>
+                                        <option>-Dfile.encoding=UTF-8</option>
+                                    </javaOptions>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>package-msi</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.6.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-dependencies-msi</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <includeScope>compile</includeScope>
+                                    <excludeGroupIds>org.openjfx</excludeGroupIds>
+                                    <outputDirectory>${project.build.directory}/dependency</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-fat-jar-msi</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy file="${project.build.directory}/${project.build.finalName}.jar"
+                                              todir="${project.build.directory}/dependency"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.panteleyev</groupId>
+                        <artifactId>jpackage-maven-plugin</artifactId>
+                        <version>1.7.4</version>
+                        <executions>
+                            <execution>
+                                <id>jpackage-msi</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>jpackage</goal>
+                                </goals>
+                                <configuration>
+                                    <name>WuZhu</name>
+                                    <appVersion>${project.version}</appVersion>
+                                    <vendor>lifxue</vendor>
+                                    <description>WuZhu - 加密货币交易记录和分析工具</description>
+                                    <mainJar>${project.build.finalName}.jar</mainJar>
+                                    <mainClass>org.springframework.boot.loader.launch.JarLauncher</mainClass>
+                                    <input>${project.build.directory}/dependency</input>
+                                    <destination>${project.build.directory}/dist</destination>
+                                    <type>MSI</type>
+                                    <icon>${project.basedir}/src/main/resources/org/lifxue/wuzhu/images/wuzhu-96.ico</icon>
+                                    <winMenu>true</winMenu>
+                                    <winMenuGroup>WuZhu</winMenuGroup>
+                                    <winShortcut>true</winShortcut>
+                                    <winDirChooser>true</winDirChooser>
+                                    <winPerUserInstall>true</winPerUserInstall>
+                                    <winUpgradeUuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</winUpgradeUuid>
+                                    <javaOptions>
+                                        <option>-Dfile.encoding=UTF-8</option>
+                                    </javaOptions>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

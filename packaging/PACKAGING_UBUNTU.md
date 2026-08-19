@@ -61,9 +61,13 @@ cd WuZhu
 #### 选项 A：安装 BellSoft Liberica JDK 21 Full（推荐，包含 JavaFX）
 
 ```bash
-# 下载并安装 BellSoft Liberica JDK 21 Full（包含 JavaFX）
-wget https://download.bell-sw.com/java/21.0.7+10/bellsoft-jdk21.0.7+10-linux-amd64-full.deb
-sudo dpkg -i bellsoft-jdk21.0.7+10-linux-amd64-full.deb
+# 从 https://bell-sw.com/pages/downloads 获取最新版 BellSoft Liberica JDK 21 Full（包含 JavaFX）
+# 例如当前最新为 21.0.12+10，把 <VERSION> 替换为实际版本号：
+wget https://download.bell-sw.com/java/21.0.12%2B10/bellsoft-jdk21.0.12%2B10-linux-amd64-full.deb
+sudo dpkg -i bellsoft-jdk21.0.12+10-linux-amd64-full.deb
+
+# 或使用 mise 一键安装（推荐，可锁定版本并自动配置 JAVA_HOME，见 docs/plans/DEV_ENV_MISE.md）
+mise use -g java@liberica-javafx-21
 
 # 设置为默认 Java
 sudo update-alternatives --config java
@@ -80,9 +84,9 @@ java --list-modules | grep javafx
 mkdir -p target/dist
 
 # 使用 jlink 创建精简 JRE（包含 JavaFX 模块）
-# 注意：--print-module-path 只在 BellSoft/Temurin JDK 中可用
+# 注意：JDK 21 没有 --print-module-path 选项；直接使用 JAVA_HOME/jmods 作为模块路径
 jlink \
-  --module-path $(java --print-module-path) \
+  --module-path "$JAVA_HOME/jmods" \
   --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing \
   --output target/custom-jre \
   --strip-debug \
@@ -122,7 +126,7 @@ jpackage \
   --vendor "lifxue" \
   --description "WuZhu - 加密货币交易记录和分析工具" \
   --copyright "Copyright 2023-2025 lifxue" \
-  --main-class org.springframework.boot.loader.JarLauncher \
+  --main-class org.springframework.boot.loader.launch.JarLauncher \
   --main-jar WuZhu-1.0.jar \
   --input target \
   --dest target/dist \
@@ -192,7 +196,7 @@ jlink \
   --compress=2
 ```
 
-> **注意**：`--print-module-path` 在标准 OpenJDK 和某些 JDK 发行版中不可用。使用上述方式手动指定 JDK 的 jmods 目录路径。
+> **注意**：JDK 21 没有 `--print-module-path` 选项。使用上述方式手动指定 JDK 的 `jmods` 目录路径（`$JAVA_HOME/jmods`）。
 
 ### 步骤 2：复制应用文件
 
@@ -251,7 +255,7 @@ echo "=== WuZhu Ubuntu 打包脚本 ==="
 if [ ! -d "target/custom-jre" ]; then
     echo "创建自定义 JRE..."
     jlink \
-      --module-path $(java --print-module-path) \
+      --module-path "$JAVA_HOME/jmods" \
       --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml \
       --output target/custom-jre \
       --strip-debug \
@@ -268,7 +272,7 @@ jpackage \
   --app-version 1.0.0 \
   --vendor "lifxue" \
   --description "WuZhu - 加密货币交易记录和分析工具" \
-  --main-class org.springframework.boot.loader.JarLauncher \
+  --main-class org.springframework.boot.loader.launch.JarLauncher \
   --main-jar WuZhu-1.0.jar \
   --input target \
   --dest target/dist \

@@ -7,7 +7,7 @@
 </div>
 
 [![Java](https://img.shields.io/badge/Java-21-orange)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7.10-brightgreen)](https://spring.io/projects/spring-boot)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen)](https://spring.io/projects/spring-boot)
 [![JavaFX](https://img.shields.io/badge/JavaFX-21-blue)](https://openjfx.io/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-red)](LICENSE)
 
@@ -114,10 +114,10 @@
 
 ```bash
 # Download the latest release
-curl -LO https://github.com/lifxue/WuZhu/releases/download/v1.0.0/wuzhu_1.0.0_amd64.deb
+curl -LO https://github.com/lifxue/WuZhu/releases/download/v1.0.1/wuzhu_1.0.1_amd64.deb
 
 # Install the package
-sudo dpkg -i wuzhu_1.0.0_amd64.deb
+sudo dpkg -i wuzhu_1.0.1_amd64.deb
 
 # Fix dependencies if needed
 sudo apt-get install -f
@@ -302,13 +302,13 @@ Import and export trading data.
 | Component | Version | Purpose |
 |-----------|---------|---------|
 | Java | 21 | Programming Language |
-| Spring Boot | 2.7.10 | Application Framework |
+| Spring Boot | 3.2.0 | Application Framework |
 | JavaFX | 21.0.2 | Desktop UI Framework |
 | [WorkbenchFX](https://github.com/dlsc-software-consulting-gmbh/WorkbenchFX) | 11.3.1 | Workbench-style UI Framework |
-| H2 Database | 2.2.220 | Embedded Database |
-| OpenFeign | 2021.0.3 | HTTP Client for API |
+| H2 Database | 2.2.224 | Embedded Database |
+| OpenFeign | 2023.0.0 | HTTP Client for API |
 | Lombok | 1.18.30 | Code Generation |
-| MapStruct | 1.5.5 | Object Mapping |
+| MapStruct | 1.6.2 | Object Mapping |
 | RichTextFX | 0.11.0 | Rich Text Editing |
 
 ### Project Structure
@@ -355,7 +355,7 @@ PrimaryStageInitializer → Initialize WorkbenchFX + Load Modules
 
 - **Type**: H2 Embedded Database
 - **File Location**: `~/.wuzhu/h2/wuzhudbjpa`
-- **Schema Mode**: `ddl-auto: update` (automatic schema updates)
+- **Schema Mode**: `ddl-auto: validate` (schema managed by Flyway, Hibernate only validates)
 - **Backup**: Simply copy the `.wuzhu` directory
 
 ### API Integration

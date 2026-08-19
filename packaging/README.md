@@ -54,7 +54,9 @@ java -jar target/WuZhu-1.0.jar
 
 ## 自动化 CI/CD
 
-推荐使用 GitHub Actions 自动化多平台构建：
+仓库已内置发布工作流 [`.github/workflows/release.yml`](../.github/workflows/release.yml)（推送 `v*` tag 时自动构建 Ubuntu `.deb` 与 Windows `.msi` 并发布 GitHub Release）。
+
+以下是一个参考示例（注意 `actions/setup-java@v4` 使用 **`java-package: jdk+fx`** 提供 JavaFX —— 不存在 `javafx: true` 参数）：
 
 ```yaml
 # .github/workflows/build.yml
@@ -71,7 +73,8 @@ jobs:
         with:
           distribution: 'liberica'
           java-version: '21'
-          javafx: true
+          java-package: jdk+fx
+          cache: maven
       - run: ./packaging/package-ubuntu.sh
       - uses: actions/upload-artifact@v4
         with:
@@ -86,8 +89,9 @@ jobs:
         with:
           distribution: 'liberica'
           java-version: '21'
-          javafx: true
-      - run: choco install wixtoolset
+          java-package: jdk+fx
+          cache: maven
+      - run: choco install wixtoolset -y
       - run: .\packaging\package-windows.ps1
       - uses: actions/upload-artifact@v4
         with:

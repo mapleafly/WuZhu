@@ -7,10 +7,16 @@
     WuZhu Windows 打包脚本
 .DESCRIPTION
     将 WuZhu 应用打包为 Windows MSI 安装程序
+.PARAMETER AppVersion
+    应用版本号（tag 驱动）。未指定时从环境变量 APP_VERSION 或最近 git tag 推导，默认 1.0.0。
 .NOTES
     需要以管理员权限运行
     需要安装 WiX Toolset 3.x
 #>
+
+param(
+    [string]$AppVersion = ""
+)
 
 $ErrorActionPreference = "Stop"
 
@@ -21,6 +27,25 @@ $Red = "`e[31m"
 $Reset = "`e[0m"
 
 Write-Host "${Yellow}=== WuZhu Windows 11 打包脚本 ===${Reset}"
+Write-Host ""
+
+# 版本号（tag 驱动）：命令行参数 > 环境变量 APP_VERSION > 最近 git tag > 默认 1.0.0
+# 用法示例: .\package-windows.ps1 -AppVersion 1.0.1  或  APP_VERSION=1.0.1 .\package-windows.ps1
+if (-not $AppVersion) {
+    $AppVersion = $env:APP_VERSION
+}
+if (-not $AppVersion) {
+    $gitTag = & git describe --tags --abbrev=0 2>$null
+    if ($LASTEXITCODE -eq 0 -and $gitTag) {
+        $AppVersion = $gitTag
+    }
+}
+# 去掉前缀 v/V（如 v1.0.1 -> 1.0.1）
+$AppVersion = $AppVersion -replace '^[vV]', ''
+if ($AppVersion -notmatch '^\d+\.\d+\.\d+$') {
+    $AppVersion = "1.0.0"
+}
+Write-Host "${Green}版本号: $AppVersion${Reset}"
 Write-Host ""
 
 # 检查环境
@@ -104,12 +129,12 @@ $upgradeUuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 $jpackageArgs = @(
     "--type", "msi",
     "--name", "WuZhu",
-    "--app-version", "1.0.0",
+    "--app-version", $AppVersion,
     "--vendor", "lifxue",
     "--description", "WuZhu - 加密货币交易记录和分析工具",
     "--copyright", "Copyright 2023-2025 lifxue",
     "--main-jar", "WuZhu-1.0.jar",
-    "--main-class", "org.springframework.boot.loader.JarLauncher",
+    "--main-class", "org.springframework.boot.loader.launch.JarLauncher",
     "--input", "target\dependency",
     "--dest", "target\dist",
     "--icon", "src\main\resources\org\lifxue\wuzhu\images\wuzhu-96.ico",
@@ -133,7 +158,7 @@ Write-Host "${Green}=== 打包完成 ===${Reset}"
 Write-Host ""
 
 # 显示结果
-$msiPath = "target\dist\WuZhu-1.0.0.msi"
+$msiPath = "target\dist\WuZhu-$AppVersion.msi"
 if (Test-Path $msiPath) {
     $fileInfo = Get-Item $msiPath
     $fileSizeMB = [math]::Round($fileInfo.Length / 1MB, 2)

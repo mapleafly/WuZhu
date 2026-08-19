@@ -1,8 +1,8 @@
 # WuZhu 项目知识库
 
-**生成时间:** 2025-06-03  
-**提交:** `f44661f`  
-**分支:** master
+**生成时间:** 2025-08-19  
+**提交:** `0cd1c4f`  
+**分支:** release-1.0.1
 
 ## 项目概述
 
@@ -21,7 +21,7 @@
 | H2 Database | 2.2.224  | 嵌入式数据库   |
 | OpenFeign   | 2023.0.0 | HTTP 客户端 |
 | MapStruct   | 1.6.2    | 对象映射     |
-| Flyway      | 10.x     | 数据库迁移    |
+| Flyway      | 9.22.3   | 数据库迁移    |
 
 ## 项目结构
 
@@ -34,7 +34,7 @@ WuZhu/
 │   ├── dto/              # API 数据传输对象
 │   ├── enums/            # 枚举类
 │   ├── exception/        # 异常处理
-│   ├── modules/          # ⭐ 8个业务模块
+│   ├── modules/          # ⭐ 8个业务模块（cash/file/note/piechart/selectcoin/setting/statistics/tradeinfo）
 │   ├── pojo/             # JPA 实体类
 │   ├── repository/       # 数据访问层
 │   ├── service/          # 服务层（含 Feign 客户端）
@@ -46,49 +46,6 @@ WuZhu/
 │   ├── db/migration/     # Flyway 迁移脚本
 │   └── org/lifxue/wuzhu/ # FXML、CSS、图片资源
 └── packaging/            # 打包脚本和文档
-```
-
-## 技术栈
-
-| 组件          | 版本       | 用途       |
-| ----------- | -------- | -------- |
-| Java        | 21       | 编程语言     |
-| Spring Boot | 2.7.10   | 应用框架     |
-| JavaFX      | 21.0.2   | UI 框架    |
-| WorkbenchFX | 11.3.1   | 工作台框架    |
-| H2 Database | 2.2.220  | 嵌入式数据库   |
-| OpenFeign   | 2021.0.3 | HTTP 客户端 |
-| Lombok      | 1.18.30  | 代码生成     |
-| MapStruct   | 1.5.5    | 对象映射     |
-| RichTextFX  | 0.11.0   | 富文本编辑    |
-
-## 项目结构
-
-```
-WuZhu/
-├── src/main/java/org/lifxue/wuzhu/
-│   ├── config/           # 配置类 (Feign、代理)
-│   ├── convert/          # MapStruct 转换器
-│   ├── dto/              # 数据传输对象
-│   ├── enums/            # 枚举类
-│   ├── modules/          # 功能模块 (8个业务模块)
-│   │   ├── cash/         # 现金管理
-│   │   ├── file/         # 导入导出
-│   │   ├── note/         # 笔记 (富文本)
-│   │   ├── piechart/     # 饼图
-│   │   ├── selectcoin/   # 币种选择
-│   │   ├── setting/      # 偏好设置
-│   │   ├── statistics/   # 统计分析
-│   │   └── tradeinfo/    # 交易信息
-│   ├── pojo/             # JPA 实体类
-│   ├── repository/       # 数据访问层
-│   ├── service/          # 服务层
-│   │   ├── feignc/       # Feign 客户端
-│   │   └── impl/         # 服务实现
-│   ├── springfx/         # Spring-JavaFX 集成
-│   ├── themes/           # 主题配置
-│   └── util/             # 工具类
-└── src/main/resources/   # FXML、CSS、配置
 ```
 
 ## 快速导航
@@ -175,7 +132,7 @@ java -jar target/WuZhu-1.0.jar
 
 - **类型**: H2 嵌入式
 - **文件位置**: `~/.wuzhu/h2/wuzhudbjpa`
-- **模式**: `ddl-auto: update`
+- **模式**: `ddl-auto: validate`（数据库结构由 Flyway 管理，Hibernate 仅验证）
 
 ### API 配置
 
@@ -238,6 +195,6 @@ PrimaryStageInitializer → 初始化 WorkbenchFX + 加载所有模块
 
 ## 相关文件
 
-- `pom.xml` - Maven 配置（已添加 jpackage 插件）
+- `pom.xml` - Maven 配置（jpackage 通过 `package-deb`/`package-msi` profile 提供，见 `packaging/`）
 - `src/main/resources/application.yml` - 应用配置
 - `src/main/resources/org/lifxue/wuzhu/modules/*/*.fxml` - 界面定义
