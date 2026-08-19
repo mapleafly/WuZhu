@@ -109,15 +109,18 @@ if ($LASTEXITCODE -ne 0) {
 
 # 编译
 Write-Host "${Yellow}编译项目...${Reset}"
-& .\mvnw.cmd package -DskipTests -q
+& .\mvnw.cmd package "-DskipTests" -q
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Maven 编译失败"
     exit 1
 }
 
 # 复制依赖
+# 注意：PowerShell 调用 mvnw.cmd 时，-D 参数必须加引号，
+# 否则 -DexcludeGroupIds=org.openjfx 会被 cmd.exe 拆成 ".openjfx" 导致
+# Maven 报 "Unknown lifecycle phase .openjfx"。
 Write-Host "${Yellow}复制依赖...${Reset}"
-& .\mvnw.cmd dependency:copy-dependencies -DincludeScope=compile -DexcludeGroupIds=org.openjfx -q
+& .\mvnw.cmd dependency:copy-dependencies "-DincludeScope=compile" "-DexcludeGroupIds=org.openjfx" -q
 Copy-Item target\WuZhu-1.0.jar target\dependency\
 
 # 创建 MSI
