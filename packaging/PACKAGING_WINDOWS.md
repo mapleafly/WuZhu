@@ -96,7 +96,8 @@ cd C:\path\to\WuZhu
 
 ```powershell
 # 复制所有依赖到 target/dependency
-.\mvnw.cmd dependency:copy-dependencies -DincludeScope=compile -DexcludeGroupIds=org.openjfx
+# 注意：PowerShell 调用 mvnw.cmd 时 -D 参数需加引号（否则 .openjfx 会被 cmd.exe 拆开报 Unknown lifecycle phase）
+.\mvnw.cmd dependency:copy-dependencies "-DincludeScope=compile" "-DexcludeGroupIds=org.openjfx"
 
 # 复制主 JAR
 copy target\WuZhu-1.0.jar target\dependency\
@@ -272,7 +273,7 @@ Write-Host "编译项目..." -ForegroundColor Yellow
 
 # 复制依赖
 Write-Host "复制依赖..." -ForegroundColor Yellow
-.\mvnw.cmd dependency:copy-dependencies -DincludeScope=compile -DexcludeGroupIds=org.openjfx
+.\mvnw.cmd dependency:copy-dependencies "-DincludeScope=compile" "-DexcludeGroupIds=org.openjfx"
 copy target\WuZhu-1.0.jar target\dependency\
 
 # 创建 MSI
