@@ -9,6 +9,7 @@
 | [DEVELOPMENT.md](./DEVELOPMENT.md) | 开发者 | 开发环境搭建、日常开发命令、IDE 配置、调试技巧 |
 | [PACKAGING_UBUNTU.md](./PACKAGING_UBUNTU.md) | 发布者 | Ubuntu 24.04 打包为 .deb 安装包 |
 | [PACKAGING_WINDOWS.md](./PACKAGING_WINDOWS.md) | 发布者 | Windows 11 打包为 .msi/.exe 安装包 |
+| [../docs/DEVELOPMENT_RELEASE.md](../docs/DEVELOPMENT_RELEASE.md) | 开发者/发布者 | **开发与发布全流程**：环境、分支策略、tag 驱动发布、Actions 流水线、排错 |
 
 ## 快速导航
 

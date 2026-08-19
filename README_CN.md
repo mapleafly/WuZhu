@@ -192,6 +192,8 @@ cd WuZhu
 java -jar target/WuZhu-1.0.jar
 ```
 
+> 📘 **开发与发布流程**：环境搭建（mise）、分支策略、构建/测试命令、tag 驱动发布、GitHub Actions 流水线与排错，详见 [`docs/DEVELOPMENT_RELEASE.md`](docs/DEVELOPMENT_RELEASE.md)。
+
 ### 开发命令
 
 ```bash
