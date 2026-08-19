@@ -126,7 +126,7 @@ jpackage \
   --vendor "lifxue" \
   --description "WuZhu - 加密货币交易记录和分析工具" \
   --copyright "Copyright 2023-2025 lifxue" \
-  --main-class org.springframework.boot.loader.launch.JarLauncher \
+  --main-class org.lifxue.wuzhu.WuZhuApplication \
   --main-jar WuZhu-1.0.jar \
   --input target \
   --dest target/dist \
@@ -137,8 +137,14 @@ jpackage \
   --linux-shortcut \
   --icon src/main/resources/org/lifxue/wuzhu/images/logo.png \
   --java-options "-Dfile.encoding=UTF-8" \
-  --java-options "-Dspring.backgroundpreinitializer.ignore=true"
+  --java-options "--add-modules" \
+  --java-options "javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing"
 ```
+
+> **重要（避免 `failed to launch JVM`）**：
+> 1. `--main-jar` 用 **Spring Boot 的"薄 jar"**（`WuZhu-1.0.jar.original`，未 repackage 前的原 jar）重命名而来；**不要用 fat jar**（应用类藏在 `BOOT-INF/`，classpath 启动无法加载）。
+> 2. `--main-class` 用 `org.lifxue.wuzhu.WuZhuApplication`，**不要用 `org.springframework.boot.loader.launch.JarLauncher`**。
+> 3. 必须加 `--add-modules` 让非模块化应用加载内置 runtime 的 JavaFX 模块。
 
 ### 步骤 4：验证安装包
 
