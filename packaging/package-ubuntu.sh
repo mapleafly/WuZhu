@@ -89,14 +89,16 @@ echo -e "${YELLOW}编译项目...${NC}"
 # 复制依赖
 echo -e "${YELLOW}复制依赖...${NC}"
 ./mvnw dependency:copy-dependencies -DincludeScope=compile -DexcludeGroupIds=org.openjfx -q
-cp target/WuZhu-1.0.jar target/dependency/
+# 主 jar 使用 Spring Boot 的"薄 jar"（.original = 未 repackage 前的原 jar，应用类在 jar 根部，
+# 可被 jpackage 的 classpath 启动直接加载）。不能用 fat jar：其应用类藏在 BOOT-INF/，classpath 启动无法加载。
+cp target/WuZhu-1.0.jar.original target/dependency/WuZhu-1.0.jar
 
 # 创建自定义 JRE
 echo -e "${YELLOW}创建自定义 JRE...${NC}"
 if [ ! -d "target/custom-jre" ]; then
     jlink \
       --module-path "$JAVA_HOME/jmods" \
-      --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml,javafx.web,jdk.localedata \
+      --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing,jdk.localedata \
       --output target/custom-jre \
       --strip-debug \
       --no-man-pages \
@@ -113,7 +115,7 @@ jpackage \
   --vendor "lifxue" \
   --description "WuZhu - 加密货币交易记录和分析工具" \
   --copyright "Copyright 2023-2025 lifxue" \
-  --main-class org.springframework.boot.loader.launch.JarLauncher \
+  --main-class org.lifxue.wuzhu.WuZhuApplication \
   --main-jar WuZhu-1.0.jar \
   --input target/dependency \
   --dest target/dist \
@@ -123,7 +125,9 @@ jpackage \
   --linux-menu-group Office \
   --linux-shortcut \
   --icon src/main/resources/org/lifxue/wuzhu/images/logo.png \
-  --java-options "-Dfile.encoding=UTF-8"
+  --java-options "-Dfile.encoding=UTF-8" \
+  --java-options "--add-modules" \
+  --java-options "javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing"
 
 echo ""
 echo -e "${GREEN}=== 打包完成 ===${NC}"

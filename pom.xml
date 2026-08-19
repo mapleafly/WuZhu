@@ -347,8 +347,9 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <copy file="${project.build.directory}/${project.build.finalName}.jar"
-                                              todir="${project.build.directory}/dependency"/>
+                                        <!-- 与 package-msi 一致：使用薄 jar（.original），classpath 可加载 -->
+                                        <copy file="${project.build.directory}/${project.build.finalName}.jar.original"
+                                              tofile="${project.build.directory}/dependency/${project.build.finalName}.jar"/>
                                     </target>
                                 </configuration>
                             </execution>
@@ -371,7 +372,7 @@
                                     <vendor>lifxue</vendor>
                                     <description>WuZhu - 加密货币交易记录和分析工具</description>
                                     <mainJar>${project.build.finalName}.jar</mainJar>
-                                    <mainClass>org.springframework.boot.loader.launch.JarLauncher</mainClass>
+                                    <mainClass>org.lifxue.wuzhu.WuZhuApplication</mainClass>
                                     <input>${project.build.directory}/dependency</input>
                                     <destination>${project.build.directory}/dist</destination>
                                     <type>DEB</type>
@@ -382,6 +383,9 @@
                                     <linuxShortcut>true</linuxShortcut>
                                     <javaOptions>
                                         <option>-Dfile.encoding=UTF-8</option>
+                                        <!-- 非模块化 classpath 应用需显式加载内置 runtime 的 JavaFX 模块 -->
+                                        <option>--add-modules</option>
+                                        <option>javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing</option>
                                     </javaOptions>
                                 </configuration>
                             </execution>
@@ -427,8 +431,14 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <copy file="${project.build.directory}/${project.build.finalName}.jar"
-                                              todir="${project.build.directory}/dependency"/>
+                                        <!--
+                                            使用 Spring Boot 的"薄 jar"（.original = 未 repackage 前的原 jar，
+                                            应用类在 jar 根部，可被 jpackage 的 classpath 启动直接加载），
+                                            重命名为 ${finalName}.jar 作为 jpackage 的 main jar。
+                                            不能用 fat jar：其应用类藏在 BOOT-INF/ 里，classpath 启动无法加载。
+                                        -->
+                                        <copy file="${project.build.directory}/${project.build.finalName}.jar.original"
+                                              tofile="${project.build.directory}/dependency/${project.build.finalName}.jar"/>
                                     </target>
                                 </configuration>
                             </execution>
@@ -451,7 +461,7 @@
                                     <vendor>lifxue</vendor>
                                     <description>WuZhu - 加密货币交易记录和分析工具</description>
                                     <mainJar>${project.build.finalName}.jar</mainJar>
-                                    <mainClass>org.springframework.boot.loader.launch.JarLauncher</mainClass>
+                                    <mainClass>org.lifxue.wuzhu.WuZhuApplication</mainClass>
                                     <input>${project.build.directory}/dependency</input>
                                     <destination>${project.build.directory}/dist</destination>
                                     <type>MSI</type>
@@ -464,6 +474,9 @@
                                     <winUpgradeUuid>a1b2c3d4-e5f6-7890-abcd-ef1234567890</winUpgradeUuid>
                                     <javaOptions>
                                         <option>-Dfile.encoding=UTF-8</option>
+                                        <!-- 非模块化 classpath 应用需显式加载内置 runtime 的 JavaFX 模块，否则启动即失败 -->
+                                        <option>--add-modules</option>
+                                        <option>javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing</option>
                                     </javaOptions>
                                 </configuration>
                             </execution>

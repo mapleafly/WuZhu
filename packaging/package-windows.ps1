@@ -120,8 +120,15 @@ if ($LASTEXITCODE -ne 0) {
 # 否则 -DexcludeGroupIds=org.openjfx 会被 cmd.exe 拆成 ".openjfx" 导致
 # Maven 报 "Unknown lifecycle phase .openjfx"。
 Write-Host "${Yellow}复制依赖...${Reset}"
+# 说明：.
+#   - openjfx 不复制进 classpath（排除），改为依赖内置 runtime 自带的 JavaFX 模块，
+#     通过 --add-modules 在启动时加载（见下方 jpackage 参数），避免平台分类器/原生库冲突。
+#   - 主 jar 使用 Spring Boot 的"薄 jar"（WuZhu-1.0.jar.original = 未 re-package 前的原 jar，
+#     应用类在 jar 根部直接可被 classpath 加载），重命名为 WuZhu-1.0.jar 作为 --main-jar。
+#     不能用 fat jar：fat jar 的应用类藏在 BOOT-INF/ 里，只能靠 java -jar + JarLauncher 加载，
+#     jpackage 的 classpath 启动方式无法直接加载，会报 failed to launch JVM。
 & .\mvnw.cmd dependency:copy-dependencies "-DincludeScope=compile" "-DexcludeGroupIds=org.openjfx" -q
-Copy-Item target\WuZhu-1.0.jar target\dependency\
+Copy-Item target\WuZhu-1.0.jar.original target\dependency\WuZhu-1.0.jar
 
 # 创建 MSI
 Write-Host "${Yellow}创建 MSI 安装包...${Reset}"
@@ -137,7 +144,7 @@ $jpackageArgs = @(
     "--description", "WuZhu - 加密货币交易记录和分析工具",
     "--copyright", "Copyright 2023-2025 lifxue",
     "--main-jar", "WuZhu-1.0.jar",
-    "--main-class", "org.springframework.boot.loader.launch.JarLauncher",
+    "--main-class", "org.lifxue.wuzhu.WuZhuApplication",
     "--input", "target\dependency",
     "--dest", "target\dist",
     "--icon", "src\main\resources\org\lifxue\wuzhu\images\wuzhu-96.ico",
@@ -147,7 +154,11 @@ $jpackageArgs = @(
     "--win-dir-chooser",
     "--win-per-user-install",
     "--win-upgrade-uuid", $upgradeUuid,
-    "--java-options", "-Dfile.encoding=UTF-8"
+    "--java-options", "-Dfile.encoding=UTF-8",
+    # 非模块化 classpath 应用不能直接看到内置 runtime 里的 JavaFX 模块，
+    # 必须显式 --add-modules 把它们加载进模块图，否则启动即失败。
+    "--java-options", "--add-modules",
+    "--java-options", "javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing"
 )
 
 & jpackage @jpackageArgs
