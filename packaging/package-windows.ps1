@@ -130,6 +130,25 @@ Write-Host "${Yellow}复制依赖...${Reset}"
 & .\mvnw.cmd dependency:copy-dependencies "-DincludeScope=compile" "-DexcludeGroupIds=org.openjfx" -q
 Copy-Item target\WuZhu-1.0.jar.original target\dependency\WuZhu-1.0.jar
 
+# 创建自定义 JRE（jlink）—— 与 package-ubuntu.sh 一致，保证内置 runtime 完整可用
+# 必须用 jlink 自建 runtime（含 bin\java.exe 启动器），不能依赖 jpackage 自动生成的 runtime：
+# 自动生成的 runtime 缺少 JVM 启动器（bin\java.exe），导致 WuZhu.exe 报 failed to launch JVM。
+Write-Host "${Yellow}创建自定义 JRE...${Reset}"
+if (-not (Test-Path "target\custom-jre")) {
+    & jlink `
+        --module-path "$env:JAVA_HOME\jmods" `
+        --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing,jdk.localedata `
+        --output target\custom-jre `
+        --strip-debug `
+        --no-man-pages `
+        --no-header-files `
+        --compress=2
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "jlink 创建自定义 JRE 失败"
+        exit 1
+    }
+}
+
 # 创建 MSI
 Write-Host "${Yellow}创建 MSI 安装包...${Reset}"
 
@@ -147,6 +166,7 @@ $jpackageArgs = @(
     "--main-class", "org.lifxue.wuzhu.WuZhuApplication",
     "--input", "target\dependency",
     "--dest", "target\dist",
+    "--runtime-image", "target\custom-jre",
     "--icon", "src\main\resources\org\lifxue\wuzhu\images\wuzhu-96.ico",
     "--win-menu",
     "--win-menu-group", "WuZhu",
