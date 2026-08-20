@@ -278,7 +278,7 @@ jpackage \
   --app-version 1.0.0 \
   --vendor "lifxue" \
   --description "WuZhu - 加密货币交易记录和分析工具" \
-  --main-class org.springframework.boot.loader.launch.JarLauncher \
+  --main-class org.lifxue.wuzhu.WuZhuApplication \
   --main-jar WuZhu-1.0.jar \
   --input target \
   --dest target/dist \
@@ -288,7 +288,9 @@ jpackage \
   --linux-menu-group Office \
   --linux-shortcut \
   --icon src/main/resources/org/lifxue/wuzhu/images/logo.png \
-  --java-options "-Dfile.encoding=UTF-8"
+  --java-options "-Dfile.encoding=UTF-8" \
+  --java-options "--add-modules" \
+  --java-options "javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing"
 
 echo "=== 打包完成 ==="
 echo "安装包位置: target/dist/wuzhu_1.0.0_amd64.deb"

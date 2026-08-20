@@ -300,7 +300,9 @@
         <!--
             原生安装包打包（改造，见 docs/plans/DOC_ACCURACY_AUDIT.md §三 / WINDOWS_PACKAGING_WSL2.md §六）：
             原 jpackage-maven-plugin 采用 module 方式（要求 JPMS 模块化）且未绑定执行阶段，与本项目 fat jar
-            结构不符、实际不会执行。现改为 <mainJar> + <mainClass>（Spring Boot 3.2 的 JarLauncher 路径）方式。
+            结构不符、实际不会执行。现改为 <mainJar>（薄 jar WuZhu-1.0.jar.original）+ <mainClass>
+            org.lifxue.wuzhu.WuZhuApplication 的 classpath 启动方式（不要用 fat jar 的 JarLauncher，
+            见 docs/DEVELOPMENT_RELEASE.md §3.0）。
 
             使用方式（显式激活，避免与发布流水线冲突）：
               Linux:   ./mvnw clean package -Ppackage-deb   → target/dist/WuZhu-1.0.0.deb

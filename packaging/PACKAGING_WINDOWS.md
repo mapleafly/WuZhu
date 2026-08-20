@@ -178,7 +178,7 @@ jpackage `
   --vendor "lifxue" `
   --description "WuZhu - 加密货币交易记录和分析工具" `
   --main-jar WuZhu-1.0.jar `
-  --main-class org.springframework.boot.loader.launch.JarLauncher `
+  --main-class org.lifxue.wuzhu.WuZhuApplication `
   --input target\dependency `
   --dest target\dist `
   --icon src\main\resources\org\lifxue\wuzhu\images\wuzhu-96.ico `
@@ -187,7 +187,9 @@ jpackage `
   --win-dir-chooser `
   --win-per-user-install `
   --win-upgrade-uuid "YOUR-UUID-HERE" `
-  --java-options "-Dfile.encoding=UTF-8"
+  --java-options "-Dfile.encoding=UTF-8" `
+  --java-options "--add-modules" `
+  --java-options "javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing"
 ```
 
 ## 方式三：创建绿色版（ZIP 压缩包）
@@ -296,7 +298,7 @@ jpackage `
   --description "WuZhu - 加密货币交易记录和分析工具" `
   --copyright "Copyright 2023-2025 lifxue" `
   --main-jar WuZhu-1.0.jar `
-  --main-class org.springframework.boot.loader.launch.JarLauncher `
+  --main-class org.lifxue.wuzhu.WuZhuApplication `
   --input target\dependency `
   --dest target\dist `
   --icon src\main\resources\org\lifxue\wuzhu\images\wuzhu-96.ico `
@@ -306,7 +308,9 @@ jpackage `
   --win-dir-chooser `
   --win-per-user-install `
   --win-upgrade-uuid $upgradeUuid `
-  --java-options "-Dfile.encoding=UTF-8"
+  --java-options "-Dfile.encoding=UTF-8" `
+  --java-options "--add-modules" `
+  --java-options "javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing"
 
 Write-Host "=== 打包完成 ===" -ForegroundColor Green
 Write-Host "安装包位置: target\dist\WuZhu-1.0.0.msi" -ForegroundColor Green
@@ -386,7 +390,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
                                 <vendor>lifxue</vendor>
                                 <description>WuZhu - 加密货币交易记录和分析工具</description>
                                 <mainJar>WuZhu-1.0.jar</mainJar>
-                                <mainClass>org.springframework.boot.loader.launch.JarLauncher</mainClass>
+                                <mainClass>org.lifxue.wuzhu.WuZhuApplication</mainClass>
                                 <input>${project.build.directory}/dependency</input>
                                 <destination>${project.build.directory}/dist</destination>
                                 <type>MSI</type>
@@ -399,6 +403,8 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
                                 <winUpgradeUuid>YOUR-UUID-HERE</winUpgradeUuid>
                                 <javaOptions>
                                     <option>-Dfile.encoding=UTF-8</option>
+                                    <option>--add-modules</option>
+                                    <option>javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing</option>
                                 </javaOptions>
                             </configuration>
                         </execution>
