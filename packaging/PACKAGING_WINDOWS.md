@@ -97,10 +97,11 @@ cd C:\path\to\WuZhu
 ```powershell
 # 复制所有依赖到 target/dependency
 # 注意：PowerShell 调用 mvnw.cmd 时 -D 参数需加引号（否则 .openjfx 会被 cmd.exe 拆开报 Unknown lifecycle phase）
-.\mvnw.cmd dependency:copy-dependencies "-DincludeScope=compile" "-DexcludeGroupIds=org.openjfx"
+# includeScope 用 runtime（compile + runtime）：h2 驱动是 runtime scope，只 copy compile 会漏掉导致启动报 Cannot load driver class
+.\mvnw.cmd dependency:copy-dependencies "-DincludeScope=runtime" "-DexcludeGroupIds=org.openjfx" "-DexcludeArtifactIds=spring-boot-devtools,spring-boot-configuration-processor"
 
-# 复制主 JAR
-copy target\WuZhu-1.0.jar target\dependency\
+# 复制主 JAR（薄 jar：Spring Boot repackage 前的原 jar，应用类在 jar 根部可被 classpath 加载）
+copy target\WuZhu-1.0.jar.original target\dependency\WuZhu-1.0.jar
 ```
 
 ### 步骤 3：使用 jpackage 创建 MSI
@@ -279,8 +280,8 @@ Write-Host "编译项目..." -ForegroundColor Yellow
 
 # 复制依赖
 Write-Host "复制依赖..." -ForegroundColor Yellow
-.\mvnw.cmd dependency:copy-dependencies "-DincludeScope=compile" "-DexcludeGroupIds=org.openjfx"
-copy target\WuZhu-1.0.jar target\dependency\
+.\mvnw.cmd dependency:copy-dependencies "-DincludeScope=runtime" "-DexcludeGroupIds=org.openjfx" "-DexcludeArtifactIds=spring-boot-devtools,spring-boot-configuration-processor"
+copy target\WuZhu-1.0.jar.original target\dependency\WuZhu-1.0.jar
 
 # 创建 MSI
 Write-Host "创建 MSI 安装包..." -ForegroundColor Yellow
@@ -358,8 +359,10 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
                                 <goal>copy-dependencies</goal>
                             </goals>
                             <configuration>
-                                <includeScope>compile</includeScope>
+                                <!-- runtime = compile + runtime：h2 驱动是 runtime scope，只 copy compile 会漏掉 -->
+                                <includeScope>runtime</includeScope>
                                 <excludeGroupIds>org.openjfx</excludeGroupIds>
+                                <excludeArtifactIds>spring-boot-devtools,spring-boot-configuration-processor</excludeArtifactIds>
                             </configuration>
                         </execution>
                     </executions>

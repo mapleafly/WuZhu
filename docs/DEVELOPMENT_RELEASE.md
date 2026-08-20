@@ -211,8 +211,9 @@ gh release create v1.0.1 \
 - 需要管理员权限 + WiX Toolset 3.x（Actions 中 `choco install wixtoolset -y`）。
 - ⚠️ **PowerShell 调用 `mvnw.cmd` 时，`-D` 参数必须加引号**，否则 `-DexcludeGroupIds=org.openjfx` 会被 `cmd.exe` 拆成 `.openjfx`，Maven 报 `Unknown lifecycle phase .openjfx`：
   ```powershell
-  & .\mvnw.cmd dependency:copy-dependencies "-DincludeScope=compile" "-DexcludeGroupIds=org.openjfx" -q
+  & .\mvnw.cmd dependency:copy-dependencies "-DincludeScope=runtime" "-DexcludeGroupIds=org.openjfx" "-DexcludeArtifactIds=spring-boot-devtools,spring-boot-configuration-processor" -q
   ```
+  > `includeScope` 用 `runtime`（compile + runtime）：h2 驱动是 `runtime` scope，只 copy `compile` 会漏掉它，导致启动报 `Cannot load driver class: org.h2.Driver`。
 
 ### 3.3 pom.xml 打包 profile
 
