@@ -43,8 +43,10 @@
 Copy-Item target\WuZhu-1.0.jar.original target\dependency\WuZhu-1.0.jar
 
 # 3. jlink 自建 runtime（含 java.exe 启动器）
+# 注意：必须包含 jdk.crypto.ec（TLS/ECDHE 所需）。缺失时 HTTPS 请求会报
+#   "(unexpected_message) Received close_notify during handshake"（v1.0.4 已踩坑）。
 jlink --module-path "$env:JAVA_HOME\jmods" `
-  --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing,jdk.localedata `
+  --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing,jdk.localedata,jdk.crypto.ec,jdk.crypto.cryptoki `
   --output target\custom-jre --strip-debug --no-man-pages --no-header-files --compress=2
 
 # 4. jpackage 打 MSI

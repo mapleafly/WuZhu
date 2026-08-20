@@ -85,9 +85,11 @@ mkdir -p target/dist
 
 # 使用 jlink 创建精简 JRE（包含 JavaFX 模块）
 # 注意：JDK 21 没有 --print-module-path 选项；直接使用 JAVA_HOME/jmods 作为模块路径
+# 注意：必须包含 jdk.crypto.ec（TLS/ECDHE 所需）。缺失时 HTTPS 请求会报
+#   "(unexpected_message) Received close_notify during handshake"（v1.0.4 已踩坑）。
 jlink \
   --module-path "$JAVA_HOME/jmods" \
-  --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing \
+  --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing,jdk.crypto.ec,jdk.crypto.cryptoki \
   --output target/custom-jre \
   --strip-debug \
   --no-man-pages \
@@ -108,7 +110,7 @@ unzip openjfx-21.0.2_linux-x64_bin-jmods.zip -d /tmp/javafx
 JDK_PATH=/usr/lib/jvm/java-21-openjdk-amd64
 jlink \
   --module-path "$JDK_PATH/jmods:/tmp/javafx/javafx-jmods-21.0.2" \
-  --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing \
+  --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing,jdk.crypto.ec,jdk.crypto.cryptoki \
   --output target/custom-jre \
   --strip-debug \
   --no-man-pages \
@@ -194,7 +196,7 @@ echo "JDK 路径: $JDK_HOME"
 # 使用 jlink 创建精简 JRE
 jlink \
   --module-path "$JDK_HOME/jmods" \
-  --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing \
+  --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing,jdk.crypto.ec,jdk.crypto.cryptoki \
   --output target/WuZhu-linux/runtime \
   --strip-debug \
   --no-man-pages \
@@ -262,7 +264,7 @@ if [ ! -d "target/custom-jre" ]; then
     echo "创建自定义 JRE..."
     jlink \
       --module-path "$JAVA_HOME/jmods" \
-      --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml \
+      --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing,jdk.crypto.ec,jdk.crypto.cryptoki \
       --output target/custom-jre \
       --strip-debug \
       --no-man-pages \

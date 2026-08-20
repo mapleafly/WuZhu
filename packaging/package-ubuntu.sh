@@ -101,7 +101,7 @@ echo -e "${YELLOW}创建自定义 JRE...${NC}"
 if [ ! -d "target/custom-jre" ]; then
     jlink \
       --module-path "$JAVA_HOME/jmods" \
-      --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing,jdk.localedata \
+      --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing,jdk.localedata,jdk.crypto.ec,jdk.crypto.cryptoki \
       --output target/custom-jre \
       --strip-debug \
       --no-man-pages \
@@ -135,6 +135,13 @@ jpackage \
 echo ""
 echo -e "${GREEN}=== 打包完成 ===${NC}"
 echo ""
+
+# 打包后自动验证 runtime（防止 jdk.crypto.ec 遗漏导致 HTTPS 失败的问题回归，见 v1.0.4）
+echo -e "${YELLOW}验证自定义 JRE...${NC}"
+"$(dirname "$0")/verify-runtime.sh" target/custom-jre || {
+    echo -e "${RED}✗ runtime 验证失败，请检查 jlink --add-modules 是否包含 jdk.crypto.ec${NC}"
+    exit 1
+}
 
 # 显示结果
 DEB_FILE="target/dist/wuzhu_${APP_VERSION}_amd64.deb"

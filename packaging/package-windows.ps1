@@ -142,7 +142,7 @@ Write-Host "${Yellow}创建自定义 JRE...${Reset}"
 if (-not (Test-Path "target\custom-jre")) {
     & jlink `
         --module-path "$env:JAVA_HOME\jmods" `
-        --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing,jdk.localedata `
+        --add-modules java.base,java.logging,java.xml,java.sql,java.desktop,java.management,java.naming,java.security.jgss,java.instrument,jdk.unsupported,javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.web,javafx.media,javafx.swing,jdk.localedata,jdk.crypto.ec,jdk.crypto.cryptoki `
         --output target\custom-jre `
         --strip-debug `
         --no-man-pages `
@@ -191,6 +191,16 @@ if ($LASTEXITCODE -ne 0) {
     Write-Error "jpackage 打包失败"
     exit 1
 }
+
+# 打包后自动验证 runtime（防止 jdk.crypto.ec 遗漏导致 HTTPS 失败的问题回归，见 v1.0.4）
+Write-Host "${Yellow}验证自定义 JRE...${Reset}"
+$rtJava = "target\custom-jre\bin\java.exe"
+$cryptoOk = & $rtJava --list-modules 2>$null | Select-String -Quiet "jdk.crypto.ec"
+if (-not $cryptoOk) {
+    Write-Error "✗ runtime 缺少 jdk.crypto.ec 模块，HTTPS/TLS(ECDHE) 会失败（见 v1.0.4 bug）"
+    exit 1
+}
+Write-Host "${Green}✓ runtime 包含 jdk.crypto.ec${Reset}"
 
 Write-Host ""
 Write-Host "${Green}=== 打包完成 ===${Reset}"

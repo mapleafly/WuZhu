@@ -393,25 +393,34 @@ public class PrimaryStageInitializer implements ApplicationListener<StageReadyEv
             workbench.showConfirmationDialog("更新货币数据", "你确定要更新货币数据吗？", buttonType -> {
                     if (buttonType == ButtonType.YES) {
                         CompletableFuture.runAsync(() -> {
-                            if (icmcMapJpaService.saveNewBatch("cmc_rank")) {
-                                Platform.runLater(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        workbench.showInformationDialog("数据更新信息", "加密货币信息更新成功！",
-                                            buttonType1 -> {
-                                            }
-                                        );
-                                    }
-                                });
-                            } else {
-                                Platform.runLater(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        workbench.showErrorDialog("数据更新信息", "加密货币信息更新失败！",
-                                            buttonType1 -> {
-                                            }
-                                        );
-                                    }
+                            try {
+                                if (icmcMapJpaService.saveNewBatch("cmc_rank")) {
+                                    Platform.runLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            workbench.showInformationDialog("数据更新信息", "加密货币信息更新成功！",
+                                                buttonType1 -> {
+                                                }
+                                            );
+                                        }
+                                    });
+                                } else {
+                                    Platform.runLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            workbench.showErrorDialog("数据更新信息", "加密货币信息更新失败！",
+                                                buttonType1 -> {
+                                                }
+                                            );
+                                        }
+                                    });
+                                }
+                            } catch (Exception e) {
+                                log.error("更新货币数据时发生异常", e);
+                                Platform.runLater(() -> {
+                                    workbench.showErrorDialog("货币数据更新异常",
+                                        "更新过程中发生错误: " + e.getMessage() + "\n请检查日志获取详细信息。",
+                                        buttonType1 -> {});
                                 });
                             }
                         });
