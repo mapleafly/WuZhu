@@ -121,13 +121,18 @@ if ($LASTEXITCODE -ne 0) {
 # Maven 报 "Unknown lifecycle phase .openjfx"。
 Write-Host "${Yellow}复制依赖...${Reset}"
 # 说明：.
+#   - includeScope 用 runtime（Maven 默认 runtime = compile + runtime）：
+#     不能只 copy compile，h2 数据库驱动是 runtime scope，只 copy compile 会漏掉它，
+#     导致启动报 Cannot load driver class: org.h2.Driver（见 v1.0.3 修复）。
+#   - 排除 dev 工具（optional）：spring-boot-devtools / spring-boot-configuration-processor
+#     不进生产包，与 Spring Boot fat jar 依赖集合一致。
 #   - openjfx 不复制进 classpath（排除），改为依赖内置 runtime 自带的 JavaFX 模块，
 #     通过 --add-modules 在启动时加载（见下方 jpackage 参数），避免平台分类器/原生库冲突。
 #   - 主 jar 使用 Spring Boot 的"薄 jar"（WuZhu-1.0.jar.original = 未 re-package 前的原 jar，
 #     应用类在 jar 根部直接可被 classpath 加载），重命名为 WuZhu-1.0.jar 作为 --main-jar。
 #     不能用 fat jar：fat jar 的应用类藏在 BOOT-INF/ 里，只能靠 java -jar + JarLauncher 加载，
 #     jpackage 的 classpath 启动方式无法直接加载，会报 failed to launch JVM。
-& .\mvnw.cmd dependency:copy-dependencies "-DincludeScope=compile" "-DexcludeGroupIds=org.openjfx" -q
+& .\mvnw.cmd dependency:copy-dependencies "-DincludeScope=runtime" "-DexcludeGroupIds=org.openjfx" "-DexcludeArtifactIds=spring-boot-devtools,spring-boot-configuration-processor" -q
 Copy-Item target\WuZhu-1.0.jar.original target\dependency\WuZhu-1.0.jar
 
 # 创建自定义 JRE（jlink）—— 与 package-ubuntu.sh 一致，保证内置 runtime 完整可用

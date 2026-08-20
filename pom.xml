@@ -326,8 +326,11 @@
                                     <goal>copy-dependencies</goal>
                                 </goals>
                                 <configuration>
-                                    <includeScope>compile</includeScope>
+                                    <!-- includeScope=runtime（compile + runtime）：h2 驱动是 runtime scope，只 copy compile 会漏掉，
+                                         导致启动报 Cannot load driver class: org.h2.Driver -->
+                                    <includeScope>runtime</includeScope>
                                     <excludeGroupIds>org.openjfx</excludeGroupIds>
+                                    <excludeArtifactIds>spring-boot-devtools,spring-boot-configuration-processor</excludeArtifactIds>
                                     <outputDirectory>${project.build.directory}/dependency</outputDirectory>
                                 </configuration>
                             </execution>
@@ -411,8 +414,11 @@
                                     <goal>copy-dependencies</goal>
                                 </goals>
                                 <configuration>
-                                    <includeScope>compile</includeScope>
+                                    <!-- includeScope=runtime（compile + runtime）：h2 驱动是 runtime scope，只 copy compile 会漏掉，
+                                         导致启动报 Cannot load driver class: org.h2.Driver -->
+                                    <includeScope>runtime</includeScope>
                                     <excludeGroupIds>org.openjfx</excludeGroupIds>
+                                    <excludeArtifactIds>spring-boot-devtools,spring-boot-configuration-processor</excludeArtifactIds>
                                     <outputDirectory>${project.build.directory}/dependency</outputDirectory>
                                 </configuration>
                             </execution>

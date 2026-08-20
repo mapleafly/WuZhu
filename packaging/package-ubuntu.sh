@@ -88,7 +88,10 @@ echo -e "${YELLOW}编译项目...${NC}"
 
 # 复制依赖
 echo -e "${YELLOW}复制依赖...${NC}"
-./mvnw dependency:copy-dependencies -DincludeScope=compile -DexcludeGroupIds=org.openjfx -q
+# includeScope 用 runtime（compile + runtime）：h2 数据库驱动是 runtime scope，
+# 只 copy compile 会漏掉，导致启动报 Cannot load driver class: org.h2.Driver。
+# 排除 dev 工具（optional）：spring-boot-devtools / spring-boot-configuration-processor。
+./mvnw dependency:copy-dependencies -DincludeScope=runtime -DexcludeGroupIds=org.openjfx -DexcludeArtifactIds=spring-boot-devtools,spring-boot-configuration-processor -q
 # 主 jar 使用 Spring Boot 的"薄 jar"（.original = 未 repackage 前的原 jar，应用类在 jar 根部，
 # 可被 jpackage 的 classpath 启动直接加载）。不能用 fat jar：其应用类藏在 BOOT-INF/，classpath 启动无法加载。
 cp target/WuZhu-1.0.jar.original target/dependency/WuZhu-1.0.jar
