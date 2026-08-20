@@ -48,6 +48,9 @@ public class TypePieChartViewController implements Initializable {
         totalPrice.setText("当前总价值约:$0");
         
         viewModel.loadPortfolioData();
+        // 重新打开页面时，如果总价值与上次相同，JavaFX 属性监听器不会触发，
+        // 这里直接根据当前值刷新标签，避免第二次打开显示 0
+        totalPrice.setText("当前总价值约:$" + Math.round(viewModel.getTotalValue().doubleValue()));
         pieChart.setData(viewModel.getPieData());
 
         setupTooltips();
@@ -60,12 +63,24 @@ public class TypePieChartViewController implements Initializable {
             NumberFormat percent = NumberFormat.getPercentInstance();
             percent.setMaximumFractionDigits(3);
 
-            Tooltip tooltip = new Tooltip(String.format("%s\n总价: %s\n占比: %s",
+            Tooltip tooltip = new Tooltip(String.format("%s\n总价: %s\n占比: %s\n数量: %s",
                 data.getName(),
                 currency.format(data.getPieValue()),
-                percent.format(data.getPieValue() / total)));
+                percent.format(data.getPieValue() / total),
+                formatQuantity(viewModel.getPieDataQuantity(data))));
             tooltip.setFont(new Font("Arial", 20));
             Tooltip.install(data.getNode(), tooltip);
         });
+    }
+
+    /**
+     * 格式化持仓数量，去掉多余的尾随零，最多保留 8 位小数
+     */
+    private String formatQuantity(java.math.BigDecimal quantity) {
+        if (quantity == null) {
+            return "0";
+        }
+        java.math.BigDecimal scaled = quantity.setScale(8, java.math.RoundingMode.HALF_UP).stripTrailingZeros();
+        return scaled.toPlainString();
     }
 }
