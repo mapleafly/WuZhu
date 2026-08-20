@@ -26,9 +26,13 @@ import javafx.collections.ObservableList;
 import org.lifxue.wuzhu.constant.CoinConstants;
 import org.lifxue.wuzhu.modules.statistics.vo.PATableVO;
 import org.lifxue.wuzhu.modules.tradeinfo.vo.TradeInfoVO;
+import org.lifxue.wuzhu.pojo.CMCQuotesLatest;
+import org.lifxue.wuzhu.pojo.TradeInfo;
 import org.lifxue.wuzhu.service.CashCalculationService;
+import org.lifxue.wuzhu.service.ICMCQuotesLatestService;
 import org.lifxue.wuzhu.service.IPATableService;
 import org.lifxue.wuzhu.service.ITradeInfoService;
+import org.lifxue.wuzhu.service.PortfolioCalculationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +48,8 @@ public class PATableViewModel {
     private IPATableService paTableService;
     private CashCalculationService cashCalculationService;
     private ITradeInfoService tradeInfoService;
+    private ICMCQuotesLatestService quotesLatestService;
+    private PortfolioCalculationService portfolioCalculationService;
 
     private final ObservableList<PATableVO> paDataList = FXCollections.observableArrayList();
     private final ObservableList<String> availableSymbols = FXCollections.observableArrayList();
@@ -77,6 +83,16 @@ public class PATableViewModel {
     @Autowired
     public void setTradeInfoService(ITradeInfoService tradeInfoService) {
         this.tradeInfoService = tradeInfoService;
+    }
+
+    @Autowired
+    public void setQuotesLatestService(ICMCQuotesLatestService quotesLatestService) {
+        this.quotesLatestService = quotesLatestService;
+    }
+
+    @Autowired
+    public void setPortfolioCalculationService(PortfolioCalculationService portfolioCalculationService) {
+        this.portfolioCalculationService = portfolioCalculationService;
     }
 
     public ObservableList<PATableVO> getPaDataList() {
@@ -306,13 +322,10 @@ public class PATableViewModel {
             }
         }
 
+        // 当前总价 = 当前投资组合总市值（与"数据图例"页面口径一致）
+        BigDecimal nowTotalValue = getCurrentPortfolioValue();
         // 计算出入金余额
         BigDecimal cashBalance = getCashBalance();
-
-        // 总成本 = 买入总额 - 卖出总额
-        BigDecimal totalInvestment = totalBuy.subtract(totalSale);
-        // 当前总价值 = 交易盈亏 + 出入金余额
-        BigDecimal nowTotalValue = totalInvestment.add(cashBalance);
 
         String chg = "0.00%";
         // 以总成本为基数计算收益率
@@ -333,7 +346,27 @@ public class PATableViewModel {
     }
 
     /**
+     * 获取当前投资组合总价值（与"数据图例"页面一致）
+     *
+     * @return 当前总市值
+     */
+    private BigDecimal getCurrentPortfolioValue() {
+        if (portfolioCalculationService == null || tradeInfoService == null || quotesLatestService == null) {
+            return BigDecimal.ZERO;
+        }
+        try {
+            List<TradeInfo> trades = tradeInfoService.findOrderByTradeDate();
+            List<CMCQuotesLatest> quotes = quotesLatestService.queryLatest();
+            return portfolioCalculationService.calculate(trades, quotes).getTotalValue();
+        } catch (Exception e) {
+            return BigDecimal.ZERO;
+        }
+    }
+
+    /**
      * 获取当前出入金余额
+     *
+     * <p>USDT 出入金记录在数据库中存为：入金 -&gt; "卖"，出金 -&gt; "买"（见 CashViewModel）。</p>
      *
      * @return 余额
      */
@@ -348,9 +381,9 @@ public class PATableViewModel {
             BigDecimal totalDeposit = BigDecimal.ZERO;
             BigDecimal totalWithdrawal = BigDecimal.ZERO;
             for (TradeInfoVO record : usdtRecords) {
-                if ("入金".equals(record.getSaleOrBuy())) {
+                if ("卖".equals(record.getSaleOrBuy())) {
                     totalDeposit = totalDeposit.add(new BigDecimal(record.getQuoteNum()));
-                } else if ("出金".equals(record.getSaleOrBuy())) {
+                } else if ("买".equals(record.getSaleOrBuy())) {
                     totalWithdrawal = totalWithdrawal.add(new BigDecimal(record.getQuoteNum()));
                 }
             }
