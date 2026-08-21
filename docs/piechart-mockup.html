@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>WuZhu · 数据图例 优化方案原型</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+<style>
+/* ========== 基础变量 ========== */
+:root {
+  /* Material Light Theme */
+  --primary: #6200EE;
+  --primary-variant: #3700B3;
+  --secondary: #02ABF5;
+  --secondary-variant: #005fa3;
+  --background: #FFFFFF;
+  --surface: #FFFFFF;
+  --on-primary: #FFFFFF;
+  --on-background: #1C1B1F;
+  --on-surface: #1C1B1F;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.16);
+  --text-secondary: #5F6368;
+  --text-tertiary: #9AA0A6;
+  --hover-bg: rgba(98,0,238,0.08);
+  --kpi-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.04);
+  --chart-shadow: 0 4px 16px rgba(98,0,238,0.08);
+  /* 品牌色板 10 色，与主题同步 */
+  --c1:#6200EE; --c2:#02ABF5; --c3:#03DAC6; --c4:#FF6E40; --c5:#FFC107;
+  --c6:#7C4DFF; --c7:#00B8D4; --c8:#B388FF; --c9:#FF4081; --c10:#69F0AE;
+}
+
+[data-theme="dark"] {
+  --primary: #BB86FC;
+  --primary-variant: #3700B3;
+  --secondary: #03DAC6;
+  --secondary-variant: #018786;
+  --background: #202530;
+  --surface: #2E3540;
+  --on-primary: #1C1B1F;
+  --on-background: rgba(255,255,255,0.87);
+  --on-surface: rgba(255,255,255,0.87);
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.16);
+  --text-secondary: rgba(255,255,255,0.6);
+  --text-tertiary: rgba(255,255,255,0.4);
+  --hover-bg: rgba(187,134,252,0.12);
+  --kpi-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2);
+  --chart-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  --c1:#BB86FC; --c2:#03DAC6; --c3:#CF6679; --c4:#FFB74D; --c5:#4FC3F7;
+  --c6:#81C784; --c7:#BA68C8; --c8:#FFD54F; --c9:#F06292; --c10:#A5D6A7;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  background: #ECEFF1; font-size: 13px; color: #333; }
+body[data-theme="dark"] { background: #181c22; color: #e0e0e0; }
+
+/* ========== 顶部原型控制条 ========== */
+.controls {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+  padding: 10px 20px; display: flex; align-items: center; gap: 14px;
+  color: white; font-size: 13px;
+}
+.controls .title { font-weight: 600; margin-right: auto; }
+.controls label { cursor: pointer; }
+.controls .btn {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  color: white; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;
+}
+.controls .btn:hover { background: rgba(255,255,255,0.2); }
+.controls .btn.active { background: var(--primary); border-color: var(--primary); }
+
+.stage { padding: 60px 20px 40px; display: flex; justify-content: center; }
+
+/* ========== JavaFX 风格窗口 ========== */
+.app-window {
+  width: 1000px; height: 700px; background: var(--background);
+  border-radius: 6px; box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.08);
+  display: grid; grid-template-columns: 200px 1fr; grid-template-rows: 32px 1fr; overflow: hidden;
+}
+
+/* 标题栏 */
+.titlebar {
+  grid-column: 1 / -1; background: var(--primary); color: var(--on-primary);
+  display: flex; align-items: center; padding: 0 12px; font-size: 12px; gap: 8px;
+}
+.titlebar .logo {
+  width: 16px; height: 16px; background: white; border-radius: 3px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--primary); font-weight: bold; font-size: 10px;
+}
+.titlebar .win-controls { margin-left: auto; display: flex; gap: 4px; }
+.titlebar .win-controls span {
+  width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; border-radius: 3px; font-size: 11px;
+}
+.titlebar .win-controls span:hover { background: rgba(255,255,255,0.18); }
+.titlebar .win-controls .close:hover { background: #E81123; }
+
+/* 侧边导航 */
+.sidebar {
+  background: var(--primary-variant); color: var(--on-primary);
+  display: flex; flex-direction: column; padding: 4px 0;
+}
+body[data-theme="dark"] .sidebar { background: #293244; }
+.sidebar .nav-item {
+  padding: 10px 16px; display: flex; align-items: center; gap: 12px;
+  cursor: pointer; font-size: 13px; border-left: 3px solid transparent;
+}
+.sidebar .nav-item i { width: 18px; text-align: center; font-size: 14px; opacity: 0.85; }
+.sidebar .nav-item:hover { background: rgba(255,255,255,0.08); }
+.sidebar .nav-item.active { background: rgba(255,255,255,0.12); border-left-color: var(--secondary); }
+.sidebar .divider { height: 1px; background: rgba(255,255,255,0.1); margin: 6px 0; }
+
+/* 主内容区 */
+.content {
+  background: var(--background); display: flex; flex-direction: column;
+  overflow: hidden; position: relative;
+}
+
+/* ===== 工具栏 ===== */
+.toolbar {
+  height: 52px; padding: 8px 16px; display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.toolbar .tb-group { display: flex; align-items: center; gap: 8px; }
+.toolbar .tb-divider { width: 1px; height: 24px; background: var(--border); }
+.toolbar .tb-label { color: var(--text-secondary); font-size: 12px; }
+
+.tb-toggle { display: inline-flex; background: var(--background); border: 1px solid var(--border);
+  border-radius: 4px; overflow: hidden; }
+.tb-toggle button {
+  background: transparent; border: 0; padding: 5px 12px; cursor: pointer;
+  font-size: 12px; color: var(--on-surface);
+}
+.tb-toggle button.active { background: var(--primary); color: var(--on-primary); }
+
+.tb-check { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--on-surface); cursor: pointer; }
+.tb-check input { accent-color: var(--primary); }
+
+.spinner { display: inline-flex; align-items: center; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.spinner input { width: 70px; border: 0; padding: 5px 8px; font-size: 12px; background: var(--background); color: var(--on-surface); outline: none; }
+.spinner button { background: var(--background); border: 0; padding: 0 8px; cursor: pointer; color: var(--text-secondary); }
+.spinner button:hover { background: var(--hover-bg); }
+
+.tb-btn {
+  background: var(--primary); color: var(--on-primary); border: 0; padding: 6px 14px;
+  border-radius: 4px; cursor: pointer; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;
+}
+.tb-btn.secondary { background: transparent; color: var(--primary); border: 1px solid var(--border-strong); }
+.tb-btn:hover { opacity: 0.92; }
+
+/* ===== KPI 卡片 ===== */
+.kpi-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; padding: 16px 16px 0; }
+.kpi-card {
+  background: var(--surface); border-radius: 8px; padding: 14px 16px;
+  border: 1px solid var(--border); box-shadow: var(--kpi-shadow);
+  display: flex; flex-direction: column; gap: 4px; position: relative; overflow: hidden;
+}
+.kpi-card::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--primary);
+}
+.kpi-card.k2::before { background: var(--secondary); }
+.kpi-card.k3::before { background: var(--c4); }
+.kpi-card.k4::before { background: var(--c3); }
+.kpi-card .kpi-head { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 11px; }
+.kpi-card .kpi-head i { color: var(--primary); }
+.kpi-card.k2 .kpi-head i { color: var(--secondary); }
+.kpi-card.k3 .kpi-head i { color: var(--c4); }
+.kpi-card.k4 .kpi-head i { color: var(--c3); }
+.kpi-card .kpi-value { font-size: 22px; font-weight: 700; color: var(--on-surface); line-height: 1.2; }
+.kpi-card .kpi-sub { font-size: 11px; color: var(--text-tertiary); }
+
+/* ===== 主体两栏：饼图 + 图例/表 ===== */
+.main { flex: 1; display: grid; grid-template-columns: 1fr 320px; gap: 12px; padding: 12px 16px; min-height: 0; }
+.chart-panel {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative; box-shadow: var(--kpi-shadow);
+}
+.chart-title { position: absolute; top: 16px; left: 0; right: 0; text-align: center;
+  font-size: 16px; font-weight: 600; color: var(--on-surface); }
+.chart-wrap { position: relative; width: 320px; height: 320px; }
+.pie-svg { width: 100%; height: 100%; filter: drop-shadow(var(--chart-shadow)); }
+.pie-svg path { transition: transform 0.2s, filter 0.2s; transform-origin: 200px 200px; cursor: pointer; }
+.pie-svg path:hover { transform: scale(1.04); filter: brightness(1.08); }
+.pie-center {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  text-align: center; pointer-events: none;
+}
+.pie-center .total-label { font-size: 11px; color: var(--text-secondary); }
+.pie-center .total-value { font-size: 22px; font-weight: 700; color: var(--primary); line-height: 1.1; }
+.pie-center .total-sub { font-size: 10px; color: var(--text-tertiary); margin-top: 2px; }
+
+.legend-panel { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.legend-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  box-shadow: var(--kpi-shadow); display: flex; flex-direction: column; min-height: 0;
+}
+.legend-head { padding: 10px 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-secondary); }
+.legend-head .head-actions { display: flex; gap: 6px; }
+.legend-head .head-actions a { color: var(--primary); text-decoration: none; cursor: pointer; font-size: 11px; }
+.legend-list { overflow-y: auto; flex: 1; }
+.legend-row {
+  display: grid; grid-template-columns: 12px 1fr 70px 90px;
+  align-items: center; gap: 8px; padding: 7px 14px; cursor: pointer; font-size: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.legend-row:hover { background: var(--hover-bg); }
+.legend-row:last-child { border-bottom: 0; }
+.legend-row .dot { width: 10px; height: 10px; border-radius: 50%; }
+.legend-row .name { color: var(--on-surface); font-weight: 500; }
+.legend-row .pct { color: var(--text-secondary); text-align: right; }
+.legend-row .val { color: var(--on-surface); text-align: right; font-variant-numeric: tabular-nums; }
+.legend-row.other-row { background: rgba(0,0,0,0.02); font-style: italic; }
+.legend-row.other-row .name::before { content: "▶ "; font-size: 9px; color: var(--text-tertiary); }
+
+/* ===== 表格 ===== */
+.table-card {
+  margin: 0 16px 16px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; box-shadow: var(--kpi-shadow); overflow: hidden;
+}
+.table-head { padding: 10px 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-secondary); }
+.table-head .left { display: flex; align-items: center; gap: 10px; }
+.table-head .left i { color: var(--primary); }
+.table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.table th { background: rgba(0,0,0,0.02); color: var(--text-secondary); font-weight: 600;
+  text-align: left; padding: 8px 14px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.table td { padding: 8px 14px; border-bottom: 1px solid var(--border); color: var(--on-surface); }
+.table tr:last-child td { border-bottom: 0; }
+.table tr:hover td { background: var(--hover-bg); }
+.table .coin-cell { display: flex; align-items: center; gap: 8px; }
+.table .coin-cell .dot { width: 8px; height: 8px; border-radius: 50%; }
+.table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.table .pct-bar { display: inline-block; width: 80px; height: 4px; background: rgba(0,0,0,0.06);
+  border-radius: 2px; vertical-align: middle; margin-right: 6px; position: relative; }
+.table .pct-bar::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+  background: var(--primary); border-radius: 2px; width: var(--w, 0%); }
+.table .chg-up { color: #1A8754; }
+.table .chg-down { color: #D93025; }
+
+/* ===== 注释 ===== */
+.annotation {
+  position: absolute; background: #FFEB3B; color: #333; padding: 4px 10px;
+  border-radius: 4px; font-size: 11px; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  z-index: 10; line-height: 1.4; max-width: 200px;
+}
+.annotation::before { content: ""; position: absolute; width: 10px; height: 10px;
+  background: #FFEB3B; transform: rotate(45deg); }
+.annotation.top::before { bottom: -5px; left: 20px; }
+.annotation.bottom::before { top: -5px; left: 20px; }
+.annotation .an-num { display: inline-block; width: 18px; height: 18px; background: #F57C00;
+  color: white; border-radius: 50%; text-align: center; line-height: 18px; margin-right: 4px; }
+
+/* 注释标记 */
+.anno-kpi { top: 102px; left: 120px; }
+.anno-pie { top: 220px; left: 220px; }
+.anno-legend { top: 220px; right: 60px; }
+.anno-table { bottom: 80px; left: 200px; }
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+.legend-section { color: var(--text-secondary); }
+</style>
+</head>
+<body data-theme="light">
+
+<!-- 原型控制条 -->
+<div class="controls">
+  <div class="title">📊 WuZhu ·「数据图例」优化方案原型</div>
+  <span>主题：</span>
+  <button class="btn active" onclick="setTheme('light')" id="btn-light">☀️ 浅色</button>
+  <button class="btn" onclick="setTheme('dark')" id="btn-dark">🌙 深色</button>
+  <span style="opacity:0.6">|</span>
+  <label><input type="checkbox" id="toggle-anno" checked onchange="toggleAnno()"> 显示优化标注</label>
+  <span style="opacity:0.6">|</span>
+  <button class="btn" onclick="window.print()">🖨️ 打印</button>
+</div>
+
+<div class="stage">
+  <div class="app-window">
+    <!-- 标题栏 -->
+    <div class="titlebar">
+      <span class="logo">W</span>
+      <span>WuZhu</span>
+      <span style="opacity:0.7; font-size:11px;">— 加密货币资产管理</span>
+      <div class="win-controls">
+        <span title="最小化">—</span>
+        <span title="最大化">▢</span>
+        <span class="close" title="关闭">✕</span>
+      </div>
+    </div>
+
+    <!-- 侧边导航 -->
+    <div class="sidebar">
+      <div class="nav-item"><i class="fa fa-sticky-note-o"></i> 笔记</div>
+      <div class="nav-item"><i class="fa fa-exchange"></i> 交易信息</div>
+      <div class="nav-item"><i class="fa fa-line-chart"></i> 盈亏分析</div>
+      <div class="nav-item active"><i class="fa fa-pie-chart"></i> 数据图例</div>
+      <div class="nav-item"><i class="fa fa-money"></i> 资金流水</div>
+      <div class="nav-item"><i class="fa fa-list"></i> 选择品种</div>
+      <div class="divider"></div>
+      <div class="nav-item"><i class="fa fa-cog"></i> 首选项</div>
+    </div>
+
+    <!-- 主内容 -->
+    <div class="content">
+      <!-- 工具栏 -->
+      <div class="toolbar">
+        <div class="tb-group">
+          <span class="tb-label">显示方式</span>
+          <div class="tb-toggle">
+            <button class="active">现价</button>
+            <button>成本价</button>
+          </div>
+        </div>
+        <div class="tb-divider"></div>
+        <label class="tb-check">
+          <input type="checkbox" checked> 隐藏小额品种
+        </label>
+        <div class="spinner">
+          <button>−</button>
+          <input value="100">
+          <button>+</button>
+        </div>
+        <div class="tb-divider"></div>
+        <button class="tb-btn secondary"><i class="fa fa-refresh"></i> 刷新</button>
+        <button class="tb-btn secondary"><i class="fa fa-download"></i> 导出CSV</button>
+        <div style="flex:1"></div>
+        <span class="tb-label"><i class="fa fa-clock-o"></i> 更新于 14:32:08</span>
+      </div>
+
+      <!-- KPI 卡片 -->
+      <div class="kpi-row">
+        <div class="kpi-card k1">
+          <div class="kpi-head"><i class="fa fa-database"></i> 资产总价值</div>
+          <div class="kpi-value">$117,523.42</div>
+          <div class="kpi-sub">≈ ¥851,560 · 24h +1.84%</div>
+        </div>
+        <div class="kpi-card k2">
+          <div class="kpi-head"><i class="fa fa-cubes"></i> 持仓品种</div>
+          <div class="kpi-value">8 <span style="font-size:13px;color:var(--text-tertiary)">/ 4 其他</span></div>
+          <div class="kpi-sub">USDT · BTC · ETH · ENJ...</div>
+        </div>
+        <div class="kpi-card k3">
+          <div class="kpi-head"><i class="fa fa-trophy"></i> 最大持仓</div>
+          <div class="kpi-value">BTC <span style="font-size:18px;color:var(--text-tertiary)">96.22%</span></div>
+          <div class="kpi-sub">$113,058.31 · 1.176 BTC</div>
+        </div>
+        <div class="kpi-card k4">
+          <div class="kpi-head"><i class="fa fa-percent"></i> 集中度</div>
+          <div class="kpi-value">HHI 9,259</div>
+          <div class="kpi-sub">⚠ 极高 · 建议分散</div>
+        </div>
+      </div>
+
+      <!-- 中间两栏：饼图 + 图例 -->
+      <div class="main">
+        <div class="chart-panel">
+          <div class="chart-title">资产分布（按现价）</div>
+          <div class="chart-wrap">
+            <svg class="pie-svg" viewBox="0 0 400 400">
+              <!-- 完整饼图 -->
+              <!-- BTC 96.22% = 346.4° -->
+              <path d="M 200 200 L 200 30 A 170 170 0 1 1 32.4 245.7 Z" fill="var(--c1)" />
+              <!-- 其他 0.81% -->
+              <path d="M 200 200 L 32.4 245.7 A 170 170 0 0 1 30.2 222.5 Z" fill="var(--c5)" />
+              <!-- ENJ 0.71% -->
+              <path d="M 200 200 L 30.2 222.5 A 170 170 0 0 1 31.5 199.2 Z" fill="var(--c3)" />
+              <!-- KNC 0.69% -->
+              <path d="M 200 200 L 31.5 199.2 A 170 170 0 0 1 33.6 176.0 Z" fill="var(--c2)" />
+              <!-- DYDX 0.57% -->
+              <path d="M 200 200 L 33.6 176.0 A 170 170 0 0 1 38.3 152.7 Z" fill="var(--c6)" />
+              <!-- POL 0.56% -->
+              <path d="M 200 200 L 38.3 152.7 A 170 170 0 0 1 45.5 129.4 Z" fill="var(--c9)" />
+              <!-- ZK 0.44% -->
+              <path d="M 200 200 L 45.5 129.4 A 170 170 0 0 1 55.3 105.8 Z" fill="var(--c4)" />
+              <!-- 中心镂空（donut） -->
+              <circle cx="200" cy="200" r="80" fill="var(--surface)" />
+            </svg>
+            <div class="pie-center">
+              <div class="total-label">总价值</div>
+              <div class="total-value">$117,523</div>
+              <div class="total-sub">8 个品种</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="legend-panel">
+          <div class="legend-card">
+            <div class="legend-head">
+              <span><i class="fa fa-list-ul" style="color:var(--primary)"></i> 持仓明细</span>
+              <div class="head-actions">
+                <a>↓ 占比</a> · <a>币种</a>
+              </div>
+            </div>
+            <div class="legend-list">
+              <div class="legend-row" style="background:var(--hover-bg)">
+                <span class="dot" style="background:var(--c1)"></span>
+                <span class="name">BTC</span>
+                <span class="pct">96.22%</span>
+                <span class="val">$113,058</span>
+              </div>
+              <div class="legend-row">
+                <span class="dot" style="background:var(--c2)"></span>
+                <span class="name">USDT</span>
+                <span class="pct">0.97%</span>
+                <span class="val">$1,140</span>
+              </div>
+              <div class="legend-row">
+                <span class="dot" style="background:var(--c3)"></span>
+                <span class="name">ENJ</span>
+                <span class="pct">0.71%</span>
+                <span class="val">$834</span>
+              </div>
+              <div class="legend-row">
+                <span class="dot" style="background:var(--c4)"></span>
+                <span class="name">KNC</span>
+                <span class="pct">0.69%</span>
+                <span class="val">$811</span>
+              </div>
+              <div class="legend-row">
+                <span class="dot" style="background:var(--c6)"></span>
+                <span class="name">DYDX</span>
+                <span class="pct">0.57%</span>
+                <span class="val">$670</span>
+              </div>
+              <div class="legend-row">
+                <span class="dot" style="background:var(--c9)"></span>
+                <span class="name">POL</span>
+                <span class="pct">0.56%</span>
+                <span class="val">$658</span>
+              </div>
+              <div class="legend-row">
+                <span class="dot" style="background:var(--c7)"></span>
+                <span class="name">ETH</span>
+                <span class="pct">0.20%</span>
+                <span class="val">$235</span>
+              </div>
+              <div class="legend-row other-row">
+                <span class="dot" style="background:var(--c5)"></span>
+                <span class="name">其他 (ZK 等 4 项)</span>
+                <span class="pct">0.06%</span>
+                <span class="val">$117</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 详细数据表 -->
+      <div class="table-card">
+        <div class="table-head">
+          <div class="left"><i class="fa fa-table"></i> 详细数据 · 点击表头排序</div>
+          <div>
+            <span style="color:var(--text-tertiary)">单位：</span>
+            <a style="color:var(--primary);cursor:pointer">USD</a> ·
+            <a style="color:var(--primary);cursor:pointer;opacity:0.6">CNY</a> ·
+            <a style="color:var(--primary);cursor:pointer;opacity:0.6">EUR</a>
+          </div>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>货币</th><th>当前价</th><th>持仓数量</th><th>总价值</th>
+              <th>占比</th><th>24h 涨跌</th><th>7d 涨跌</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="coin-cell"><span class="dot" style="background:var(--c1)"></span>BTC</div></td>
+              <td class="num">$96,234.18</td>
+              <td class="num">1.176</td>
+              <td class="num"><strong>$113,058.31</strong></td>
+              <td><span class="pct-bar" style="--w:96.22%"></span><span class="num">96.22%</span></td>
+              <td class="chg-up num">+2.34%</td>
+              <td class="chg-up num">+5.67%</td>
+            </tr>
+            <tr>
+              <td><div class="coin-cell"><span class="dot" style="background:var(--c2)"></span>USDT</div></td>
+              <td class="num">$1.0001</td>
+              <td class="num">1,140.00</td>
+              <td class="num"><strong>$1,140.11</strong></td>
+              <td><span class="pct-bar" style="--w:0.97%"></span><span class="num">0.97%</span></td>
+              <td class="num" style="color:var(--text-tertiary)">+0.01%</td>
+              <td class="num" style="color:var(--text-tertiary)">+0.00%</td>
+            </tr>
+            <tr>
+              <td><div class="coin-cell"><span class="dot" style="background:var(--c3)"></span>ENJ</div></td>
+              <td class="num">$0.0834</td>
+              <td class="num">10,000.00</td>
+              <td class="num"><strong>$834.00</strong></td>
+              <td><span class="pct-bar" style="--w:0.71%"></span><span class="num">0.71%</span></td>
+              <td class="chg-down num">−1.23%</td>
+              <td class="chg-up num">+3.45%</td>
+            </tr>
+            <tr>
+              <td><div class="coin-cell"><span class="dot" style="background:var(--c4)"></span>KNC</div></td>
+              <td class="num">$0.5410</td>
+              <td class="num">1,500.00</td>
+              <td class="num"><strong>$811.50</strong></td>
+              <td><span class="pct-bar" style="--w:0.69%"></span><span class="num">0.69%</span></td>
+              <td class="chg-up num">+0.87%</td>
+              <td class="chg-down num">−2.11%</td>
+            </tr>
+            <tr>
+              <td><div class="coin-cell"><span class="dot" style="background:var(--c6)"></span>DYDX</div></td>
+              <td class="num">$0.6700</td>
+              <td class="num">1,000.00</td>
+              <td class="num"><strong>$670.00</strong></td>
+              <td><span class="pct-bar" style="--w:0.57%"></span><span class="num">0.57%</span></td>
+              <td class="chg-down num">−3.12%</td>
+              <td class="chg-up num">+8.92%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 优化标注 -->
+      <div class="annotation anno-kpi top">
+        <span class="an-num">1</span><strong>KPI 卡片</strong><br>
+        替代原单个 Label，提供<br>总价值/品种数/集中度 等<br>关键指标一眼可见
+      </div>
+      <div class="annotation anno-pie top">
+        <span class="an-num">2</span><strong>品牌色板 + 环形图</strong><br>
+        与项目紫色 #6200EE 同源，<br>中心镂空显示总额，
+        解决原图硬编码粉色问题
+      </div>
+      <div class="annotation anno-legend top">
+        <span class="an-num">3</span><strong>自绘图例</strong><br>
+        列表式可点击，<br>色点与饼图扇形联动高亮，<br>「其他」可展开
+      </div>
+      <div class="annotation anno-table bottom">
+        <span class="an-num">4</span><strong>详细数据表</strong><br>
+        与 CashView/TradeInfoView<br>信息密度对齐，<br>支持表头排序与单位切换
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function setTheme(t) {
+  document.body.dataset.theme = t;
+  document.getElementById('btn-light').classList.toggle('active', t==='light');
+  document.getElementById('btn-dark').classList.toggle('active', t==='dark');
+}
+function toggleAnno() {
+  const show = document.getElementById('toggle-anno').checked;
+  document.querySelectorAll('.annotation').forEach(a => a.style.display = show ? 'block' : 'none');
+}
+</script>
+</body>
+</html>

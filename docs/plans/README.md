@@ -10,6 +10,7 @@
 | [RELEASE_AUTOMATION.md](./RELEASE_AUTOMATION.md) | 自动生成 Releases 并提交的流程（GitHub Actions 全自动 + 本地 gh CLI 半自动） | 问题 3 |
 | [WINDOWS_PACKAGING_WSL2.md](./WINDOWS_PACKAGING_WSL2.md) | WSL2 下打包 Windows 程序的可行性结论与方案（推荐 GitHub Actions Windows runner） | 问题 4 |
 | [DOC_ACCURACY_AUDIT.md](./DOC_ACCURACY_AUDIT.md) | README / AGENTS.md / packaging 文档与 pom.xml、代码的一致性审查 | 问题 1 |
+| [piechart-redesign.md](./piechart-redesign.md) | 「数据图例」模块界面优化方案（4 段式信息架构 + 品牌色板 + 自绘图例 + 联动高亮）；HTML 原型见 [`../piechart-mockup.html`](../piechart-mockup.html) | 模块升级参考 |
 
 ## 核心结论速览
 
@@ -17,6 +18,7 @@
 2. **mise 装 JDK**：✅ `java@liberica-javafx-21`（如 `liberica-javafx-21.0.12+10`）即 BellSoft Liberica JDK 21 Full，含 JavaFX，mise 完全支持。详见 [DEV_ENV_MISE.md](./DEV_ENV_MISE.md)。
 3. **Releases 自动化**：推荐 GitHub Actions（tag 触发 → Ubuntu/Windows runner 分别出 .deb/.msi → 自动建 Release）。详见 [RELEASE_AUTOMATION.md](./RELEASE_AUTOMATION.md)。
 4. **WSL2 出 Windows 安装包**：jpackage 不支持跨平台，WSL2 只能出 .deb；Windows .msi/.exe 需在 Windows 环境（推荐 GitHub Actions Windows runner）产出。详见 [WINDOWS_PACKAGING_WSL2.md](./WINDOWS_PACKAGING_WSL2.md)。
+5. **数据图例模块升级**：保持 WorkbenchFX 框架不变，把单饼图升级为「工具栏 + 4 个 KPI 卡片 + 环形图 + 自绘图例 + 详细数据表」5 段式；完全跟随主题变量；详见 [piechart-redesign.md](./piechart-redesign.md)。
 
 ## 待确认的执行清单（按优先级）
 
